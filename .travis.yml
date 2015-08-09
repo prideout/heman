@@ -1,0 +1,9 @@
+language: c
+script: scons test
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    - boost-latest
+    packages:
+    - libboost-python-dev
