@@ -27,12 +27,12 @@ The above images were generated from code that looks like this:
 // Generate an island shape using simplex noise and a distance field.
 heman_image_t* elevation = heman_island_create_heightmap(1024, 1024, rand());
 
+// Visualize the normal vectors.
+heman_image_t* normals = heman_lighting_compute_normals(elevation);
+
 // Apply a color gradient.
 heman_image_t* gradient = heman_color_create_gradient(...);
 heman_image_t* albedo = heman_color_apply_gradient(elevation, -0.5, 0.5, grad);
-
-// Visualize the normal vectors.
-heman_image_t* normals = heman_lighting_compute_normals(elevation);
 
 // Apply diffuse lighting.
 heman_image_t* final = heman_lighting_apply(elevation, albedo, ...);
