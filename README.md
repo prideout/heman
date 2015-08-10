@@ -17,13 +17,36 @@ This is a tiny MIT-licensed C99 library of image utilities for dealing with **he
     * Uses gamma-correct linear interpolation.
 - Compute diffuse lighting.
 
+## Example
+
+![](https://github.com/prideout/heman/blob/master/island.png)
+
+The above images were generated from code that looks like this:
+
+```c
+// Generate an island shape using simplex noise and a distance field.
+heman_image_t* elevation = heman_island_create_heightmap(1024, 1024, rand());
+
+// Apply a color gradient.
+heman_image_t* gradient = heman_color_create_gradient(...);
+heman_image_t* albedo = heman_color_apply_gradient(elevation, -0.5, 0.5, grad);
+
+// Visualize the normal vectors.
+heman_image_t* normals = heman_lighting_compute_normals(elevation);
+
+// Apply diffuse lighting.
+heman_image_t* final = heman_lighting_apply(elevation, albedo, ...);
+```
+
+For the unabridged version, see [test/main.c](https://github.com/prideout/heman/blob/master/test/main.c).
+
 ## Documentation
 
 Read the [header file](https://github.com/prideout/heman/blob/master/include/heman.h).
 
-## Setup
+## Building
 
-It's probably easiest just to snarf the code and use whatever build system you want.  The only official build environments are the [TravisCI build](https://travis-ci.org/prideout/islandman) and the [Dockerfile](https://github.com/prideout/heman/blob/master/Dockerfile).
+It's probably easiest just to snarf the code and use whatever build system you want.  The only official builds use SCons, in the environments defined by the [TravisCI build](https://travis-ci.org/prideout/islandman) and the [Dockerfile](https://github.com/prideout/heman/blob/master/Dockerfile).
 
 If you're on OS X, there's a script, [env.sh](https://github.com/prideout/heman/blob/master/env.sh), that makes using Docker easy.  Here's how to use it:
 
@@ -40,7 +63,7 @@ scons test
 
 Here are some to-be-done items:
 - **heman_image_sample** doesn't do any interpolation.
-    - We should provide gamma decode and encode functions too.
+- We should provide gamma decode and encode functions.
 - **heman_lighting_compute_occlusion** is not yet implemented.
 - If we need more string handling, we can integrate [SDS](https://github.com/antirez/sds).
 - Create an OO Python wrapper, perhaps using **boost.python**.
