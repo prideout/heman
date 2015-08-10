@@ -7,7 +7,7 @@
 #define MAX(a, b) (a > b ? a : b)
 #define CLAMP(v) MAX(0.0f, MIN(1.0f, v))
 
-iman_image_t* iman_create_color_gradient(
+heman_image_t* heman_color_create_gradient(
     int width, int num_colors, const int* cp_locations, const int* cp_values)
 {
     assert(width > 0 && num_colors >= 2);
@@ -30,7 +30,7 @@ iman_image_t* iman_create_color_gradient(
     }
 
     // Create and populate a width x 1 image.
-    iman_image_t* result = iman_image_create(width, 1, 3);
+    heman_image_t* result = heman_image_create(width, 1, 3);
     int index0 = 0;
     int index1 = 1;
     float* dst = result->data;
@@ -68,22 +68,22 @@ iman_image_t* iman_create_color_gradient(
     return result;
 }
 
-iman_image_t* iman_apply_color_gradient(iman_image_t* heightmap,
-    float minheight, float maxheight, iman_image_t* gradient)
+heman_image_t* heman_color_apply_gradient(heman_image_t* heightmap,
+    float minheight, float maxheight, heman_image_t* gradient)
 {
     assert(heightmap->nbands == 1);
     assert(gradient->height == 1);
     assert(gradient->nbands == 3);
     int w = heightmap->width;
     int h = heightmap->height;
-    iman_image_t* result = iman_image_create(w, h, 3);
+    heman_image_t* result = heman_image_create(w, h, 3);
     int size = result->height * result->width;
     float* dst = result->data;
     const float* src = heightmap->data;
     float scale = 1.0f / (maxheight - minheight);
     for (int i = 0; i < size; i++, dst += 3, src++) {
         float u = CLAMP((*src - minheight) * scale);
-        iman_image_sample(gradient, u, 0.5f, dst);
+        heman_image_sample(gradient, u, 0.5f, dst);
     }
     return result;
 }

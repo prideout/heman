@@ -6,11 +6,11 @@ static const float SEALEVEL = 0.5f;
 
 #define NOISE(U, V) open_simplex_noise2(ctx, U, V)
 
-iman_image_t* iman_generate_island_noise(int width, int height, int seed)
+heman_image_t* heman_island_generate_noise(int width, int height, int seed)
 {
     struct osn_context* ctx;
     open_simplex_noise(seed, &ctx);
-    iman_image_t* img = iman_image_create(width, height, 3);
+    heman_image_t* img = heman_image_create(width, height, 3);
     float* data = img->data;
     float invh = 1.0f / height;
     float invw = 1.0f / width;
@@ -35,20 +35,10 @@ iman_image_t* iman_generate_island_noise(int width, int height, int seed)
     return img;
 }
 
-void iman_image_sample(iman_image_t* img, float u, float v, float* result)
+heman_image_t* heman_island_create_heightmap(int width, int height, int seed)
 {
-    int x = img->width * fmod(1.0f + u, 1.0f);
-    int y = img->height * fmod(1.0f + v, 1.0f);
-    float* data = iman_image_texel(img, x, y);
-    for (int b = 0; b < img->nbands; ++b) {
-        *result++ = *data++;
-    }
-}
-
-iman_image_t* iman_create_island_heightmap(int width, int height, int seed)
-{
-    iman_image_t* noisetex = iman_generate_island_noise(width, height, seed);
-    iman_image_t* coastmask = iman_image_create(width, height, 1);
+    heman_image_t* noisetex = heman_island_generate_noise(width, height, seed);
+    heman_image_t* coastmask = heman_image_create(width, height, 1);
     float* data = coastmask->data;
     float invh = 1.0f / height;
     float invw = 1.0f / width;
@@ -63,7 +53,7 @@ iman_image_t* iman_create_island_heightmap(int width, int height, int seed)
             float n[3];
             float v = y * invh;
             float u = x * invw;
-            iman_image_sample(noisetex, u, v, n);
+            heman_image_sample(noisetex, u, v, n);
             u = (x - hw) * invw;
             v = vv;
             float m = 0.707f - sqrt(u * u + v * v);
@@ -72,8 +62,8 @@ iman_image_t* iman_create_island_heightmap(int width, int height, int seed)
         }
     }
 
-    iman_image_destroy(noisetex);
-    iman_image_t* result = iman_create_distance_field(coastmask);
-    iman_image_destroy(coastmask);
+    heman_image_destroy(noisetex);
+    heman_image_t* result = heman_distance_create_sdf(coastmask);
+    heman_image_destroy(coastmask);
     return result;
 }

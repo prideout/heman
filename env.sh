@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # This is a little script meant for OS X users that invokes docker to build
-# a container instance, then creates some alises to make it easy to attach
+# a container instance, then creates some aliases to make it easy to attach
 # or kill the container.
 
 boot2docker up

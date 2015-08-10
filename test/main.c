@@ -1,4 +1,4 @@
-#include <islandman.h>
+#include <heman.h>
 #include <stdlib.h>
 #include <time.h>
 #include "stb.h"
@@ -6,28 +6,29 @@
 static const int SIZE = 2048;
 
 #define COUNT(a) (sizeof(a) / sizeof(a[0]))
+#define OUTFOLDER "build/"
 
 double omp_get_wtime();
 int omp_get_max_threads();
 
-static void write_image(const char* filename, iman_image_t* img)
+static void write_image(const char* filename, heman_image_t* img)
 {
     printf("Writing to \"%s\".\n", filename);
     int width, height, ncomp;
-    iman_image_info(img, &width, &height, &ncomp);
+    heman_image_info(img, &width, &height, &ncomp);
     unsigned char* bytes = malloc(width * height * ncomp);
-    iman_image_as_uchar(img, -1.0, 1.0, bytes);
+    heman_image_as_uchar(img, -1.0, 1.0, bytes);
     stbi_write_png(filename, width, height, ncomp, bytes, width * ncomp);
     free(bytes);
 }
 
-static void write_colors(const char* filename, iman_image_t* img)
+static void write_colors(const char* filename, heman_image_t* img)
 {
     printf("Writing to \"%s\".\n", filename);
     int width, height, ncomp;
-    iman_image_info(img, &width, &height, &ncomp);
+    heman_image_info(img, &width, &height, &ncomp);
     unsigned char* bytes = malloc(width * height * ncomp);
-    iman_image_as_uchar(img, 0.0, 1.0, bytes);
+    heman_image_as_uchar(img, 0.0, 1.0, bytes);
     stbi_write_png(filename, width, height, ncomp, bytes, width * ncomp);
     free(bytes);
 }
@@ -36,22 +37,22 @@ static void test_noise()
 {
     printf("Generating noise.\n");
     double begin = omp_get_wtime();
-    iman_image_t* img = iman_generate_island_noise(SIZE, SIZE, 7000);
+    heman_image_t* img = heman_island_generate_noise(SIZE, SIZE, 7000);
     double duration = omp_get_wtime() - begin;
     printf("Noise generated in %.3f seconds.\n", duration);
-    iman_image_destroy(img);
+    heman_image_destroy(img);
 }
 
-static iman_image_t* draw_circle()
+static heman_image_t* draw_circle()
 {
-    iman_image_t* img = iman_image_create(SIZE, SIZE, 1);
+    heman_image_t* img = heman_image_create(SIZE, SIZE, 1);
     float inv = 1.0f / SIZE;
 
 #pragma omp parallel for
     for (int y = 0; y < SIZE; ++y) {
         float v = y * inv;
         float dv2 = (v - 0.5f) * (v - 0.5f);
-        float* dst = iman_image_data(img) + y * SIZE;
+        float* dst = heman_image_data(img) + y * SIZE;
         for (int x = 0; x < SIZE; ++x) {
             float u = x * inv;
             float du2 = (u - 0.5f) * (u - 0.5f);
@@ -63,22 +64,22 @@ static iman_image_t* draw_circle()
 
 static void test_distance()
 {
-    iman_image_t* img = draw_circle();
+    heman_image_t* img = draw_circle();
     double begin = omp_get_wtime();
-    iman_image_t* sdf = iman_create_distance_field(img);
+    heman_image_t* sdf = heman_distance_create_sdf(img);
     double duration = omp_get_wtime() - begin;
     printf("Distance field generated in %.3f seconds.\n", duration);
-    write_image("distance.png", sdf);
-    iman_image_destroy(img);
-    iman_image_destroy(sdf);
+    write_image(OUTFOLDER "distance.png", sdf);
+    heman_image_destroy(img);
+    heman_image_destroy(sdf);
 }
 
 static void test_island()
 {
     srand(time(0));
-    iman_image_t* img = iman_create_island_heightmap(SIZE, SIZE, rand());
-    write_image("heightmap.png", img);
-    iman_image_destroy(img);
+    heman_image_t* img = heman_island_create_heightmap(SIZE, SIZE, rand());
+    write_image(OUTFOLDER "heightmap.png", img);
+    heman_image_destroy(img);
 }
 
 static void test_color1()
@@ -90,20 +91,20 @@ static void test_color1()
         0xFF0000, 0x00FF00,
     };
     assert(COUNT(cp_locations) == COUNT(cp_colors));
-    iman_image_t* grad = iman_create_color_gradient(
+    heman_image_t* grad = heman_color_create_gradient(
         256, COUNT(cp_colors), cp_locations, cp_colors);
 
-    const char* filename = "gradient.png";
+    const char* filename = OUTFOLDER "gradient.png";
     printf("Writing to \"%s\".\n", filename);
     unsigned char* bytes = malloc(256 * 3);
     unsigned char* resized = malloc(256 * 256 * 3);
-    iman_image_as_uchar(grad, 0.0, 1.0, bytes);
+    heman_image_as_uchar(grad, 0.0, 1.0, bytes);
     stbir_resize_uint8(bytes, 256, 1, 0, resized, 256, 256, 0, 3);
     stbi_write_png(filename, 256, 256, 3, resized, 256 * 3);
     free(bytes);
     free(resized);
 
-    iman_image_destroy(grad);
+    heman_image_destroy(grad);
 }
 
 static void test_color2()
@@ -125,13 +126,13 @@ static void test_color2()
         0xFFFFFF,  // White
     };
     assert(COUNT(cp_locations) == COUNT(cp_colors));
-    iman_image_t* grad = iman_create_color_gradient(
+    heman_image_t* grad = heman_color_create_gradient(
         256, COUNT(cp_colors), cp_locations, cp_colors);
-    iman_image_t* hmap = iman_create_island_heightmap(SIZE, SIZE, rand());
-    iman_image_t* albedo = iman_apply_color_gradient(hmap, -0.5, 0.5, grad);
-    write_colors("albedo.png", albedo);
-    iman_image_destroy(grad);
-    iman_image_destroy(hmap);
+    heman_image_t* hmap = heman_island_create_heightmap(SIZE, SIZE, rand());
+    heman_image_t* albedo = heman_color_apply_gradient(hmap, -0.5, 0.5, grad);
+    write_colors(OUTFOLDER "albedo.png", albedo);
+    heman_image_destroy(grad);
+    heman_image_destroy(hmap);
 }
 
 int main(int argc, char** argv)

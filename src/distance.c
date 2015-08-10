@@ -37,7 +37,7 @@ static void edt(float* f, float* d, float* z, uint16_t* v, uint16_t* w, int n)
     }
 }
 
-static void transform_to_distance(iman_image_t* img)
+static void transform_to_distance(heman_image_t* img)
 {
     int width = img->width;
     int height = img->height;
@@ -87,11 +87,11 @@ static void transform_to_distance(iman_image_t* img)
     free(ww);
 }
 
-iman_image_t* iman_create_distance_field(iman_image_t* src)
+heman_image_t* heman_distance_create_sdf(heman_image_t* src)
 {
     assert(src->nbands == 1 && "Distance field input must have only 1 band.");
-    iman_image_t* positive = iman_image_create(src->width, src->height, 1);
-    iman_image_t* negative = iman_image_create(src->width, src->height, 1);
+    heman_image_t* positive = heman_image_create(src->width, src->height, 1);
+    heman_image_t* negative = heman_image_create(src->width, src->height, 1);
     int size = src->height * src->width;
     float* pptr = positive->data;
     float* nptr = negative->data;
@@ -108,6 +108,6 @@ iman_image_t* iman_create_distance_field(iman_image_t* src)
     for (int i = 0; i < size; ++i, ++pptr, ++nptr) {
         *pptr = (sqrt(*pptr) - sqrt(*nptr)) * inv;
     }
-    iman_image_destroy(negative);
+    heman_image_destroy(negative);
     return positive;
 }

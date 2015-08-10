@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 struct heman_image_s;
 typedef struct heman_image_s heman_image_t;
 
