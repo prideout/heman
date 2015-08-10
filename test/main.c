@@ -59,6 +59,7 @@ static heman_image_t* draw_circle()
             *dst++ = du2 + dv2 < 0.0625f ? 1 : 0;
         }
     }
+
     return img;
 }
 
@@ -107,7 +108,7 @@ static void test_color1()
     heman_image_destroy(grad);
 }
 
-static void test_color2()
+static heman_image_t* test_color2()
 {
     int cp_locations[] = {
         000,  // Dark Blue
@@ -129,18 +130,18 @@ static void test_color2()
     heman_image_t* grad = heman_color_create_gradient(
         256, COUNT(cp_colors), cp_locations, cp_colors);
     heman_image_t* hmap = heman_island_create_heightmap(SIZE, SIZE, rand());
+
     heman_image_t* albedo = heman_color_apply_gradient(hmap, -0.5, 0.5, grad);
     write_colors(OUTFOLDER "albedo.png", albedo);
     heman_image_destroy(grad);
-    heman_image_destroy(hmap);
+    return hmap;
 }
 
-static void test_lighting()
+static void test_lighting(heman_image_t* hmap)
 {
-    heman_image_t* elev = heman_island_create_heightmap(SIZE, SIZE, rand());
-    heman_image_t* norm = heman_lighting_compute_normals(elev);
-    // TODO
-    heman_image_destroy(elev);
+    heman_image_t* norm = heman_lighting_compute_normals(hmap);
+    write_image(OUTFOLDER "normals.png", norm);
+    heman_image_destroy(hmap);
     heman_image_destroy(norm);
 }
 
@@ -151,6 +152,6 @@ int main(int argc, char** argv)
     test_distance();
     test_island();
     test_color1();
-    test_color2();
-    test_lighting();
+    heman_image_t* hmap = test_color2();
+    test_lighting(hmap);
 }
