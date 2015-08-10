@@ -135,6 +135,15 @@ static void test_color2()
     heman_image_destroy(hmap);
 }
 
+static void test_lighting()
+{
+    heman_image_t* elev = heman_island_create_heightmap(SIZE, SIZE, rand());
+    heman_image_t* norm = heman_lighting_compute_normals(elev);
+    // TODO
+    heman_image_destroy(elev);
+    heman_image_destroy(norm);
+}
+
 int main(int argc, char** argv)
 {
     printf("%d threads available.\n", omp_get_max_threads());
@@ -143,4 +152,5 @@ int main(int argc, char** argv)
     test_island();
     test_color1();
     test_color2();
+    test_lighting();
 }
