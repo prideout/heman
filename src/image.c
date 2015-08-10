@@ -1,5 +1,6 @@
 #include "image.h"
 #include <stdlib.h>
+#include <math.h>
 
 float _gamma = 2.2f;
 
