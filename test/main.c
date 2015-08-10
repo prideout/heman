@@ -87,7 +87,7 @@ static void test_color1()
     int cp_locations[] = {
         000, 255,
     };
-    int cp_colors[] = {
+    uint32_t cp_colors[] = {
         0xFF0000, 0x00FF00,
     };
     assert(COUNT(cp_locations) == COUNT(cp_colors));
@@ -117,7 +117,7 @@ static void test_color2()
         150,  // Brown
         255,  // White
     };
-    int cp_colors[] = {
+    uint32_t cp_colors[] = {
         0x001070,  // Dark Blue
         0x0C3A6C,  // Light Blue
         0xC0D0B0,  // Yellow
