@@ -19,7 +19,7 @@ This is a tiny MIT-licensed C99 library of image utilities for dealing with **he
 
 ## Example
 
-![](https://github.com/prideout/heman/blob/master/island.png)
+![](https://github.com/prideout/heman/blob/master/test/island.png)
 
 The above images were generated from code that looks like this:
 
@@ -38,7 +38,7 @@ heman_image_t* normals = heman_lighting_compute_normals(elevation);
 heman_image_t* final = heman_lighting_apply(elevation, albedo, ...);
 ```
 
-For the unabridged version, see [test/main.c](https://github.com/prideout/heman/blob/master/test/main.c).
+For the unabridged version, see `test_lighting` in [test/main.c](https://github.com/prideout/heman/blob/master/test/main.c).
 
 ## Documentation
 
@@ -46,7 +46,7 @@ Read the [header file](https://github.com/prideout/heman/blob/master/include/hem
 
 ## Building
 
-It's probably easiest just to snarf the code and use whatever build system you want.  The only official builds use SCons, in the environments defined by the [TravisCI build](https://travis-ci.org/prideout/islandman) and the [Dockerfile](https://github.com/prideout/heman/blob/master/Dockerfile).
+It's probably easiest just to snarf the code and use whatever build system you want.  The only official builds use SCons, in the environments defined by [.travis.yml](https://github.com/prideout/heman/blob/master/.travis.yml) and the [Dockerfile](https://github.com/prideout/heman/blob/master/Dockerfile).
 
 If you're on OS X, there's a script, [env.sh](https://github.com/prideout/heman/blob/master/env.sh), that makes using Docker easy.  Here's how to use it:
 
@@ -66,6 +66,7 @@ Here are some to-be-done items:
 - We should provide gamma decode and encode functions.
 - **heman_lighting_compute_occlusion** is not yet implemented.
 - If we need more string handling, we can integrate [SDS](https://github.com/antirez/sds).
-- Create an OO Python wrapper, perhaps using **boost.python**.
+- Create a simple C++ wrapper in a top-level folder called `bindings`.
+- Create a Python wrapper in `bindings` that uses **boost.python** and provides docstrings.
 - Integrate aaOcean, or some other implementation of Tessendorf waves.
 - If we need to read JSON, we might use [johanson](https://github.com/mitsuhiko/johanson).
