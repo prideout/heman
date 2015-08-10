@@ -57,7 +57,8 @@ heman_image_t* heman_lighting_apply(heman_image_t* heightmap,
     heman_image_t* colorbuffer, float occlusion, float diffuse,
     float diffuse_softening, float* light_position);
 
-// Given a 1-band heightmap image, create a 3-band image with surface normals.
+// Given a 1-band heightmap image, create a 3-band image with surface normals,
+// using simple forward differencing and OpenMP.
 heman_image_t* heman_lighting_compute_normals(heman_image_t* heightmap);
 
 // Compute occlusion values for the given heightmap, as described at

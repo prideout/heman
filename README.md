@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.org/prideout/heman.svg?branch=master)](https://travis-ci.org/prideout/heman)
 
-This is a tiny MIT-licensed C99 library of image utilities for dealing with **he**ight**ma**ps, **n**ormal maps, distance fields, and the like.  It has nothing to do with the Masters of the Universe.  It has a very low-level API, where an "image" is an array of 32-bit floats.
+This is a tiny MIT-licensed C99 library of image utilities for dealing with **he**ight** ma**ps, **n**ormal maps, distance fields, and the like.  It has nothing to do with the Masters of the Universe.  It has a very low-level API, where an "image" is an array of 32-bit floats.
 
 **heman** can do stuff like this:
 - Generate a normal map from a height map.
@@ -62,9 +62,10 @@ scons test
 ## Roadmap
 
 Here are some to-be-done items:
-- **heman_image_sample** doesn't do any interpolation.
-- We should provide gamma decode and encode functions.
 - **heman_lighting_compute_occlusion** is not yet implemented.
+- Provide gamma decode and encode functions.
+- Provide a way to compute noise normals analytically.
+- **heman_image_sample** doesn't do any interpolation.
 - If we need more string handling, we can integrate [SDS](https://github.com/antirez/sds).
 - Create a simple C++ wrapper in a top-level folder called `bindings`.
 - Create a Python wrapper in `bindings` that uses **boost.python** and provides docstrings.
