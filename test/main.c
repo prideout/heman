@@ -75,15 +75,7 @@ static void test_distance()
     heman_image_destroy(sdf);
 }
 
-static void test_island()
-{
-    srand(time(0));
-    heman_image_t* img = heman_island_create_heightmap(SIZE, SIZE, rand());
-    write_image(OUTFOLDER "heightmap.png", img);
-    heman_image_destroy(img);
-}
-
-static void test_color1()
+static void test_color()
 {
     int cp_locations[] = {
         000, 255,
@@ -108,8 +100,9 @@ static void test_color1()
     heman_image_destroy(grad);
 }
 
-static heman_image_t* test_color2()
+static void test_lighting()
 {
+    // Create a reasonable ocean-to-land color gradient.
     int cp_locations[] = {
         000,  // Dark Blue
         126,  // Light Blue
@@ -129,20 +122,31 @@ static heman_image_t* test_color2()
     assert(COUNT(cp_locations) == COUNT(cp_colors));
     heman_image_t* grad = heman_color_create_gradient(
         256, COUNT(cp_colors), cp_locations, cp_colors);
+
+    // Generate the heightmap.
+    srand(time(0));
     heman_image_t* hmap = heman_island_create_heightmap(SIZE, SIZE, rand());
+    write_image(OUTFOLDER "heightmap.png", hmap);
 
+    // Create an albedo image.
     heman_image_t* albedo = heman_color_apply_gradient(hmap, -0.5, 0.5, grad);
-    write_colors(OUTFOLDER "albedo.png", albedo);
     heman_image_destroy(grad);
-    return hmap;
-}
+    write_colors(OUTFOLDER "albedo.png", albedo);
 
-static void test_lighting(heman_image_t* hmap)
-{
+    // Create a normal map.
     heman_image_t* norm = heman_lighting_compute_normals(hmap);
     write_image(OUTFOLDER "normals.png", norm);
-    heman_image_destroy(hmap);
     heman_image_destroy(norm);
+
+    // Perform lighting.
+    float lightpos[] = {-0.5f, 0.5f, 1.0f};
+    heman_image_t* final =
+        heman_lighting_apply(hmap, albedo, 0, 1.0f, 0.5f, lightpos);
+    write_colors(OUTFOLDER "final.png", final);
+
+    heman_image_destroy(hmap);
+    heman_image_destroy(albedo);
+    heman_image_destroy(final);
 }
 
 int main(int argc, char** argv)
@@ -150,8 +154,6 @@ int main(int argc, char** argv)
     printf("%d threads available.\n", omp_get_max_threads());
     test_noise();
     test_distance();
-    test_island();
-    test_color1();
-    heman_image_t* hmap = test_color2();
-    test_lighting(hmap);
+    test_color();
+    test_lighting();
 }

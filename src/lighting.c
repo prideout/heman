@@ -47,3 +47,50 @@ heman_image_t* heman_lighting_compute_normals(heman_image_t* heightmap)
 
     return result;
 }
+
+heman_image_t* heman_lighting_apply(heman_image_t* heightmap,
+    heman_image_t* albedo, float occlusion, float diffuse,
+    float diffuse_softening, float* light_position)
+{
+    assert(occlusion == 0 && "Not yet implemented.");
+    assert(heightmap->nbands == 1);
+    assert(albedo->nbands == 3);
+    int width = heightmap->width;
+    int height = heightmap->height;
+    assert(albedo->width == width);
+    assert(albedo->height == height);
+    heman_image_t* final = heman_image_create(width, height, 3);
+    heman_image_t* normals = heman_lighting_compute_normals(heightmap);
+    kmVec3* colors = (kmVec3*) final->data;
+    float invgamma = 1.0f / _gamma;
+
+    kmVec3 L;
+    L.x = light_position[0];
+    L.y = light_position[1];
+    L.z = light_position[2];
+    kmVec3Normalize(&L, &L);
+
+#pragma omp parallel for
+    for (int y = 0; y < height; y++) {
+        kmVec3* color = colors + y * width;
+        for (int x = 0; x < width; x++, color++) {
+            kmVec3* N = (kmVec3*) heman_image_texel(normals, x, y);
+            kmVec3Lerp(N, N, &KM_VEC3_POS_Z, diffuse_softening);
+            float df = 1 - diffuse * (1 - kmClamp(kmVec3Dot(N, &L), 0, 1));
+            *color = *((kmVec3*) heman_image_texel(albedo, x, y));
+
+            color->x = pow(color->x, _gamma);
+            color->y = pow(color->y, _gamma);
+            color->z = pow(color->z, _gamma);
+
+            kmVec3Scale(color, color, df);
+
+            color->x = pow(color->x, invgamma);
+            color->y = pow(color->y, invgamma);
+            color->z = pow(color->z, invgamma);
+        }
+    }
+
+    heman_image_destroy(normals);
+    return final;
+}

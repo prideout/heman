@@ -3,9 +3,10 @@
 
 [![Build Status](https://travis-ci.org/prideout/heman.svg?branch=master)](https://travis-ci.org/prideout/heman)
 
-This is a tiny MIT-licensed C99 library of image utilities for dealing with **he**ight**ma**ps, distance fields, normal maps, and the like.  It has nothing to do with the Masters of the Universe.  It has a very low-level API, where an "image" is an array of 32-bit floats.
+This is a tiny MIT-licensed C99 library of image utilities for dealing with **he**ight**ma**ps, **n**ormal maps, distance fields, and the like.  It has nothing to do with the Masters of the Universe.  It has a very low-level API, where an "image" is an array of 32-bit floats.
 
 **heman** can do stuff like this:
+- Generate a normal map from a height map.
 - Generate a signed distance field (SDF) from a monochrome image.
     * Also known as a Euclidean Distance Transform (EDT)
     * Uses Felzenszwalb's [super fast algorithm](http://cs.brown.edu/~pff/dt/index.html).
@@ -14,6 +15,7 @@ This is a tiny MIT-licensed C99 library of image utilities for dealing with **he
 - Apply a color gradient to a heightmap.
 - Generate a color gradient, given a list of control points.
     * Uses gamma-correct linear interpolation.
+- Compute diffuse lighting.
 
 ## Documentation
 
