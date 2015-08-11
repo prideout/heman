@@ -3,7 +3,7 @@
 #include <time.h>
 #include "stb.h"
 
-static const int SIZE = 2048;
+static const int SIZE = 1024;
 
 #define COUNT(a) (sizeof(a) / sizeof(a[0]))
 #define OUTFOLDER "build/"
@@ -113,10 +113,10 @@ static void test_lighting()
     };
     heman_color cp_colors[] = {
         0x001070,  // Dark Blue
-        0x0C3A6C,  // Light Blue
-        0xC0D0B0,  // Yellow
-        0x4D842C,  // Dark Green
-        0x505001,  // Brown
+        0x2C5A7C,  // Light Blue
+        0xE0F0C0,  // Yellow
+        0x5D943C,  // Dark Green
+        0x606011,  // Brown
         0xFFFFFF,  // White
     };
     assert(COUNT(cp_locations) == COUNT(cp_colors));
@@ -128,25 +128,30 @@ static void test_lighting()
     heman_image_t* hmap = heman_island_create_heightmap(SIZE, SIZE, rand());
     write_image(OUTFOLDER "heightmap.png", hmap);
 
-    // Create an albedo image.
-    heman_image_t* albedo = heman_color_apply_gradient(hmap, -0.5, 0.5, grad);
-    heman_image_destroy(grad);
-    write_colors(OUTFOLDER "albedo.png", albedo);
+    // Compute ambient occlusion.
+    heman_image_t* occ = heman_lighting_compute_occlusion(hmap);
+    write_image(OUTFOLDER "occlusion.png", occ);
+    heman_image_destroy(occ);
 
     // Create a normal map.
     heman_image_t* norm = heman_lighting_compute_normals(hmap);
     write_image(OUTFOLDER "normals.png", norm);
     heman_image_destroy(norm);
 
+    // Create an albedo image.
+    heman_image_t* albedo = heman_color_apply_gradient(hmap, -0.5, 0.5, grad);
+    heman_image_destroy(grad);
+    write_colors(OUTFOLDER "albedo.png", albedo);
+
     // Perform lighting.
     float lightpos[] = {-0.5f, 0.5f, 1.0f};
     heman_image_t* final =
-        heman_lighting_apply(hmap, albedo, 0, 1.0f, 0.5f, lightpos);
+        heman_lighting_apply(hmap, albedo, 1, 1, 0.5, lightpos);
     write_colors(OUTFOLDER "final.png", final);
 
-    heman_image_destroy(hmap);
     heman_image_destroy(albedo);
     heman_image_destroy(final);
+    heman_image_destroy(hmap);
 }
 
 int main(int argc, char** argv)
