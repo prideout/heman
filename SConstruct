@@ -9,7 +9,7 @@ AlwaysBuild('test')
 Alias('lib', 'build/_heman.so')
 
 additions = ['include/heman.h', 'test/main.c']
-exclusions = ['src/noise.c', 'src/noise.h']
+exclusions = Glob('src/noise.*')
 cfiles = Glob('src/*.c') + Glob('src/*.h') + additions
 cfiles = list(set(cfiles) - set(exclusions))
 Command('format', cfiles, 'clang-format-3.6 -i $SOURCES')

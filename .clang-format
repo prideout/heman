@@ -5,7 +5,7 @@ AccessModifierOffset: -1
 AlignAfterOpenBracket: false
 AlignEscapedNewlinesLeft: true
 AlignOperands:   true
-AlignTrailingComments: false
+AlignTrailingComments: true
 
 AllowAllParametersOfDeclarationOnNextLine: false
 BinPackParameters: true
