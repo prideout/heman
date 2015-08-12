@@ -36,14 +36,14 @@ void heman_image_destroy(heman_image_t* img)
     free(img);
 }
 
-void heman_image_as_uchar(
-    heman_image_t* img, float minv, float maxv, unsigned char* dst)
+void heman_image_normalize(
+    heman_image_t* source, float minv, float maxv, heman_byte* outp)
 {
-    float* src = img->data;
+    const float* inp = source->data;
     float scale = 1.0f / (maxv - minv);
-    int size = img->height * img->width * img->nbands;
+    int size = source->height * source->width * source->nbands;
     for (int i = 0; i < size; ++i) {
-        *dst++ = 255 * (*src++ - minv) * scale;
+        *outp++ = 255 * (*inp++ - minv) * scale;
     }
 }
 

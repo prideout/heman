@@ -8,7 +8,7 @@
 #define CLAMP(v) MAX(0.0f, MIN(1.0f, v))
 
 heman_image_t* heman_color_create_gradient(int width, int num_colors,
-    const int* cp_locations, const uint32_t* cp_values)
+    const int* cp_locations, const heman_color* cp_values)
 {
     assert(width > 0 && num_colors >= 2);
     assert(cp_locations[0] == 0);
@@ -18,9 +18,9 @@ heman_image_t* heman_color_create_gradient(int width, int num_colors,
     float* f32colors = malloc(sizeof(float) * 3 * num_colors);
     float inv = 1.0f / 255.0f;
     float* f32color = f32colors;
-    const uint32_t* u32color = cp_values;
+    const heman_color* u32color = cp_values;
     for (int index = 0; index < num_colors; index++) {
-        uint32_t rgb = *u32color++;
+        heman_color rgb = *u32color++;
         float r = (float) (rgb >> 16) * inv;
         float g = (float) ((rgb >> 8) & 0xff) * inv;
         float b = (float) (rgb & 0xff) * inv;

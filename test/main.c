@@ -17,7 +17,7 @@ static void write_image(const char* filename, heman_image_t* img)
     int width, height, ncomp;
     heman_image_info(img, &width, &height, &ncomp);
     unsigned char* bytes = malloc(width * height * ncomp);
-    heman_image_as_uchar(img, -1.0, 1.0, bytes);
+    heman_image_normalize(img, -1.0, 1.0, bytes);
     stbi_write_png(filename, width, height, ncomp, bytes, width * ncomp);
     free(bytes);
 }
@@ -28,7 +28,7 @@ static void write_colors(const char* filename, heman_image_t* img)
     int width, height, ncomp;
     heman_image_info(img, &width, &height, &ncomp);
     unsigned char* bytes = malloc(width * height * ncomp);
-    heman_image_as_uchar(img, 0.0, 1.0, bytes);
+    heman_image_normalize(img, 0.0, 1.0, bytes);
     stbi_write_png(filename, width, height, ncomp, bytes, width * ncomp);
     free(bytes);
 }
@@ -80,7 +80,7 @@ static void test_color()
     int cp_locations[] = {
         000, 255,
     };
-    uint32_t cp_colors[] = {
+    heman_color cp_colors[] = {
         0xFF0000, 0x00FF00,
     };
     assert(COUNT(cp_locations) == COUNT(cp_colors));
@@ -91,7 +91,7 @@ static void test_color()
     printf("Writing to \"%s\".\n", filename);
     unsigned char* bytes = malloc(256 * 3);
     unsigned char* resized = malloc(256 * 256 * 3);
-    heman_image_as_uchar(grad, 0.0, 1.0, bytes);
+    heman_image_normalize(grad, 0.0, 1.0, bytes);
     stbir_resize_uint8(bytes, 256, 1, 0, resized, 256, 256, 0, 3);
     stbi_write_png(filename, 256, 256, 3, resized, 256 * 3);
     free(bytes);
@@ -111,7 +111,7 @@ static void test_lighting()
         150,  // Brown
         255,  // White
     };
-    uint32_t cp_colors[] = {
+    heman_color cp_colors[] = {
         0x001070,  // Dark Blue
         0x0C3A6C,  // Light Blue
         0xC0D0B0,  // Yellow

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <stdint.h>
-
 struct heman_image_s;
 typedef struct heman_image_s heman_image_t;
+typedef unsigned char heman_byte;
+typedef unsigned int heman_color;
 
 // Allocate a floating-point image with dimensions width x height x nbands.
 heman_image_t* heman_image_create(int width, int height, int nbands);
@@ -21,9 +21,9 @@ float* heman_image_texel(heman_image_t*, int x, int y);
 void heman_image_sample(heman_image_t*, float u, float v, float* result);
 
 // Transform texel values so that [minval, maxval] map to [0, 255], and write
-// the result to "dest".
-void heman_image_as_uchar(
-    heman_image_t*, float minval, float maxval, uint8_t* dest);
+// the result to "dest".  The source image is untouched.
+void heman_image_normalize(
+    heman_image_t* source, float minval, float maxval, heman_byte* dest);
 
 // Free memory for a image.
 void heman_image_destroy(heman_image_t*);
@@ -37,7 +37,7 @@ void heman_image_set_gamma(float f);
 // defined by an X location (one integer each) and an RGB value (one 32-bit
 // word for each color).
 heman_image_t* heman_color_create_gradient(int width, int num_colors,
-    const int* cp_locations, const uint32_t* cp_colors);
+    const int* cp_locations, const heman_color* cp_colors);
 
 // Create a 3-band image with the same dimensions as the given heightmap by
 // making lookups from a 1-pixel tall color gradient.  The heightmap values
