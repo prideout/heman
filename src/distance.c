@@ -37,7 +37,7 @@ static void edt(float* f, float* d, float* z, uint16_t* v, uint16_t* w, int n)
     }
 }
 
-static void transform_to_distance(heman_image_t* img)
+static void transform_to_distance(heman_image* img)
 {
     int width = img->width;
     int height = img->height;
@@ -87,11 +87,11 @@ static void transform_to_distance(heman_image_t* img)
     free(ww);
 }
 
-heman_image_t* heman_distance_create_sdf(heman_image_t* src)
+heman_image* heman_distance_create_sdf(heman_image* src)
 {
     assert(src->nbands == 1 && "Distance field input must have only 1 band.");
-    heman_image_t* positive = heman_image_create(src->width, src->height, 1);
-    heman_image_t* negative = heman_image_create(src->width, src->height, 1);
+    heman_image* positive = heman_image_create(src->width, src->height, 1);
+    heman_image* negative = heman_image_create(src->width, src->height, 1);
     int size = src->height * src->width;
     float* pptr = positive->data;
     float* nptr = negative->data;

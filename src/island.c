@@ -6,11 +6,11 @@ static const float SEALEVEL = 0.5f;
 
 #define NOISE(U, V) open_simplex_noise2(ctx, U, V)
 
-heman_image_t* heman_island_generate_noise(int width, int height, int seed)
+heman_image* heman_island_generate_noise(int width, int height, int seed)
 {
     struct osn_context* ctx;
     open_simplex_noise(seed, &ctx);
-    heman_image_t* img = heman_image_create(width, height, 3);
+    heman_image* img = heman_image_create(width, height, 3);
     float* data = img->data;
     float invh = 1.0f / height;
     float invw = 1.0f / width;
@@ -35,10 +35,10 @@ heman_image_t* heman_island_generate_noise(int width, int height, int seed)
     return img;
 }
 
-heman_image_t* heman_island_create_heightmap(int width, int height, int seed)
+heman_image* heman_island_create_heightmap(int width, int height, int seed)
 {
-    heman_image_t* noisetex = heman_island_generate_noise(width, height, seed);
-    heman_image_t* coastmask = heman_image_create(width, height, 1);
+    heman_image* noisetex = heman_island_generate_noise(width, height, seed);
+    heman_image* coastmask = heman_image_create(width, height, 1);
     float* data = coastmask->data;
     float invh = 1.0f / height;
     float invw = 1.0f / width;
@@ -63,7 +63,7 @@ heman_image_t* heman_island_create_heightmap(int width, int height, int seed)
     }
 
     heman_image_destroy(noisetex);
-    heman_image_t* result = heman_distance_create_sdf(coastmask);
+    heman_image* result = heman_distance_create_sdf(coastmask);
     heman_image_destroy(coastmask);
     return result;
 }

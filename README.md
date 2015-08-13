@@ -26,17 +26,17 @@ The above images were generated from code that looks like this:
 
 ```c
 // Generate an island shape using simplex noise and a distance field.
-heman_image_t* elevation = heman_island_create_heightmap(1024, 1024, rand());
+heman_image* elevation = heman_island_create_heightmap(1024, 1024, rand());
 
 // Visualize the normal vectors.
-heman_image_t* normals = heman_lighting_compute_normals(elevation);
+heman_image* normals = heman_lighting_compute_normals(elevation);
 
 // Apply a color gradient.
-heman_image_t* gradient = heman_color_create_gradient(...);
-heman_image_t* albedo = heman_color_apply_gradient(elevation, -0.5, 0.5, grad);
+heman_image* gradient = heman_color_create_gradient(...);
+heman_image* albedo = heman_color_apply_gradient(elevation, -0.5, 0.5, grad);
 
 // Apply diffuse lighting.
-heman_image_t* final = heman_lighting_apply(elevation, albedo, ...);
+heman_image* final = heman_lighting_apply(elevation, albedo, ...);
 ```
 
 For the unabridged version, see `test_lighting` in [test/main.c](https://github.com/prideout/heman/blob/master/test/main.c).

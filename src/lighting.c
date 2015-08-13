@@ -7,14 +7,14 @@
 #define MIN(a, b) (a > b ? b : a)
 #define MAX(a, b) (a > b ? a : b)
 #define SGN(x) ((x > 0) - (x < 0))
-#define EDGE(value,upper) MAX(0, MIN(upper-1, value))
+#define EDGE(value, upper) MAX(0, MIN(upper - 1, value))
 
-heman_image_t* heman_lighting_compute_normals(heman_image_t* heightmap)
+heman_image* heman_lighting_compute_normals(heman_image* heightmap)
 {
     assert(heightmap->nbands == 1);
     int width = heightmap->width;
     int height = heightmap->height;
-    heman_image_t* result = heman_image_create(width, height, 3);
+    heman_image* result = heman_image_create(width, height, 3);
     float invh = 1.0f / height;
     float invw = 1.0f / width;
     int maxx = width - 1;
@@ -34,13 +34,13 @@ heman_image_t* heman_lighting_compute_normals(heman_image_t* heightmap)
             int x1 = MIN(x + 1, maxx);
             p.x = u;
             p.y = v;
-            p.z = *heman_image_texel(heightmap, x, y);
+            p.z = *heman_imageexel(heightmap, x, y);
             px.x = u + invw;
             px.y = v;
-            px.z = *heman_image_texel(heightmap, x1, y);
+            px.z = *heman_imageexel(heightmap, x1, y);
             py.x = u;
             py.y = v + invh;
-            py.z = *heman_image_texel(heightmap, x, y1);
+            py.z = *heman_imageexel(heightmap, x, y1);
             kmVec3Subtract(&px, &px, &p);
             kmVec3Subtract(&py, &py, &p);
             kmVec3Cross(n, &px, &py);
@@ -52,9 +52,9 @@ heman_image_t* heman_lighting_compute_normals(heman_image_t* heightmap)
     return result;
 }
 
-heman_image_t* heman_lighting_apply(heman_image_t* heightmap,
-    heman_image_t* albedo, float occlusion, float diffuse,
-    float diffuse_softening, float* light_position)
+heman_image* heman_lighting_apply(heman_image* heightmap, heman_image* albedo,
+    float occlusion, float diffuse, float diffuse_softening,
+    float* light_position)
 {
     assert(heightmap->nbands == 1);
     assert(albedo->nbands == 3);
@@ -62,9 +62,9 @@ heman_image_t* heman_lighting_apply(heman_image_t* heightmap,
     int height = heightmap->height;
     assert(albedo->width == width);
     assert(albedo->height == height);
-    heman_image_t* final = heman_image_create(width, height, 3);
-    heman_image_t* normals = heman_lighting_compute_normals(heightmap);
-    heman_image_t* occ = heman_lighting_compute_occlusion(heightmap);
+    heman_image* final = heman_image_create(width, height, 3);
+    heman_image* normals = heman_lighting_compute_normals(heightmap);
+    heman_image* occ = heman_lighting_compute_occlusion(heightmap);
 
     kmVec3* colors = (kmVec3*) final->data;
     float invgamma = 1.0f / _gamma;
@@ -79,11 +79,11 @@ heman_image_t* heman_lighting_apply(heman_image_t* heightmap,
     for (int y = 0; y < height; y++) {
         kmVec3* color = colors + y * width;
         for (int x = 0; x < width; x++, color++) {
-            kmVec3* N = (kmVec3*) heman_image_texel(normals, x, y);
+            kmVec3* N = (kmVec3*) heman_imageexel(normals, x, y);
             kmVec3Lerp(N, N, &KM_VEC3_POS_Z, diffuse_softening);
             float df = 1 - diffuse * (1 - kmClamp(kmVec3Dot(N, &L), 0, 1));
-            float of = 1 - occlusion * (1 - *heman_image_texel(occ, x, y));
-            *color = *((kmVec3*) heman_image_texel(albedo, x, y));
+            float of = 1 - occlusion * (1 - *heman_imageexel(occ, x, y));
+            *color = *((kmVec3*) heman_imageexel(albedo, x, y));
             color->x = pow(color->x, _gamma);
             color->y = pow(color->y, _gamma);
             color->z = pow(color->z, _gamma);
@@ -120,8 +120,8 @@ static float compute_occlusion(kmVec3 thispt, kmVec3 horizonpt)
     return MAX(dot, 0.0f);
 }
 
-static void horizon_scan(heman_image_t* heightmap, heman_image_t* result,
-    int* startpts, int dx, int dy)
+static void horizon_scan(
+    heman_image* heightmap, heman_image* result, int* startpts, int dx, int dy)
 {
     int w = heightmap->width, h = heightmap->height;
     int sx = SGN(dx), sy = SGN(dy);
@@ -173,14 +173,14 @@ static void horizon_scan(heman_image_t* heightmap, heman_image_t* result,
         kmVec3 thispt, horizonpt;
         thispt.x = i * cellw;
         thispt.y = j * cellh;
-        thispt.z = *heman_image_texel(heightmap, EDGE(i, w), EDGE(j, h));
+        thispt.z = *heman_imageexel(heightmap, EDGE(i, w), EDGE(j, h));
         int stack_top = 0;
         convex_hull[0] = thispt;
         i += dx, j += dy;
         while (i >= 0 && i < w && j >= 0 && j < h) {
             thispt.x = i * cellw;
             thispt.y = j * cellh;
-            thispt.z = *heman_image_texel(heightmap, i, j);
+            thispt.z = *heman_imageexel(heightmap, i, j);
             while (stack_top > 0) {
                 float s1 = azimuth_slope(thispt, convex_hull[stack_top]);
                 float s2 = azimuth_slope(thispt, convex_hull[stack_top - 1]);
@@ -193,7 +193,7 @@ static void horizon_scan(heman_image_t* heightmap, heman_image_t* result,
             assert(stack_top < pathlen);
             convex_hull[stack_top] = thispt;
             float occlusion = compute_occlusion(thispt, horizonpt);
-            *heman_image_texel(result, i, j) += INV_SCANS * occlusion;
+            *heman_imageexel(result, i, j) += INV_SCANS * occlusion;
             i += dx;
             j += dy;
         }
@@ -202,12 +202,12 @@ static void horizon_scan(heman_image_t* heightmap, heman_image_t* result,
     free(hull_buffer);
 }
 
-heman_image_t* heman_lighting_compute_occlusion(heman_image_t* heightmap)
+heman_image* heman_lighting_compute_occlusion(heman_image* heightmap)
 {
     assert(heightmap->nbands == 1);
     int width = heightmap->width;
     int height = heightmap->height;
-    heman_image_t* result = heman_image_create(width, height, 1);
+    heman_image* result = heman_image_create(width, height, 1);
     memset(result->data, 0, sizeof(float) * width * height);
 
     // Define sixteen 2D vectors, used for the sweep directions.

@@ -7,7 +7,7 @@
 #define MAX(a, b) (a > b ? a : b)
 #define CLAMP(v) MAX(0.0f, MIN(1.0f, v))
 
-heman_image_t* heman_color_create_gradient(int width, int num_colors,
+heman_image* heman_color_create_gradient(int width, int num_colors,
     const int* cp_locations, const heman_color* cp_values)
 {
     assert(width > 0 && num_colors >= 2);
@@ -30,7 +30,7 @@ heman_image_t* heman_color_create_gradient(int width, int num_colors,
     }
 
     // Create and populate a width x 1 image.
-    heman_image_t* result = heman_image_create(width, 1, 3);
+    heman_image* result = heman_image_create(width, 1, 3);
     int index0 = 0;
     int index1 = 1;
     float* dst = result->data;
@@ -68,15 +68,15 @@ heman_image_t* heman_color_create_gradient(int width, int num_colors,
     return result;
 }
 
-heman_image_t* heman_color_apply_gradient(heman_image_t* heightmap,
-    float minheight, float maxheight, heman_image_t* gradient)
+heman_image* heman_color_apply_gradient(heman_image* heightmap, float minheight,
+    float maxheight, heman_image* gradient)
 {
     assert(heightmap->nbands == 1);
     assert(gradient->height == 1);
     assert(gradient->nbands == 3);
     int w = heightmap->width;
     int h = heightmap->height;
-    heman_image_t* result = heman_image_create(w, h, 3);
+    heman_image* result = heman_image_create(w, h, 3);
     int size = result->height * result->width;
     float* dst = result->data;
     const float* src = heightmap->data;
