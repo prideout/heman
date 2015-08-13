@@ -3,15 +3,14 @@
 
 [![Build Status](https://travis-ci.org/prideout/heman.svg?branch=master)](https://travis-ci.org/prideout/heman)
 
-This is a tiny MIT-licensed C99 library of image utilities for dealing with **he**ight **ma**ps, **n**ormal maps, distance fields, and the like.  It has nothing to do with the Masters of the Universe.  It has a very low-level API, where an "image" is an array of 32-bit floats.
+This is a tiny MIT-licensed C99 library of image utilities for dealing with **he**ight **ma**ps, **n**ormal maps, distance fields, and the like.  It has a very low-level API, where an "image" is simply an array of 32-bit floats.  It's pretty fast too, since it's parallelized using OpenMP.
+
+![](https://github.com/prideout/heman/blob/master/test/island.png)
 
 **heman** can do stuff like this:
 - Generate a normal map from a height map.
 - Compute ambient occlusion from a height map.
-- Generate a signed distance field (SDF) from a monochrome image.
-    * Also known as a Euclidean Distance Transform (EDT)
-    * Uses Felzenszwalb's [super fast algorithm](http://cs.brown.edu/~pff/dt/index.html).
-    * Parallelized using OpenMP.
+- Generate a signed distance field (SDF) using a [fast algorithm](http://cs.brown.edu/~pff/dt/index.html).
 - Create an image that sums up several octaves of simplex noise.
 - Apply a color gradient to a heightmap.
 - Generate a color gradient, given a list of control points.
@@ -20,13 +19,11 @@ This is a tiny MIT-licensed C99 library of image utilities for dealing with **he
 
 ## Example
 
-![](https://github.com/prideout/heman/blob/master/test/island.png)
-
-The above images were generated from code that looks like this:
+The above image was generated from code that looks like this:
 
 ```c
 // Generate an island shape using simplex noise and a distance field.
-heman_image* elevation = heman_island_create_heightmap(1024, 1024, rand());
+heman_image* elevation = heman_generate_island_heightmap(1024, 1024, rand());
 
 // Visualize the normal vectors.
 heman_image* normals = heman_lighting_compute_normals(elevation);

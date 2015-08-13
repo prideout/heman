@@ -15,15 +15,22 @@ void heman_image_info(heman_image*, int* width, int* height, int* nbands);
 float* heman_image_data(heman_image*);
 
 // Peek at the given texel value.
-float* heman_imageexel(heman_image*, int x, int y);
+float* heman_image_texel(heman_image*, int x, int y);
 
 // Find a reasonable value for the given normalized texture coord.
 void heman_image_sample(heman_image*, float u, float v, float* result);
 
 // Transform texel values so that [minval, maxval] map to [0, 255], and write
-// the result to "dest".  The source image is untouched.
-void heman_image_normalize(
+// the result to "dest".  Values outside the range are clamped.  The source
+// image is untouched.
+void heman_image_normalize_u8(
     heman_image* source, float minval, float maxval, heman_byte* dest);
+
+// Transform texel values so that [minval, maxval] map to [0, 1] and return the
+// result.  Values outside the range are clamped.  The source image is
+// untouched.
+heman_image* heman_image_normalize_f32(
+    heman_image* source, float minval, float maxval);
 
 // Free memory for a image.
 void heman_image_destroy(heman_image*);
@@ -31,6 +38,9 @@ void heman_image_destroy(heman_image*);
 // This sets some global state that affects lighting and color interpolation.
 // The default value is 2.2.
 void heman_image_set_gamma(float f);
+
+// Give a set of same-sized images, copy them into a horizontal filmstrip.
+heman_image* heman_image_stitch(heman_image** images, int count);
 
 // Create a 1-pixel tall, 3-band image representing a color gradient that lerps
 // the given control points, in a gamma correct way.  Each control point is

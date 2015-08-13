@@ -34,13 +34,13 @@ heman_image* heman_lighting_compute_normals(heman_image* heightmap)
             int x1 = MIN(x + 1, maxx);
             p.x = u;
             p.y = v;
-            p.z = *heman_imageexel(heightmap, x, y);
+            p.z = *heman_image_texel(heightmap, x, y);
             px.x = u + invw;
             px.y = v;
-            px.z = *heman_imageexel(heightmap, x1, y);
+            px.z = *heman_image_texel(heightmap, x1, y);
             py.x = u;
             py.y = v + invh;
-            py.z = *heman_imageexel(heightmap, x, y1);
+            py.z = *heman_image_texel(heightmap, x, y1);
             kmVec3Subtract(&px, &px, &p);
             kmVec3Subtract(&py, &py, &p);
             kmVec3Cross(n, &px, &py);
@@ -79,11 +79,11 @@ heman_image* heman_lighting_apply(heman_image* heightmap, heman_image* albedo,
     for (int y = 0; y < height; y++) {
         kmVec3* color = colors + y * width;
         for (int x = 0; x < width; x++, color++) {
-            kmVec3* N = (kmVec3*) heman_imageexel(normals, x, y);
+            kmVec3* N = (kmVec3*) heman_image_texel(normals, x, y);
             kmVec3Lerp(N, N, &KM_VEC3_POS_Z, diffuse_softening);
             float df = 1 - diffuse * (1 - kmClamp(kmVec3Dot(N, &L), 0, 1));
-            float of = 1 - occlusion * (1 - *heman_imageexel(occ, x, y));
-            *color = *((kmVec3*) heman_imageexel(albedo, x, y));
+            float of = 1 - occlusion * (1 - *heman_image_texel(occ, x, y));
+            *color = *((kmVec3*) heman_image_texel(albedo, x, y));
             color->x = pow(color->x, _gamma);
             color->y = pow(color->y, _gamma);
             color->z = pow(color->z, _gamma);
@@ -173,14 +173,14 @@ static void horizon_scan(
         kmVec3 thispt, horizonpt;
         thispt.x = i * cellw;
         thispt.y = j * cellh;
-        thispt.z = *heman_imageexel(heightmap, EDGE(i, w), EDGE(j, h));
+        thispt.z = *heman_image_texel(heightmap, EDGE(i, w), EDGE(j, h));
         int stack_top = 0;
         convex_hull[0] = thispt;
         i += dx, j += dy;
         while (i >= 0 && i < w && j >= 0 && j < h) {
             thispt.x = i * cellw;
             thispt.y = j * cellh;
-            thispt.z = *heman_imageexel(heightmap, i, j);
+            thispt.z = *heman_image_texel(heightmap, i, j);
             while (stack_top > 0) {
                 float s1 = azimuth_slope(thispt, convex_hull[stack_top]);
                 float s2 = azimuth_slope(thispt, convex_hull[stack_top - 1]);
@@ -193,7 +193,7 @@ static void horizon_scan(
             assert(stack_top < pathlen);
             convex_hull[stack_top] = thispt;
             float occlusion = compute_occlusion(thispt, horizonpt);
-            *heman_imageexel(result, i, j) += INV_SCANS * occlusion;
+            *heman_image_texel(result, i, j) += INV_SCANS * occlusion;
             i += dx;
             j += dy;
         }

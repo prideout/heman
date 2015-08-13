@@ -17,7 +17,7 @@ static void write_image(const char* filename, heman_image* img)
     int width, height, ncomp;
     heman_image_info(img, &width, &height, &ncomp);
     unsigned char* bytes = malloc(width * height * ncomp);
-    heman_image_normalize(img, -1.0, 1.0, bytes);
+    heman_image_normalize_u8(img, -1.0, 1.0, bytes);
     stbi_write_png(filename, width, height, ncomp, bytes, width * ncomp);
     free(bytes);
 }
@@ -28,7 +28,7 @@ static void write_colors(const char* filename, heman_image* img)
     int width, height, ncomp;
     heman_image_info(img, &width, &height, &ncomp);
     unsigned char* bytes = malloc(width * height * ncomp);
-    heman_image_normalize(img, 0.0, 1.0, bytes);
+    heman_image_normalize_u8(img, 0.0, 1.0, bytes);
     stbi_write_png(filename, width, height, ncomp, bytes, width * ncomp);
     free(bytes);
 }
@@ -91,7 +91,7 @@ static void test_color()
     printf("Writing to \"%s\".\n", filename);
     unsigned char* bytes = malloc(256 * 3);
     unsigned char* resized = malloc(256 * 256 * 3);
-    heman_image_normalize(grad, 0.0, 1.0, bytes);
+    heman_image_normalize_u8(grad, 0.0, 1.0, bytes);
     stbir_resize_uint8(bytes, 256, 1, 0, resized, 256, 256, 0, 3);
     stbi_write_png(filename, 256, 256, 3, resized, 256 * 3);
     free(bytes);
@@ -115,7 +115,7 @@ static void test_lighting()
     heman_color cp_colors[] = {
         0x001070,  // Dark Blue
         0x2C5A7C,  // Light Blue
-        0xE0F0C0,  // Yellow
+        0xE0F0A0,  // Yellow
         0x5D943C,  // Dark Green
         0x606011,  // Brown
         0xFFFFFF,  // White
@@ -128,32 +128,35 @@ static void test_lighting()
     // Generate the heightmap.
     srand(time(0));
     heman_image* hmap = heman_generate_island_heightmap(SIZE, SIZE, rand());
-    write_image(OUTFOLDER "heightmap.png", hmap);
+    heman_image* hmapviz = heman_image_normalize_f32(hmap, -0.5, 0.5);
 
     // Compute ambient occlusion.
     heman_image* occ = heman_lighting_compute_occlusion(hmap);
-    write_image(OUTFOLDER "occlusion.png", occ);
-    heman_image_destroy(occ);
 
     // Create a normal map.
     heman_image* norm = heman_lighting_compute_normals(hmap);
-    write_image(OUTFOLDER "normals.png", norm);
-    heman_image_destroy(norm);
+    heman_image* normviz = heman_image_normalize_f32(norm, -1, 1);
 
     // Create an albedo image.
     heman_image* albedo = heman_color_apply_gradient(hmap, -0.5, 0.5, grad);
     heman_image_destroy(grad);
-    write_colors(OUTFOLDER "albedo.png", albedo);
 
     // Perform lighting.
     float lightpos[] = {-0.5f, 0.5f, 1.0f};
     heman_image* final =
         heman_lighting_apply(hmap, albedo, 1, 1, 0.5, lightpos);
-    write_colors(OUTFOLDER "final.png", final);
 
+    heman_image* frames[] = {hmapviz, occ, normviz, albedo, final};
+    heman_image* filmstrip = heman_image_stitch(frames, 5);
+    write_colors(OUTFOLDER "filmstrip.png", filmstrip);
+
+    heman_image_destroy(hmap);
+    heman_image_destroy(hmapviz);
+    heman_image_destroy(occ);
+    heman_image_destroy(norm);
+    heman_image_destroy(normviz);
     heman_image_destroy(albedo);
     heman_image_destroy(final);
-    heman_image_destroy(hmap);
 }
 
 int main(int argc, char** argv)
