@@ -6,7 +6,7 @@ static const float SEALEVEL = 0.5f;
 
 #define NOISE(U, V) open_simplex_noise2(ctx, U, V)
 
-heman_image* heman_island_generate_noise(int width, int height, int seed)
+heman_image* heman_generate_island_noise(int width, int height, int seed)
 {
     struct osn_context* ctx;
     open_simplex_noise(seed, &ctx);
@@ -35,9 +35,9 @@ heman_image* heman_island_generate_noise(int width, int height, int seed)
     return img;
 }
 
-heman_image* heman_island_create_heightmap(int width, int height, int seed)
+heman_image* heman_generate_island_heightmap(int width, int height, int seed)
 {
-    heman_image* noisetex = heman_island_generate_noise(width, height, seed);
+    heman_image* noisetex = heman_generate_island_noise(width, height, seed);
     heman_image* coastmask = heman_image_create(width, height, 1);
     float* data = coastmask->data;
     float invh = 1.0f / height;

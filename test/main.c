@@ -37,7 +37,7 @@ static void test_noise()
 {
     printf("Generating noise.\n");
     double begin = omp_get_wtime();
-    heman_image* img = heman_island_generate_noise(SIZE, SIZE, 7000);
+    heman_image* img = heman_generate_island_noise(SIZE, SIZE, 7000);
     double duration = omp_get_wtime() - begin;
     printf("Noise generated in %.3f seconds.\n", duration);
     heman_image_destroy(img);
@@ -125,7 +125,7 @@ static void test_lighting()
 
     // Generate the heightmap.
     srand(time(0));
-    heman_image* hmap = heman_island_create_heightmap(SIZE, SIZE, rand());
+    heman_image* hmap = heman_generate_island_heightmap(SIZE, SIZE, rand());
     write_image(OUTFOLDER "heightmap.png", hmap);
 
     // Compute ambient occlusion.

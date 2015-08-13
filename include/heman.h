@@ -47,10 +47,10 @@ heman_image* heman_color_apply_gradient(heman_image* heightmap, float minheight,
 
 // High-level function that uses several octaves of simplex noise and a signed
 // distance field to generate an interesting height map.
-heman_image* heman_island_create_heightmap(int width, int height, int seed);
+heman_image* heman_generate_island_heightmap(int width, int height, int seed);
 
 // High-level function that computes several octaves of noise for demo purposes.
-heman_image* heman_island_generate_noise(int width, int height, int seed);
+heman_image* heman_generate_island_noise(int width, int height, int seed);
 
 // Apply ambient occlusion and diffuse lighting to the given heightmap.
 heman_image* heman_lighting_apply(heman_image* heightmap,
