@@ -14,16 +14,18 @@ This is a tiny MIT-licensed C99 library of image utilities for dealing with **he
 - Create an image that sums up several octaves of simplex noise.
 - Apply a color gradient to a heightmap.
 - Generate a color gradient, given a list of control points.
-    * Uses gamma-correct linear interpolation.
-- Compute diffuse lighting.
+- Compute diffuse lighting with an infinite light source.
 
 ## Example
 
-The above image was generated from code that looks like this:
+The above images were generated from code that looks like this:
 
 ```c
 // Generate an island shape using simplex noise and a distance field.
 heman_image* elevation = heman_generate_island_heightmap(1024, 1024, rand());
+
+// Compute ambient occlusion from the height map.
+heman_image* occ = heman_lighting_compute_occlusion(hmap);
 
 // Visualize the normal vectors.
 heman_image* normals = heman_lighting_compute_normals(elevation);
