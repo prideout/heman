@@ -65,7 +65,7 @@ Here are some to-be-done items:
 - Provide gamma decode and encode functions.
 - Provide a way to compute noise normals analytically.
 - **heman_image_sample** doesn't do any interpolation.
-- Provide more functionality form _Scalable Height-Field Self-Shadowing_
+- Provide functionality from _Scalable Height-Field Self-Shadowing_
 - If we need more string handling, we can integrate [SDS](https://github.com/antirez/sds).
 - Create a simple C++ wrapper in a top-level folder called `bindings`.
 - Create a Python wrapper in `bindings` that uses **boost.python** and provides docstrings.
