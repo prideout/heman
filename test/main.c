@@ -3,7 +3,7 @@
 #include <time.h>
 #include "stb.h"
 
-static const int SIZE = 1024;
+static const int SIZE = 512;
 
 #define COUNT(a) (sizeof(a) / sizeof(a[0]))
 #define OUTFOLDER "build/"
@@ -108,7 +108,8 @@ static void test_lighting()
         126,  // Light Blue
         127,  // Yellow
         128,  // Dark Green
-        150,  // Brown
+        160,  // Brown
+        200,  // White
         255,  // White
     };
     heman_color cp_colors[] = {
@@ -117,6 +118,7 @@ static void test_lighting()
         0xE0F0C0,  // Yellow
         0x5D943C,  // Dark Green
         0x606011,  // Brown
+        0xFFFFFF,  // White
         0xFFFFFF,  // White
     };
     assert(COUNT(cp_locations) == COUNT(cp_colors));
