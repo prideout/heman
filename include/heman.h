@@ -78,3 +78,10 @@ heman_image* heman_lighting_compute_occlusion(heman_image* heightmap);
 // Create a signed distance field based on the given input, using the very
 // fast algorithm described in Felzenszwalb 2012.
 heman_image* heman_distance_create_sdf(heman_image* monochrome);
+
+// Create a mesh with (width - 1) x (height - 1) quads.
+void heman_export_ply(heman_image*, const char* filename);
+
+// Create a mesh with (width - 1) x (height - 1) quads and per-vertex colors.
+void heman_export_with_colors_ply(
+    heman_image* heightmap, heman_image* colors, const char* filename);

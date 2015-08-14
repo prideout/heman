@@ -11,6 +11,7 @@ This is a tiny MIT-licensed C99 library of image utilities for dealing with **he
 - Generate a normal map from a height map.
 - Compute ambient occlusion from a height map.
 - Generate a signed distance field (SDF) using a [fast algorithm](http://cs.brown.edu/~pff/dt/index.html).
+- Export a 3D mesh in [PLY](http://paulbourke.net/dataformats/ply/) format.
 - Create an image that sums up several octaves of simplex noise.
 - Apply a color gradient to a heightmap.
 - Generate a color gradient, given a list of control points.

@@ -149,7 +149,8 @@ static void test_lighting()
     heman_image* frames[] = {hmapviz, occ, normviz, albedo, final};
     heman_image* filmstrip = heman_image_stitch(frames, 5);
     write_colors(OUTFOLDER "filmstrip.png", filmstrip);
-
+    heman_export_ply(hmap, OUTFOLDER "heightmap.ply");
+    heman_export_with_colors_ply(hmap, final, OUTFOLDER "colors.ply");
     heman_image_destroy(hmap);
     heman_image_destroy(hmapviz);
     heman_image_destroy(occ);
