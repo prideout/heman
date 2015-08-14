@@ -101,6 +101,7 @@ heman_image* heman_lighting_apply(heman_image* heightmap, heman_image* albedo,
 
 #define NUM_SCANS (16)
 #define INV_SCANS (1.0f / 16.0f)
+#define TWO_OVER_PI (0.63661977236)
 
 static float azimuth_slope(kmVec3 a, kmVec3 b)
 {
@@ -117,7 +118,7 @@ static float compute_occlusion(kmVec3 thispt, kmVec3 horizonpt)
     kmVec3Subtract(&direction, &horizonpt, &thispt);
     kmVec3Normalize(&direction, &direction);
     float dot = kmVec3Dot(&direction, &KM_VEC3_POS_Z);
-    return MAX(dot, 0.0f);
+    return atan(MAX(dot, 0.0f)) * TWO_OVER_PI;
 }
 
 static void horizon_scan(
