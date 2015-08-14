@@ -15,8 +15,8 @@ static heman_image* generate_island_noise(int width, int height, int seed)
     open_simplex_noise(seed, &ctx);
     heman_image* img = heman_image_create(width, height, 3);
     float* data = img->data;
-    float invh = 1.0f / height;
-    float invw = 1.0f / width;
+    float invh = 1.0f / MAX(width, height);
+    float invw = 1.0f / MAX(width, height);
     float freqs[] = {4.0, 16.0, 32.0, 64.0, 128.0};
     float ampls[] = {0.2, 0.1, 0.05, 0.025, 0.0125};
 
