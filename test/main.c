@@ -1,5 +1,4 @@
 #include <heman.h>
-#include <stdlib.h>
 #include <time.h>
 #include "stb.h"
 
@@ -134,8 +133,7 @@ static void test_lighting()
         256, COUNT(cp_colors), cp_locations, cp_colors);
 
     // Generate the heightmap.
-    srand(time(0));
-    heman_image* hmap = heman_generate_island_heightmap(SIZE, SIZE, rand());
+    heman_image* hmap = heman_generate_island_heightmap(SIZE, SIZE, time(0));
     heman_image* hmapviz = heman_image_normalize_f32(hmap, -0.5, 0.5);
 
     // Compute ambient occlusion.
