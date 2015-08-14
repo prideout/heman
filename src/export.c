@@ -13,7 +13,7 @@ void heman_export_ply(heman_image* img, const char* filename)
     int nverts = img->width * img->height;
     fprintf(fout,
         "ply\n"
-        "format ascii 1.0\n"  // binary_little_endian 1.0\n"
+        "format binary_little_endian 1.0\n"
         "comment heman\n"
         "element vertex %d\n"
         "property float32 x\n"
@@ -25,19 +25,25 @@ void heman_export_ply(heman_image* img, const char* filename)
         nverts, ncells);
     float invw = 2.0f / img->width;
     float invh = 2.0f / img->height;
+    float vert[3];
     for (int j = 0; j < img->height; j++) {
         for (int i = 0; i < img->width; i++) {
-            float x = -1 + i * invw;
-            float y = -1 + j * invh;
-            float z = *heman_image_texel(img, i, j);
-            fprintf(fout, "%f %f %f\n", x, y, z);
+            vert[0] = -1 + i * invw;
+            vert[1] = -1 + j * invh;
+            vert[2] = *heman_image_texel(img, i, j);
+            fwrite(vert, sizeof(vert), 1, fout);
         }
     }
+    int face[5];
+    face[0] = 4;
     for (int j = 0; j < nrows; j++) {
         int p = j * img->width;
         for (int i = 0; i < ncols; i++, p++) {
-            fprintf(fout, "4 %d %d %d %d\n", p, p + 1, p + img->width + 1,
-                p + img->width);
+            face[1] = p;
+            face[2] = p + 1;
+            face[3] = p + img->width + 1;
+            face[4] = p + img->width;
+            fwrite(face, sizeof(face), 1, fout);
         }
     }
     fclose(fout);
@@ -61,7 +67,7 @@ void heman_export_with_colors_ply(
     heman_image_normalize_u8(colors, 0.0, 1.0, colordata);
     fprintf(fout,
         "ply\n"
-        "format ascii 1.0\n"  // binary_little_endian 1.0\n"
+        "format binary_little_endian 1.0\n"
         "comment heman\n"
         "element vertex %d\n"
         "property float32 x\n"
@@ -78,22 +84,28 @@ void heman_export_with_colors_ply(
     float invw = 2.0f / width;
     float invh = 2.0f / height;
     heman_byte* pcolor = colordata;
+    float vert[3];
     for (int j = 0; j < height; j++) {
         for (int i = 0; i < width; i++) {
-            float x = -1 + i * invw;
-            float y = -1 + j * invh;
-            float z = *heman_image_texel(hmap, i, j);
-            int r = *pcolor++;
-            int g = *pcolor++;
-            int b = *pcolor++;
-            fprintf(fout, "%f %f %f %d %d %d 255\n", x, y, z, r, g, b);
+            vert[0] = -1 + i * invw;
+            vert[1] = -1 + j * invh;
+            vert[2] = *heman_image_texel(hmap, i, j);
+            fwrite(vert, sizeof(vert), 1, fout);
+            fwrite(pcolor, 3, 1, fout);
+            pcolor += 3;
+            fputc(255, fout);
         }
     }
+    int face[5];
+    face[0] = 4;
     for (int j = 0; j < nrows; j++) {
         int p = j * width;
         for (int i = 0; i < ncols; i++, p++) {
-            fprintf(fout, "4 %d %d %d %d\n", p, p + 1, p + hmap->width + 1,
-                p + hmap->width);
+            face[1] = p;
+            face[2] = p + 1;
+            face[3] = p + hmap->width + 1;
+            face[4] = p + hmap->width;
+            fwrite(face, sizeof(face), 1, fout);
         }
     }
     fclose(fout);
