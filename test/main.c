@@ -37,9 +37,17 @@ static void test_noise()
 {
     printf("Generating noise.\n");
     double begin = omp_get_wtime();
-    heman_image* img = heman_generate_island_noise(SIZE, SIZE, 7000);
+    float frequency = 4;
+    float amplitude = 1;
+    int octaves = 10;
+    float lacunarity = 2;
+    float gain = 0.65f;
+    int seed = 5000;
+    heman_image* img = heman_generate_simplex_fbm(
+        SIZE, SIZE, frequency, amplitude, octaves, lacunarity, gain, seed);
     double duration = omp_get_wtime() - begin;
     printf("Noise generated in %.3f seconds.\n", duration);
+    write_image(OUTFOLDER "noise.png", img);
     heman_image_destroy(img);
 }
 

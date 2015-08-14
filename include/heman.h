@@ -59,8 +59,12 @@ heman_image* heman_color_apply_gradient(heman_image* heightmap, float minheight,
 // distance field to generate an interesting height map.
 heman_image* heman_generate_island_heightmap(int width, int height, int seed);
 
-// High-level function that computes several octaves of noise for demo purposes.
-heman_image* heman_generate_island_noise(int width, int height, int seed);
+// High-level function that sums up a number of noise octaves, also known as
+// Fractional Brownian Motion.  Taken alone, Perlin / Simplex noise are not
+// fractals; this makes them more fractal-like. A good starting point is to use
+// a lacunarity of 2.0 and a gain of 0.5, with only 2 or 3 octaves.
+heman_image* heman_generate_simplex_fbm(int width, int height, float frequency,
+    float amplitude, int octaves, float lacunarity, float gain, int seed);
 
 // Apply ambient occlusion and diffuse lighting to the given heightmap.
 heman_image* heman_lighting_apply(heman_image* heightmap,

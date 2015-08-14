@@ -1,6 +1,7 @@
 #include "image.h"
 #include "noise.h"
 #include <math.h>
+#include <memory.h>
 
 static const float SEALEVEL = 0.5f;
 
@@ -8,7 +9,7 @@ static const float SEALEVEL = 0.5f;
 #define MAX(a, b) (a > b ? a : b)
 #define MIN(a, b) (a > b ? b : a)
 
-heman_image* heman_generate_island_noise(int width, int height, int seed)
+static heman_image* generate_island_noise(int width, int height, int seed)
 {
     struct osn_context* ctx;
     open_simplex_noise(seed, &ctx);
@@ -42,7 +43,7 @@ heman_image* heman_generate_island_noise(int width, int height, int seed)
 
 heman_image* heman_generate_island_heightmap(int width, int height, int seed)
 {
-    heman_image* noisetex = heman_generate_island_noise(width, height, seed);
+    heman_image* noisetex = generate_island_noise(width, height, seed);
     heman_image* coastmask = heman_image_create(width, height, 1);
     float* data = coastmask->data;
     float invh = 1.0f / height;
@@ -99,4 +100,35 @@ heman_image* heman_generate_island_heightmap(int width, int height, int seed)
     heman_image_destroy(noisetex);
     heman_image_destroy(heightmap);
     return result;
+}
+
+heman_image* heman_generate_simplex_fbm(int width, int height, float frequency,
+    float amplitude, int octaves, float lacunarity, float gain, int seed)
+{
+    struct osn_context* ctx;
+    open_simplex_noise(seed, &ctx);
+    heman_image* img = heman_image_create(width, height, 1);
+    float* data = img->data;
+    float invh = 1.0f / height;
+    float invw = 1.0f / width;
+    float ampl = amplitude;
+    float freq = frequency;
+    memset(data, 0, sizeof(float) * width * height);
+
+    while (octaves--) {
+#pragma omp parallel for
+        for (int y = 0; y < height; ++y) {
+            float v = y * invh;
+            float* dst = data + y * width;
+            for (int x = 0; x < width; ++x) {
+                float u = x * invw;
+                *dst++ += ampl* NOISE(u * freq, v * freq);
+            }
+        }
+        ampl *= gain;
+        freq *= lacunarity;
+    }
+
+    open_simplex_noise_free(ctx);
+    return img;
 }
