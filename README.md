@@ -47,9 +47,9 @@ Read the [header file](https://github.com/prideout/heman/blob/master/include/hem
 
 ## Building
 
-It's probably easiest just to snarf the code and use whatever build system you want.  The only official builds use SCons, in the environments defined by [.travis.yml](https://github.com/prideout/heman/blob/master/.travis.yml) and the [Dockerfile](https://github.com/prideout/heman/blob/master/Dockerfile).
+I've only built heman on Linux using scons, but it should be easy to port to other platforms; its only dependency is OpenMP.  Feel free to make a contribution!
 
-If you're on OS X, there's a script, [env.sh](https://github.com/prideout/heman/blob/master/env.sh), that makes using Docker easy.  Here's how to use it:
+If you're on OS X, you might want to use the provided [Dockerfile](https://github.com/prideout/heman/blob/master/Dockerfile).  There's a script in the repo, [env.sh](https://github.com/prideout/heman/blob/master/env.sh), that makes using Docker easy.  Here's how to use it:
 
 ```bash
 . env.sh
