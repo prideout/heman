@@ -79,52 +79,6 @@ void heman_image_sample(heman_image* img, float u, float v, float* result)
     }
 }
 
-static void copy_row(heman_image* src, heman_image* dst, int dstx, int y)
-{
-    int width = src->width;
-    if (src->nbands == 1) {
-        for (int x = 0; x < width; x++) {
-            float* srcp = heman_image_texel(src, x, y);
-            float* dstp = heman_image_texel(dst, dstx + x, y);
-            *dstp++ = *srcp;
-            *dstp++ = *srcp;
-            *dstp = *srcp;
-        }
-        return;
-    }
-    for (int x = 0; x < width; x++) {
-        float* srcp = heman_image_texel(src, x, y);
-        float* dstp = heman_image_texel(dst, dstx + x, y);
-        *dstp++ = *srcp++;
-        *dstp++ = *srcp++;
-        *dstp = *srcp;
-    }
-}
-
-heman_image* heman_image_stitch(heman_image** images, int count)
-{
-    assert(count > 0);
-    int width = images[0]->width;
-    int height = images[0]->height;
-    for (int i = 0; i < count; i++) {
-        assert(images[i]->width == width);
-        assert(images[i]->height == height);
-        assert(images[i]->nbands == 1 || images[i]->nbands == 3);
-    }
-    heman_image* result = heman_image_create(width * count, height, 3);
-
-#pragma omp parallel for
-    for (int y = 0; y < height; y++) {
-        int x = 0;
-        for (int tile = 0; tile < count; tile++) {
-            copy_row(images[tile], result, x, y);
-            x += width;
-        }
-    }
-
-    return result;
-}
-
 heman_image* heman_image_from_u8(int width, int height, int nbands,
     const heman_byte* source, float minval, float maxval)
 {

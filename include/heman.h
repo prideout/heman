@@ -44,9 +44,6 @@ void heman_image_destroy(heman_image*);
 // The default value is 2.2.
 void heman_image_set_gamma(float f);
 
-// Give a set of same-sized images, copy them into a horizontal filmstrip.
-heman_image* heman_image_stitch(heman_image** images, int count);
-
 // Create a 1-pixel tall, 3-band image representing a color gradient that lerps
 // the given control points, in a gamma correct way.  Each control point is
 // defined by an X location (one integer each) and an RGB value (one 32-bit
@@ -94,3 +91,12 @@ void heman_export_ply(heman_image*, const char* filename);
 // Create a mesh with (width - 1) x (height - 1) quads and per-vertex colors.
 void heman_export_with_colors_ply(
     heman_image* heightmap, heman_image* colors, const char* filename);
+
+// Given a set of same-sized images, copy them into a horizontal filmstrip.
+heman_image* heman_ops_stitch(heman_image** images, int count);
+
+// Generate a monochrome image by applying a step function.
+heman_image* heman_ops_step(heman_image* image, float threshold);
+
+// Generate a height x 1 x 1 image by averaging the values across each row.
+heman_image* heman_ops_sweep(heman_image* image);
