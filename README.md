@@ -47,9 +47,19 @@ Read the [header file](https://github.com/prideout/heman/blob/master/include/hem
 
 ## Building
 
-I've only built heman on Linux using scons, but it should be easy to port to other platforms; its only dependency is OpenMP.  Feel free to make a contribution!
+heman has no dependencies, so it should be easy just to incorporate the code directly into your project.
 
-If you're on OS X, you might want to use the provided [Dockerfile](https://github.com/prideout/heman/blob/master/Dockerfile).  There's a script in the repo, [env.sh](https://github.com/prideout/heman/blob/master/env.sh), that makes using Docker easy.  Here's how to use it:
+For building a shared library in OS X, you can do this:
+```
+brew install scons
+scons lib
+```
+
+Note that this will not use OpenMP or build any tests.
+
+Linux is required for OpenMP and tests.  If you are not using a Linux machine but you want OpenMP support, take a look at the provided [Dockerfile](https://github.com/prideout/heman/blob/master/Dockerfile).
+
+There's a script in the repo, [env.sh](https://github.com/prideout/heman/blob/master/env.sh), that makes using Docker easy.  It calls `boot2docker` and builds a container.  Here's how to use it:
 
 ```bash
 . env.sh

@@ -10,6 +10,9 @@ env = Environment(
     LINKFLAGS='-fopenmp',
     CFLAGS='-fopenmp -g -O3 -Wall -std=c99')
 
+if env['PLATFORM'] == 'darwin':
+    env['LINKFLAGS'] = ''
+
 heman = env.SharedLibrary('_heman.so', source=CORE_SRC + MATH_SRC)
 Alias('lib', heman)
 
