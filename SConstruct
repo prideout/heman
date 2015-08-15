@@ -1,14 +1,20 @@
-SConscript('SConscript', variant_dir='build', src_dir='.', duplicate=0)
+import os.path
 
-TEST_BIN = 'build/test_heman'
+TEST_NAME = 'test_heman'
+BUILD_DIR = 'build'
+TEST_BIN = os.path.join(BUILD_DIR, TEST_NAME)
 
-Default(TEST_BIN)
+Export('TEST_NAME')
+
+# Building Targets
+SConscript('SConscript', variant_dir=BUILD_DIR, src_dir='.', duplicate=0)
+
+# Executing Tests
 Command('test', TEST_BIN, TEST_BIN)
 AlwaysBuild('test')
 
-Alias('lib', 'build/_heman.so')
-
-additions = ['include/heman.h', 'test/main.c']
+# Code Formatting
+additions = ['include/heman.h'] + Glob('test/*.c')
 exclusions = Glob('src/noise.*')
 cfiles = Glob('src/*.c') + Glob('src/*.h') + additions
 cfiles = list(set(cfiles) - set(exclusions))
