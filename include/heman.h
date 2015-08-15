@@ -5,6 +5,10 @@ typedef struct heman_image_s heman_image;
 typedef unsigned char heman_byte;
 typedef unsigned int heman_color;
 
+#ifndef HEMAN_FLOAT
+#define HEMAN_FLOAT float
+#endif
+
 // Allocate a floating-point image with dimensions width x height x nbands.
 heman_image* heman_image_create(int width, int height, int nbands);
 

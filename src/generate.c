@@ -3,7 +3,7 @@
 #include <math.h>
 #include <memory.h>
 
-static const float SEALEVEL = 0.5f;
+static const HEMAN_FLOAT SEALEVEL = 0.5f;
 
 #define NOISE(U, V) open_simplex_noise2(ctx, U, V)
 #define MAX(a, b) (a > b ? a : b)
@@ -14,18 +14,18 @@ static heman_image* generate_island_noise(int width, int height, int seed)
     struct osn_context* ctx;
     open_simplex_noise(seed, &ctx);
     heman_image* img = heman_image_create(width, height, 3);
-    float* data = img->data;
-    float invh = 1.0f / MAX(width, height);
-    float invw = 1.0f / MAX(width, height);
-    float freqs[] = {4.0, 16.0, 32.0, 64.0, 128.0};
-    float ampls[] = {0.2, 0.1, 0.05, 0.025, 0.0125};
+    HEMAN_FLOAT* data = img->data;
+    HEMAN_FLOAT invh = 1.0f / MAX(width, height);
+    HEMAN_FLOAT invw = 1.0f / MAX(width, height);
+    HEMAN_FLOAT freqs[] = {4.0, 16.0, 32.0, 64.0, 128.0};
+    HEMAN_FLOAT ampls[] = {0.2, 0.1, 0.05, 0.025, 0.0125};
 
 #pragma omp parallel for
     for (int y = 0; y < height; ++y) {
-        float v = y * invh;
-        float* dst = data + y * width * 3;
+        HEMAN_FLOAT v = y * invh;
+        HEMAN_FLOAT* dst = data + y * width * 3;
         for (int x = 0; x < width; ++x) {
-            float u = x * invw;
+            HEMAN_FLOAT u = x * invw;
             *dst++ = ampls[0] * NOISE(u * freqs[0], v * freqs[0]) +
                 ampls[1] * NOISE(u * freqs[1], v * freqs[1]) +
                 ampls[2] * NOISE(u * freqs[2], v * freqs[2]);
@@ -45,26 +45,26 @@ heman_image* heman_generate_island_heightmap(int width, int height, int seed)
 {
     heman_image* noisetex = generate_island_noise(width, height, seed);
     heman_image* coastmask = heman_image_create(width, height, 1);
-    float* data = coastmask->data;
-    float invh = 1.0f / height;
-    float invw = 1.0f / width;
+    HEMAN_FLOAT* data = coastmask->data;
+    HEMAN_FLOAT invh = 1.0f / height;
+    HEMAN_FLOAT invw = 1.0f / width;
     int hh = height / 2;
     int hw = width / 2;
 
 #pragma omp parallel for
     for (int y = 0; y < height; ++y) {
-        float vv = (y - hh) * invh;
-        float* dst = data + y * width;
+        HEMAN_FLOAT vv = (y - hh) * invh;
+        HEMAN_FLOAT* dst = data + y * width;
         for (int x = 0; x < width; ++x) {
-            float n[3];
-            float v = y * invh;
-            float u = x * invw;
+            HEMAN_FLOAT n[3];
+            HEMAN_FLOAT v = y * invh;
+            HEMAN_FLOAT u = x * invw;
             heman_image_sample(noisetex, u, v, n);
             u = (x - hw) * invw;
             v = vv;
             u += n[1];
             v += n[2];
-            float m = 0.707f - sqrt(u * u + v * v);
+            HEMAN_FLOAT m = 0.707f - sqrt(u * u + v * v);
             m += n[0];
             *dst++ = m < SEALEVEL ? 0 : 1;
         }
@@ -78,16 +78,16 @@ heman_image* heman_generate_island_heightmap(int width, int height, int seed)
 
 #pragma omp parallel for
     for (int y = 0; y < height; ++y) {
-        float* dst = data + y * width;
+        HEMAN_FLOAT* dst = data + y * width;
         for (int x = 0; x < width; ++x) {
-            float n[3];
-            float u = x * invw;
-            float v = y * invh;
+            HEMAN_FLOAT n[3];
+            HEMAN_FLOAT u = x * invw;
+            HEMAN_FLOAT v = y * invh;
             heman_image_sample(noisetex, u, v, n);
-            float z;
+            HEMAN_FLOAT z;
             heman_image_sample(heightmap, u, v, &z);
             if (z > 0.0) {
-                float influence = z;
+                HEMAN_FLOAT influence = z;
                 u += influence * n[1];
                 v += influence * n[2];
                 heman_image_sample(heightmap, u, v, &z);
@@ -102,26 +102,26 @@ heman_image* heman_generate_island_heightmap(int width, int height, int seed)
     return result;
 }
 
-heman_image* heman_generate_simplex_fbm(int width, int height, float frequency,
-    float amplitude, int octaves, float lacunarity, float gain, int seed)
+heman_image* heman_generate_simplex_fbm(int width, int height, HEMAN_FLOAT frequency,
+    HEMAN_FLOAT amplitude, int octaves, HEMAN_FLOAT lacunarity, HEMAN_FLOAT gain, int seed)
 {
     struct osn_context* ctx;
     open_simplex_noise(seed, &ctx);
     heman_image* img = heman_image_create(width, height, 1);
-    float* data = img->data;
-    float invh = 1.0f / height;
-    float invw = 1.0f / width;
-    float ampl = amplitude;
-    float freq = frequency;
-    memset(data, 0, sizeof(float) * width * height);
+    HEMAN_FLOAT* data = img->data;
+    HEMAN_FLOAT invh = 1.0f / height;
+    HEMAN_FLOAT invw = 1.0f / width;
+    HEMAN_FLOAT ampl = amplitude;
+    HEMAN_FLOAT freq = frequency;
+    memset(data, 0, sizeof(HEMAN_FLOAT) * width * height);
 
     while (octaves--) {
 #pragma omp parallel for
         for (int y = 0; y < height; ++y) {
-            float v = y * invh;
-            float* dst = data + y * width;
+            HEMAN_FLOAT v = y * invh;
+            HEMAN_FLOAT* dst = data + y * width;
             for (int x = 0; x < width; ++x) {
-                float u = x * invw;
+                HEMAN_FLOAT u = x * invw;
                 *dst++ += ampl* NOISE(u * freq, v * freq);
             }
         }

@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.org/prideout/heman.svg?branch=master)](https://travis-ci.org/prideout/heman)
 
-This is a tiny MIT-licensed C99 library of image utilities for dealing with **he**ight **ma**ps, **n**ormal maps, distance fields, and the like.  It has a very low-level API, where an "image" is simply an array of 32-bit floats.  It's pretty fast too, since it's parallelized using OpenMP.
+This is a tiny MIT-licensed C99 library of image utilities for dealing with **he**ight **ma**ps, **n**ormal maps, distance fields, and the like.  It has a very low-level API, where an "image" is simply a flat array of floats.  It's pretty fast too, since it's parallelized using OpenMP.
 
 ![](https://github.com/prideout/heman/blob/master/test/island.png)
 

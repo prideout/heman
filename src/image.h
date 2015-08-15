@@ -5,7 +5,7 @@ struct heman_image_s {
     int width;
     int height;
     int nbands;
-    float* data;
+    HEMAN_FLOAT* data;
 };
 
-extern float _gamma;
+extern HEMAN_FLOAT _gamma;

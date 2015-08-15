@@ -1,13 +1,13 @@
 #include "image.h"
 #include <assert.h>
 
-heman_image* heman_ops_step(heman_image* hmap, float threshold)
+heman_image* heman_ops_step(heman_image* hmap, HEMAN_FLOAT threshold)
 {
     assert(hmap->nbands == 1);
     heman_image* result = heman_image_create(hmap->width, hmap->height, 1);
     int size = hmap->height * hmap->width;
-    float* src = hmap->data;
-    float* dst = result->data;
+    HEMAN_FLOAT* src = hmap->data;
+    HEMAN_FLOAT* dst = result->data;
     for (int i = 0; i < size; ++i) {
         *dst++ = (*src++) >= threshold ? 1 : 0;
     }
@@ -18,11 +18,11 @@ heman_image* heman_ops_sweep(heman_image* hmap)
 {
     assert(hmap->nbands == 1);
     heman_image* result = heman_image_create(hmap->height, 1, 1);
-    float* dst = result->data;
-    const float* src = hmap->data;
-    float invw = 1.0f / hmap->width;
+    HEMAN_FLOAT* dst = result->data;
+    const HEMAN_FLOAT* src = hmap->data;
+    HEMAN_FLOAT invw = 1.0f / hmap->width;
     for (int y = 0; y < hmap->height; y++) {
-        float acc = 0;
+        HEMAN_FLOAT acc = 0;
         for (int x = 0; x < hmap->width; x++) {
             acc += *src++;
         }
@@ -36,8 +36,8 @@ static void copy_row(heman_image* src, heman_image* dst, int dstx, int y)
     int width = src->width;
     if (src->nbands == 1) {
         for (int x = 0; x < width; x++) {
-            float* srcp = heman_image_texel(src, x, y);
-            float* dstp = heman_image_texel(dst, dstx + x, y);
+            HEMAN_FLOAT* srcp = heman_image_texel(src, x, y);
+            HEMAN_FLOAT* dstp = heman_image_texel(dst, dstx + x, y);
             *dstp++ = *srcp;
             *dstp++ = *srcp;
             *dstp = *srcp;
@@ -45,8 +45,8 @@ static void copy_row(heman_image* src, heman_image* dst, int dstx, int y)
         return;
     }
     for (int x = 0; x < width; x++) {
-        float* srcp = heman_image_texel(src, x, y);
-        float* dstp = heman_image_texel(dst, dstx + x, y);
+        HEMAN_FLOAT* srcp = heman_image_texel(src, x, y);
+        HEMAN_FLOAT* dstp = heman_image_texel(dst, dstx + x, y);
         *dstp++ = *srcp++;
         *dstp++ = *srcp++;
         *dstp = *srcp;
