@@ -1,4 +1,4 @@
-heman |release|
+heman
 ===============
 
 heman is a library of image utilities for dealing with height maps and other floating-point images, written in C99.
@@ -6,16 +6,16 @@ heman is a library of image utilities for dealing with height maps and other flo
 Features
 --------
 
-heman |version| currently supports:
+heman currently supports:
 
-* Generate a normal map from a height map.
-* Compute ambient occlusion from a height map.
-* Generate a signed distance field (SDF) using a `fast algorithm`_.
-* Export a 3D mesh in PLY_ format.
-* Create an image that sums up several octaves of simplex noise.
-* Apply a color gradient to a heightmap.
-* Generate a color gradient, given a list of control points.
-* Compute diffuse lighting with an infinite light source.
+* Generating a normal map from a height map using forwarding differencing.
+* Efficiently computing ambient occlusion from a height map.
+* Generating a signed distance field (SDF) using a `fast algorithm`_.
+* Exporting a 3D mesh in PLY_ format.
+* Creating images from scratch using simplex noise and Fractional Brownian Motion.
+* Applying a color gradient to a heightmap (LUT).
+* Generating a color gradient, given a list of control points.
+* Computing diffuse lighting with an infinite light source.
 
 Why the name "heman"?
 -----------------------
