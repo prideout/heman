@@ -28,5 +28,6 @@ additions = ['include/heman.h'] + Glob('test/*.c')
 exclusions = Glob('src/noise.*')
 cfiles = Glob('src/*.c') + Glob('src/*.h') + additions
 cfiles = list(set(cfiles) - set(exclusions))
-Command('format', cfiles, 'clang-format-3.6 -i $SOURCES')
+Command('format', cfiles, 'clang-format-3.6 -i $SOURCES && ' +
+        'uncrustify -c uncrustify.cfg --no-backup $SOURCES')
 AlwaysBuild('format')

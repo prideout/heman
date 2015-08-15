@@ -18,7 +18,7 @@ RUN apt-get install -y \
 RUN echo "/usr/local/lib64/" >/etc/ld.so.conf.d/lib64.conf
 RUN echo "/usr/local/lib/" >/etc/ld.so.conf.d/lib.conf
 
-RUN apt-get install -y clang-format-3.6
+RUN apt-get install -y clang-format-3.6 uncrustify
 
 # Change the login directory
 

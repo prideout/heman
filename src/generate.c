@@ -27,13 +27,13 @@ static heman_image* generate_island_noise(int width, int height, int seed)
         for (int x = 0; x < width; ++x) {
             float u = x * invw;
             *dst++ = ampls[0] * NOISE(u * freqs[0], v * freqs[0]) +
-                     ampls[1] * NOISE(u * freqs[1], v * freqs[1]) +
-                     ampls[2] * NOISE(u * freqs[2], v * freqs[2]);
+                ampls[1] * NOISE(u * freqs[1], v * freqs[1]) +
+                ampls[2] * NOISE(u * freqs[2], v * freqs[2]);
             *dst++ = ampls[3] * NOISE(u * freqs[3], v * freqs[3]) +
-                     ampls[4] * NOISE(u * freqs[4], v * freqs[4]);
+                ampls[4] * NOISE(u * freqs[4], v * freqs[4]);
             u += 0.5;
             *dst++ = ampls[3] * NOISE(u * freqs[3], v * freqs[3]) +
-                     ampls[4] * NOISE(u * freqs[4], v * freqs[4]);
+                ampls[4] * NOISE(u * freqs[4], v * freqs[4]);
         }
     }
 
