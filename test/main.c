@@ -1,14 +1,12 @@
 #include <heman.h>
 #include <time.h>
+#include <omp.h>
 #include "stb.h"
 
 static const int SIZE = 512;
 
 #define COUNT(a) (sizeof(a) / sizeof(a[0]))
 #define OUTFOLDER "build/"
-
-double omp_get_wtime();
-int omp_get_max_threads();
 
 static void write_image(const char* filename, heman_image* img)
 {

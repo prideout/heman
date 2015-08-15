@@ -1,5 +1,5 @@
 language: c
-script: scons lib test
+script: scons test demo
 addons:
   apt:
     sources:
