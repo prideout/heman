@@ -71,8 +71,8 @@ heman_image* heman_image_normalize_f32(
 
 void heman_image_sample(heman_image* img, float u, float v, float* result)
 {
-    int x = img->width * fmod(1.0f + u, 1.0f);
-    int y = img->height * fmod(1.0f + v, 1.0f);
+    int x = CLAMP(img->width * u, 0, img->width - 1);
+    int y = CLAMP(img->height * v, 0, img->height - 1);
     float* data = heman_image_texel(img, x, y);
     for (int b = 0; b < img->nbands; ++b) {
         *result++ = *data++;
@@ -122,5 +122,20 @@ heman_image* heman_image_stitch(heman_image** images, int count)
         }
     }
 
+    return result;
+}
+
+heman_image* heman_image_from_u8(int width, int height, int nbands,
+    const heman_byte* source, float minval, float maxval)
+{
+    heman_image* result = heman_image_create(width, height, nbands);
+    const heman_byte* inp = source;
+    float* outp = result->data;
+    float scale = (maxval - minval) / 255.0f;
+    int size = height * width * nbands;
+    for (int i = 0; i < size; ++i) {
+        float v = (*inp++) * scale + minval;
+        *outp++ = CLAMP(v, minval, maxval);
+    }
     return result;
 }

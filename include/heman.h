@@ -26,6 +26,11 @@ void heman_image_sample(heman_image*, float u, float v, float* result);
 void heman_image_normalize_u8(
     heman_image* source, float minval, float maxval, heman_byte* dest);
 
+// Create a single-channel floating point point image from bytes, such that
+// [0, 255] map to the given [minval, maxval] range.
+heman_image* heman_image_from_u8(int width, int height, int nbands,
+    const heman_byte* source, float minval, float maxval);
+
 // Transform texel values so that [minval, maxval] map to [0, 1] and return the
 // result.  Values outside the range are clamped.  The source image is
 // untouched.

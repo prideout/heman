@@ -8,28 +8,6 @@ static const int SIZE = 512;
 #define COUNT(a) (sizeof(a) / sizeof(a[0]))
 #define OUTFOLDER "build/"
 
-static void write_image(const char* filename, heman_image* img)
-{
-    printf("Writing to \"%s\".\n", filename);
-    int width, height, ncomp;
-    heman_image_info(img, &width, &height, &ncomp);
-    unsigned char* bytes = malloc(width * height * ncomp);
-    heman_image_normalize_u8(img, -1.0, 1.0, bytes);
-    stbi_write_png(filename, width, height, ncomp, bytes, width * ncomp);
-    free(bytes);
-}
-
-static void write_colors(const char* filename, heman_image* img)
-{
-    printf("Writing to \"%s\".\n", filename);
-    int width, height, ncomp;
-    heman_image_info(img, &width, &height, &ncomp);
-    unsigned char* bytes = malloc(width * height * ncomp);
-    heman_image_normalize_u8(img, 0.0, 1.0, bytes);
-    stbi_write_png(filename, width, height, ncomp, bytes, width * ncomp);
-    free(bytes);
-}
-
 static void test_noise()
 {
     printf("Generating noise.\n");
