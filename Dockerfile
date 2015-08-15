@@ -17,8 +17,8 @@ RUN apt-get install -y \
 
 RUN echo "/usr/local/lib64/" >/etc/ld.so.conf.d/lib64.conf
 RUN echo "/usr/local/lib/" >/etc/ld.so.conf.d/lib.conf
-
 RUN apt-get install -y clang-format-3.6 uncrustify
+RUN pip install sphinx sphinx-autobuild
 
 # Change the login directory
 
