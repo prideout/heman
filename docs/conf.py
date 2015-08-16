@@ -184,7 +184,7 @@ html_static_path = ['_static']
 #html_show_sphinx = True
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
-#html_show_copyright = True
+html_show_copyright = False
 
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
@@ -210,6 +210,10 @@ html_static_path = ['_static']
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'hemandoc'
+
+def setup(app):
+    # overrides for wide tables in RTD theme
+    app.add_stylesheet('overrides.css')   # path relative to _static
 
 # -- Options for LaTeX output ---------------------------------------------
 

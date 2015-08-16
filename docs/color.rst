@@ -1,5 +1,5 @@
-Colors
-#######
+Color Gradients
+###############
 
 This page covers functions with the ``heman_color_`` prefix.
 

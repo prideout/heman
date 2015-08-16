@@ -31,3 +31,8 @@ cfiles = list(set(cfiles) - set(exclusions))
 Command('format', cfiles, 'clang-format-3.6 -i $SOURCES && ' +
         'uncrustify -c uncrustify.cfg --no-backup $SOURCES')
 AlwaysBuild('format')
+
+# Sphinx Docs
+
+Command('docs', Glob('docs/*.rst'), 'cd docs ; rm -rf _build ; make html')
+AlwaysBuild('docs')

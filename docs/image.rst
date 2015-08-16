@@ -1,5 +1,5 @@
-Images
-######
+Heman Images
+############
 
 All functions with the ``heman_image_`` prefix are meant for creating empty images, freeing memory, or examining image contents.
 
@@ -9,7 +9,7 @@ Each image has a specified number of `bands`, which is usually 1 (height maps, d
 
 .. c:type:: heman_image
 
-   Encapsulates a flat array of floats and its dimensions.  The struct itself is not public, so clients must refer to it using a pointer.
+   Encapsulates a flat array of floats and its dimensions.  The struct definition is not public, so clients must refer to it using a pointer.
 
 Creating and Destroying
 =======================

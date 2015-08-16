@@ -43,7 +43,7 @@ For the unabridged version, see `test_lighting` in [test/main.c](https://github.
 
 ## Documentation
 
-Read the [header file](https://github.com/prideout/heman/blob/master/include/heman.h).
+The latest Sphinx-generated docs are hosted [here](http://heman.readthedocs.org/en/latest/).  You can also take a look at heman's one and only [header file](https://github.com/prideout/heman/blob/master/include/heman.h).
 
 ## Building
 

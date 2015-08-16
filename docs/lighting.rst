@@ -1,5 +1,5 @@
-Lighting
-########
+Lighting and AO
+###############
 
 All functions with the ``heman_lighting_`` prefix are meant for doing things that are useful for lighting, like generating normals or ambient occlusion.
 
