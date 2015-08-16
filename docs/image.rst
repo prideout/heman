@@ -1,7 +1,11 @@
 Images
 ######
 
-All functions with the `heman_image_` prefix are meant for creating empty images, destroying images, or translating to non-float formats.
+All functions with the ``heman_image_`` prefix are meant for creating empty images, freeing memory, or examining image contents.
+
+Images are simply arrays of floats.  By default, the value type is ``float``, but this can be overriden by setting the ``HEMAN_FLOAT`` macro to ``double``.  By design, integer-typed images are not allowed, although heman provides some conversion utilities (see `Import / Export <importexport>`_).
+
+Images have a number of `bands`, which is usually 1 (height maps, distance fields or 3 (colors, normal maps).
 
 Creating and Destroying
 =======================
@@ -31,22 +35,3 @@ Examining Texels
     // Find a reasonable value for the given normalized texture coord.
     void heman_image_sample(heman_image*, float u, float v, float* result);
 
-Import / Export
-===============
-
-Heman only knows how to operate on in-memory floating-point images.  It doesn't know how to read and write image files, although its test suite uses `stb <https://github.com/nothings/stb>`_ for handling image files.
-
-Heman can, however, convert floating-point to unsigned bytes, or vice versa:
-
-.. code-block:: c
-
-    // Transform texel values so that [minval, maxval] map to [0, 255], and write
-    // the result to "dest".  Values outside the range are clamped.  The source
-    // image is untouched.
-    void heman_image_normalize_u8(heman_image* source, float minval, float maxval,
-        heman_byte* dest);
-    
-    // Create a single-channel floating point image from bytes, such that
-    // [0, 255] map to the given [minval, maxval] range.
-    heman_image* heman_image_from_u8(int width, int height, int nbands,
-        const heman_byte* source, float minval, float maxval);

@@ -1,12 +1,11 @@
 heman
 ===============
 
-heman is a library of image utilities for dealing with height maps and other floating-point images, written in C99.
+Heman is a C library of image utilities for dealing with height maps and other floating-point images.
 
-Features
---------
+.. image:: _static/islands.png
 
-heman currently supports:
+Heman currently supports:
 
 * Generating a normal map from a height map using forwarding differencing.
 * Efficiently computing ambient occlusion from a height map.
@@ -35,6 +34,7 @@ Documentation
 
    image
    distance
+   importexport
 
 .. Links
 

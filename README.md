@@ -5,9 +5,9 @@
 
 This is a tiny MIT-licensed C99 library of image utilities for dealing with **he**ight **ma**ps, **n**ormal maps, distance fields, and the like.  It has a very low-level API, where an "image" is simply a flat array of floats.  It's pretty fast too, since it's parallelized using OpenMP.
 
-![](https://github.com/prideout/heman/blob/master/test/island.png)
+![](https://github.com/prideout/heman/blob/master/docs/_static/islands.png)
 
-**heman** can do stuff like this:
+**Heman** can do stuff like this:
 - Generate a normal map from a height map.
 - Compute ambient occlusion from a height map.
 - Generate a signed distance field (SDF) using a [fast algorithm](http://cs.brown.edu/~pff/dt/index.html).
@@ -47,7 +47,7 @@ Read the [header file](https://github.com/prideout/heman/blob/master/include/hem
 
 ## Building
 
-heman has no dependencies, so it should be easy just to incorporate the code directly into your project.
+Heman has no dependencies, so it should be easy just to incorporate the code directly into your project.
 
 For building a shared library in OS X, you can do this:
 ```
