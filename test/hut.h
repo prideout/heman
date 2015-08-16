@@ -1,3 +1,5 @@
+// Heman utilities.  This is part of the test suite, not the core library.
+
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
@@ -12,7 +14,7 @@
 #include "stb_image.h"
 #pragma GCC diagnostic pop
 
-heman_image* read_image(const char* filename, int nbands)
+heman_image* hut_read_image(const char* filename, int nbands)
 {
     int width = 0, height = 0;
     stbi_uc* bytes;
@@ -25,24 +27,13 @@ heman_image* read_image(const char* filename, int nbands)
     return retval;
 }
 
-void write_image(const char* filename, heman_image* img)
+void hut_write_image(const char* filename, heman_image* img, float minv, float maxv)
 {
     printf("Writing to \"%s\".\n", filename);
     int width, height, ncomp;
     heman_image_info(img, &width, &height, &ncomp);
     unsigned char* bytes = malloc(width * height * ncomp);
-    heman_export_u8(img, -1.0, 1.0, bytes);
-    stbi_write_png(filename, width, height, ncomp, bytes, width * ncomp);
-    free(bytes);
-}
-
-void write_colors(const char* filename, heman_image* img)
-{
-    printf("Writing to \"%s\".\n", filename);
-    int width, height, ncomp;
-    heman_image_info(img, &width, &height, &ncomp);
-    unsigned char* bytes = malloc(width * height * ncomp);
-    heman_export_u8(img, 0.0, 1.0, bytes);
+    heman_export_u8(img, minv, maxv, bytes);
     stbi_write_png(filename, width, height, ncomp, bytes, width * ncomp);
     free(bytes);
 }

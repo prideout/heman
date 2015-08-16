@@ -20,7 +20,9 @@ heman = env.SharedLibrary('_heman.so', source=CORE_SRC + MATH_SRC)
 Alias('lib', heman)
 
 env = env.Clone(LIBS=['m', heman])
-env.Program(TEST_NAME, source=['test/main.c'])
-Default(TEST_NAME)
 
-env.Clone().Program(DEMO_NAME, source=['test/earth.c'])
+env.Program('test_heman', source=['test/test_heman.c'])
+env.Program('test_earth', source=['test/test_earth.c'])
+env.Program('test_sdf', source=['test/test_sdf.c'])
+
+Default('test_heman')

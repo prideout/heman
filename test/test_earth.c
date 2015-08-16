@@ -1,20 +1,18 @@
 #include <heman.h>
 #include <time.h>
 #include <omp.h>
-#include "stb.h"
+#include "hut.h"
 
 #define COUNT(a) (sizeof(a) / sizeof(a[0]))
 #define OUTFOLDER "build/"
 #define INFOLDER "test/"
-
-heman_image* heman_ops_sweep(heman_image* hmap);
 
 int main(int argc, char** argv)
 {
     printf("%d threads available.\n", omp_get_max_threads());
 
 #if 0
-    heman_image* grad = read_image(INFOLDER "earthGradient.png", 3);
+    heman_image* grad = hut_read_image(INFOLDER "earthGradient.png", 3);
 #else
     int cp_locations[] = {
         000, 155, 156, 200, 255,
@@ -32,22 +30,22 @@ int main(int argc, char** argv)
 #endif
 
     double begin = omp_get_wtime();
-    heman_image* hmap = read_image(INFOLDER "earth2048.png", 1);
+    heman_image* hmap = hut_read_image(INFOLDER "earth2048.png", 1);
     heman_image* colorized = heman_color_apply_gradient(hmap, 0, 1, grad);
-    write_colors(OUTFOLDER "colorized.png", colorized);
+    hut_write_image(OUTFOLDER "colorized.png", colorized, 0, 1);
     heman_image_destroy(grad);
 
     float lightpos[] = {-0.5f, 0.5f, 1.0f};
     heman_image* litearth =
         heman_lighting_apply(hmap, colorized, 1, 0.5, 0.5, lightpos);
-    write_colors(OUTFOLDER "litearth.png", litearth);
+    hut_write_image(OUTFOLDER "litearth.png", litearth, 0, 1);
     heman_image_destroy(litearth);
     heman_image_destroy(colorized);
 
     heman_image* masked = heman_ops_step(hmap, 0.61);
-    write_colors(OUTFOLDER "masked.png", masked);
+    hut_write_image(OUTFOLDER "masked.png", masked, 0, 1);
     heman_image* sweep = heman_ops_sweep(masked);
-    write_colors(OUTFOLDER "sweep.png", sweep);
+    hut_write_image(OUTFOLDER "sweep.png", sweep, 0, 1);
     heman_image_destroy(sweep);
     heman_image_destroy(masked);
 

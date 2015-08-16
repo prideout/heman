@@ -1,7 +1,7 @@
 #include <heman.h>
-#include <time.h>
 #include <omp.h>
-#include "stb.h"
+#include <time.h>
+#include "hut.h"
 
 static const int SIZE = 512;
 
@@ -22,7 +22,7 @@ static void test_noise()
         SIZE, SIZE, frequency, amplitude, octaves, lacunarity, gain, seed);
     double duration = omp_get_wtime() - begin;
     printf("Noise generated in %.3f seconds.\n", duration);
-    write_image(OUTFOLDER "noise.png", img);
+    hut_write_image(OUTFOLDER "noise.png", img, -1, 1);
     heman_image_destroy(img);
 }
 
@@ -53,7 +53,7 @@ static void test_distance()
     heman_image* sdf = heman_distance_create_sdf(img);
     double duration = omp_get_wtime() - begin;
     printf("Distance field generated in %.3f seconds.\n", duration);
-    write_image(OUTFOLDER "distance.png", sdf);
+    hut_write_image(OUTFOLDER "distance.png", sdf, -1, 1);
     heman_image_destroy(img);
     heman_image_destroy(sdf);
 }
@@ -130,7 +130,7 @@ static void test_lighting()
 
     heman_image* frames[] = {hmapviz, occ, normviz, albedo, final};
     heman_image* filmstrip = heman_ops_stitch(frames, 5);
-    write_colors(OUTFOLDER "filmstrip.png", filmstrip);
+    hut_write_image(OUTFOLDER "filmstrip.png", filmstrip, 0, 1);
     heman_export_ply(hmap, OUTFOLDER "heightmap.ply");
     heman_export_with_colors_ply(hmap, final, OUTFOLDER "colors.ply");
     heman_image_destroy(hmap);

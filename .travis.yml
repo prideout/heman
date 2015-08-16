@@ -1,5 +1,5 @@
 language: c
-script: scons test demo && scons lib --double
+script: scons test earth sdf && scons lib --double
 addons:
   apt:
     sources:
