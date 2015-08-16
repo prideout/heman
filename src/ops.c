@@ -1,5 +1,6 @@
 #include "image.h"
 #include <assert.h>
+#include <memory.h>
 
 heman_image* heman_ops_step(heman_image* hmap, HEMAN_FLOAT threshold)
 {
@@ -80,20 +81,19 @@ heman_image* heman_ops_stitch_vertical(heman_image** images, int count)
     assert(count > 0);
     int width = images[0]->width;
     int height = images[0]->height;
+    int nbands = images[0]->nbands;
     for (int i = 0; i < count; i++) {
         assert(images[i]->width == width);
         assert(images[i]->height == height);
-        assert(images[i]->nbands == 1 || images[i]->nbands == 3);
+        assert(images[i]->nbands == nbands);
     }
     heman_image* result = heman_image_create(width, height * count, 3);
-
-#pragma omp parallel for
-    for (int y = 0; y < height; y++) {
-        for (int tile = 0; tile < count; tile++) {
-            copy_row(images[tile], result, 0, y + height * tile);
-        }
+    int size = width * height * nbands;
+    HEMAN_FLOAT* dst = result->data;
+    for (int tile = 0; tile < count; tile++) {
+        memcpy(dst, images[tile]->data, size * sizeof(float));
+        dst += size;
     }
-
     return result;
 }
 
