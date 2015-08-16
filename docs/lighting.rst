@@ -41,4 +41,6 @@ Complete Lighting
    :param light_position: Pointer to three floats representing the light direction.
    :type light_position: float*
 
+Heman automatically un-applies gamma to the albedo, then re-applies gamma after lighting.  This behavior can be configured using :c:data:`heman_color_set_gamma`.
+
 .. _`here`: http://nothings.org/gamedev/horizon/.

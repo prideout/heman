@@ -36,6 +36,7 @@ Documentation
    lighting
    distance
    importexport
+   color
 
 .. Links
 

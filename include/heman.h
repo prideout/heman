@@ -27,16 +27,16 @@ void heman_image_sample(heman_image*, float u, float v, HEMAN_FLOAT* result);
 // Free memory for a image.
 void heman_image_destroy(heman_image*);
 
-// This sets some global state that affects lighting and color interpolation.
-// The default value is 2.2.
-void heman_image_set_gamma(float f);
-
 // Create a 1-pixel tall, 3-band image representing a color gradient that lerps
 // the given control points, in a gamma correct way.  Each control point is
 // defined by an X location (one integer each) and an RGB value (one 32-bit
 // word for each color).
 heman_image* heman_color_create_gradient(int width, int num_colors,
     const int* cp_locations, const heman_color* cp_colors);
+
+// This sets some global state that affects lighting and color interpolation.
+// The default value is 2.2.
+void heman_color_set_gamma(float f);
 
 // Create a 3-band image with the same dimensions as the given heightmap by
 // making lookups from a 1-pixel tall color gradient.  The heightmap values

@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <math.h>
 
+float _gamma = 2.2f;
+
+void heman_color_set_gamma(float g) { _gamma = g; }
+
 heman_image* heman_color_create_gradient(int width, int num_colors,
     const int* cp_locations, const heman_color* cp_values)
 {

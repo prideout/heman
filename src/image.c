@@ -3,11 +3,7 @@
 #include <math.h>
 #include <assert.h>
 
-float _gamma = 2.2f;
-
 HEMAN_FLOAT* heman_image_data(heman_image* img) { return img->data; }
-
-void heman_image_set_gamma(float g) { _gamma = g; }
 
 void heman_image_info(heman_image* img, int* width, int* height, int* nbands)
 {

@@ -3,19 +3,15 @@ Import / Export
 
 Heman only knows how to work with in-memory floating-point images.  It doesn't know how to read and write image files, although its test suite uses `stb <https://github.com/nothings/stb>`_ for handling image files.  See the heman utility header (`hut.h <https://github.com/prideout/heman/blob/master/test/hut.h>`_) for an example of this.
 
-Heman can, however, convert floating-point to unsigned bytes, or vice versa:
+Heman can, however, convert floating-point to unsigned bytes, or vice versa, using one of the following functions.
 
-.. code-block:: c
-    
-    // Transform texel values so that [minval, maxval] map to [0, 255], and write
-    // the result to "dest".  Values outside the range are clamped.
-    void heman_export_u8(heman_image* source, float minval, float maxval,
-        heman_byte* dest);
-    
-    // Create a single-channel floating point image from bytes, such that
-    // [0, 255] map to the given [minval, maxval] range.
-    heman_image* heman_import_u8(int width, int height, int nbands,
-        const heman_byte* source, float minval, float maxval);
+.. c:function:: heman_image* heman_import_u8(int width, int height, int nbands, const heman_byte* source, float minval, float maxval)
+
+   Create a single-channel floating point image from bytes, such that [0, 255] maps to the given [minval, maxval] range.
+
+.. c:function:: void heman_export_u8(heman_image* source, float minval, float maxval, heman_byte* dest)
+
+   Transform texel values so that [minval, maxval] maps to [0, 255], and write the result to "dest".  Values outside the range are clamped.
 
 
 Example with STB
