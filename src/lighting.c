@@ -53,8 +53,8 @@ heman_image* heman_lighting_compute_normals(heman_image* heightmap)
 }
 
 heman_image* heman_lighting_apply(heman_image* heightmap, heman_image* albedo,
-    HEMAN_FLOAT occlusion, HEMAN_FLOAT diffuse, HEMAN_FLOAT diffuse_softening,
-    HEMAN_FLOAT* light_position)
+    float occlusion, float diffuse, float diffuse_softening,
+    float* light_position)
 {
     assert(heightmap->nbands == 1);
     assert(albedo->nbands == 3);
@@ -81,8 +81,10 @@ heman_image* heman_lighting_apply(heman_image* heightmap, heman_image* albedo,
         for (int x = 0; x < width; x++, color++) {
             kmVec3* N = (kmVec3*) heman_image_texel(normals, x, y);
             kmVec3Lerp(N, N, &KM_VEC3_POS_Z, diffuse_softening);
-            HEMAN_FLOAT df = 1 - diffuse * (1 - kmClamp(kmVec3Dot(N, &L), 0, 1));
-            HEMAN_FLOAT of = 1 - occlusion * (1 - *heman_image_texel(occ, x, y));
+            HEMAN_FLOAT df =
+                1 - diffuse * (1 - kmClamp(kmVec3Dot(N, &L), 0, 1));
+            HEMAN_FLOAT of =
+                1 - occlusion * (1 - *heman_image_texel(occ, x, y));
             *color = *((kmVec3*) heman_image_texel(albedo, x, y));
             color->x = pow(color->x, _gamma);
             color->y = pow(color->y, _gamma);
@@ -184,7 +186,8 @@ static void horizon_scan(
             thispt.z = *heman_image_texel(heightmap, i, j);
             while (stack_top > 0) {
                 HEMAN_FLOAT s1 = azimuth_slope(thispt, convex_hull[stack_top]);
-                HEMAN_FLOAT s2 = azimuth_slope(thispt, convex_hull[stack_top - 1]);
+                HEMAN_FLOAT s2 =
+                    azimuth_slope(thispt, convex_hull[stack_top - 1]);
                 if (s1 >= s2) {
                     break;
                 }

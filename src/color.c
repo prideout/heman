@@ -3,10 +3,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define MIN(a, b) (a > b ? b : a)
-#define MAX(a, b) (a > b ? a : b)
-#define CLAMP(v) MAX(0.0f, MIN(1.0f, v))
-
 heman_image* heman_color_create_gradient(int width, int num_colors,
     const int* cp_locations, const heman_color* cp_values)
 {
@@ -21,9 +17,9 @@ heman_image* heman_color_create_gradient(int width, int num_colors,
     const heman_color* u32color = cp_values;
     for (int index = 0; index < num_colors; index++) {
         heman_color rgb = *u32color++;
-        HEMAN_FLOAT r = (HEMAN_FLOAT) (rgb >> 16) * inv;
-        HEMAN_FLOAT g = (HEMAN_FLOAT) ((rgb >> 8) & 0xff) * inv;
-        HEMAN_FLOAT b = (HEMAN_FLOAT) (rgb & 0xff) * inv;
+        HEMAN_FLOAT r = (HEMAN_FLOAT)(rgb >> 16) * inv;
+        HEMAN_FLOAT g = (HEMAN_FLOAT)((rgb >> 8) & 0xff) * inv;
+        HEMAN_FLOAT b = (HEMAN_FLOAT)(rgb & 0xff) * inv;
         *f32color++ = pow(r, _gamma);
         *f32color++ = pow(g, _gamma);
         *f32color++ = pow(b, _gamma);
@@ -41,7 +37,7 @@ heman_image* heman_color_create_gradient(int width, int num_colors,
         if (loc0 == loc1) {
             t = 0;
         } else {
-            t = (x - loc0) / (HEMAN_FLOAT) (loc1 - loc0);
+            t = (x - loc0) / (HEMAN_FLOAT)(loc1 - loc0);
             if (t >= 1) {
                 --x;
                 ++index0;
@@ -68,8 +64,8 @@ heman_image* heman_color_create_gradient(int width, int num_colors,
     return result;
 }
 
-heman_image* heman_color_apply_gradient(heman_image* heightmap, HEMAN_FLOAT minheight,
-    HEMAN_FLOAT maxheight, heman_image* gradient)
+heman_image* heman_color_apply_gradient(heman_image* heightmap,
+    HEMAN_FLOAT minheight, HEMAN_FLOAT maxheight, heman_image* gradient)
 {
     assert(heightmap->nbands == 1);
     assert(gradient->height == 1);
@@ -82,7 +78,7 @@ heman_image* heman_color_apply_gradient(heman_image* heightmap, HEMAN_FLOAT minh
     const HEMAN_FLOAT* src = heightmap->data;
     HEMAN_FLOAT scale = 1.0f / (maxheight - minheight);
     for (int i = 0; i < size; i++, dst += 3, src++) {
-        HEMAN_FLOAT u = CLAMP((*src - minheight) * scale);
+        HEMAN_FLOAT u = CLAMP01((*src - minheight) * scale);
         heman_image_sample(gradient, u, 0.5f, dst);
     }
     return result;

@@ -76,3 +76,19 @@ heman_image* heman_ops_stitch(heman_image** images, int count)
 
     return result;
 }
+
+heman_image* heman_ops_normalize_f32(
+    heman_image* source, HEMAN_FLOAT minv, HEMAN_FLOAT maxv)
+{
+    heman_image* result =
+        heman_image_create(source->width, source->height, source->nbands);
+    HEMAN_FLOAT* src = source->data;
+    HEMAN_FLOAT* dst = result->data;
+    HEMAN_FLOAT scale = 1.0f / (maxv - minv);
+    int size = source->height * source->width * source->nbands;
+    for (int i = 0; i < size; ++i) {
+        HEMAN_FLOAT v = (*src++ - minv) * scale;
+        *dst++ = CLAMP(v, 0, 1);
+    }
+    return result;
+}

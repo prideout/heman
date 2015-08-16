@@ -10,6 +10,11 @@ DEMO_BIN = os.path.join(BUILD_DIR, DEMO_NAME)
 
 Export('TEST_NAME DEMO_NAME')
 
+AddOption('--double',
+          dest='double',
+          action='store_true',
+          help='use 64-bit floats')
+
 # Building Targets
 
 SConscript('SConscript', variant_dir=BUILD_DIR, src_dir='.', duplicate=0)

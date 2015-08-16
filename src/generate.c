@@ -102,8 +102,8 @@ heman_image* heman_generate_island_heightmap(int width, int height, int seed)
     return result;
 }
 
-heman_image* heman_generate_simplex_fbm(int width, int height, HEMAN_FLOAT frequency,
-    HEMAN_FLOAT amplitude, int octaves, HEMAN_FLOAT lacunarity, HEMAN_FLOAT gain, int seed)
+heman_image* heman_generate_simplex_fbm(int width, int height, float frequency,
+    float amplitude, int octaves, float lacunarity, float gain, int seed)
 {
     struct osn_context* ctx;
     open_simplex_noise(seed, &ctx);

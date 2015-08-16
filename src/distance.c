@@ -10,7 +10,8 @@ const HEMAN_FLOAT INF = 1E20;
 #define NEW(t, n) calloc(n, sizeof(t))
 #define TEXEL(x, y) (*(img->data + y * width + x))
 
-static void edt(HEMAN_FLOAT* f, HEMAN_FLOAT* d, HEMAN_FLOAT* z, uint16_t* v, uint16_t* w, int n)
+static void edt(HEMAN_FLOAT* f, HEMAN_FLOAT* d, HEMAN_FLOAT* z, uint16_t* v,
+    uint16_t* w, int n)
 {
     int k = 0;
     HEMAN_FLOAT s;

@@ -20,7 +20,7 @@ heman_image* read_image(const char* filename, int nbands)
     bytes = stbi_load(filename, &width, &height, &nbands, nbands);
     assert(bytes);
     printf("%4d x %4d x %d :: %s\n", width, height, nbands, filename);
-    retval = heman_image_from_u8(width, height, nbands, bytes, 0, 1);
+    retval = heman_import_u8(width, height, nbands, bytes, 0, 1);
     stbi_image_free(bytes);
     return retval;
 }
@@ -31,7 +31,7 @@ void write_image(const char* filename, heman_image* img)
     int width, height, ncomp;
     heman_image_info(img, &width, &height, &ncomp);
     unsigned char* bytes = malloc(width * height * ncomp);
-    heman_image_normalize_u8(img, -1.0, 1.0, bytes);
+    heman_export_u8(img, -1.0, 1.0, bytes);
     stbi_write_png(filename, width, height, ncomp, bytes, width * ncomp);
     free(bytes);
 }
@@ -42,7 +42,7 @@ void write_colors(const char* filename, heman_image* img)
     int width, height, ncomp;
     heman_image_info(img, &width, &height, &ncomp);
     unsigned char* bytes = malloc(width * height * ncomp);
-    heman_image_normalize_u8(img, 0.0, 1.0, bytes);
+    heman_export_u8(img, 0.0, 1.0, bytes);
     stbi_write_png(filename, width, height, ncomp, bytes, width * ncomp);
     free(bytes);
 }

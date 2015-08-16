@@ -64,7 +64,7 @@ void heman_export_with_colors_ply(
     int ncells = ncols * nrows;
     int nverts = hmap->width * hmap->height;
     unsigned char* colordata = malloc(width * height * 3);
-    heman_image_normalize_u8(colors, 0.0, 1.0, colordata);
+    heman_export_u8(colors, 0.0, 1.0, colordata);
     fprintf(fout,
         "ply\n"
         "format binary_little_endian 1.0\n"
@@ -110,4 +110,16 @@ void heman_export_with_colors_ply(
     }
     fclose(fout);
     free(colordata);
+}
+
+void heman_export_u8(
+    heman_image* source, HEMAN_FLOAT minv, HEMAN_FLOAT maxv, heman_byte* outp)
+{
+    const HEMAN_FLOAT* inp = source->data;
+    HEMAN_FLOAT scale = 1.0f / (maxv - minv);
+    int size = source->height * source->width * source->nbands;
+    for (int i = 0; i < size; ++i) {
+        HEMAN_FLOAT v = 255 * (*inp++ - minv) * scale;
+        *outp++ = CLAMP(v, 0, 255);
+    }
 }

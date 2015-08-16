@@ -74,7 +74,7 @@ static void test_color()
     printf("Writing to \"%s\".\n", filename);
     unsigned char* bytes = malloc(256 * 3);
     unsigned char* resized = malloc(256 * 256 * 3);
-    heman_image_normalize_u8(grad, 0.0, 1.0, bytes);
+    heman_export_u8(grad, 0.0, 1.0, bytes);
     stbir_resize_uint8(bytes, 256, 1, 0, resized, 256, 256, 0, 3);
     stbi_write_png(filename, 256, 256, 3, resized, 256 * 3);
     free(bytes);
@@ -110,14 +110,14 @@ static void test_lighting()
 
     // Generate the heightmap.
     heman_image* hmap = heman_generate_island_heightmap(SIZE, SIZE, time(0));
-    heman_image* hmapviz = heman_image_normalize_f32(hmap, -0.5, 0.5);
+    heman_image* hmapviz = heman_ops_normalize_f32(hmap, -0.5, 0.5);
 
     // Compute ambient occlusion.
     heman_image* occ = heman_lighting_compute_occlusion(hmap);
 
     // Create a normal map.
     heman_image* norm = heman_lighting_compute_normals(hmap);
-    heman_image* normviz = heman_image_normalize_f32(norm, -1, 1);
+    heman_image* normviz = heman_ops_normalize_f32(norm, -1, 1);
 
     // Create an albedo image.
     heman_image* albedo = heman_color_apply_gradient(hmap, -0.5, 0.5, grad);
