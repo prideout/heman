@@ -12,4 +12,5 @@ Documentation
    distance
    color
    generate
+   ops
    importexport
