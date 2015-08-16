@@ -94,7 +94,10 @@ void heman_export_u8(
     heman_image* source, HEMAN_FLOAT minv, HEMAN_FLOAT maxv, heman_byte* outp);
 
 // Given a set of same-sized images, copy them into a horizontal filmstrip.
-heman_image* heman_ops_stitch(heman_image** images, int count);
+heman_image* heman_ops_stitch_horizontal(heman_image** images, int count);
+
+// Given a set of same-sized images, copy them into a vertical filmstrip.
+heman_image* heman_ops_stitch_vertical(heman_image** images, int count);
 
 // Transform texel values so that [minval, maxval] map to [0, 1] and return the
 // result.  Values outside the range are clamped.  The source image is

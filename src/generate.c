@@ -157,7 +157,7 @@ heman_image* heman_generate_planet_heightmap(int width, int height, int seed)
         HEMAN_FLOAT antarctic_influence = MAX(10 * (v - s) / s, -0.5);
         v = fabs(v - 0.5);
         v = 1.5 * (0.5 - v);
-        equatorial_influence = v * v;
+        float equatorial_influence = v * v;
         v = y * scaley;
         for (int x = 0; x < width; ++x) {
             float u = x * scalex;

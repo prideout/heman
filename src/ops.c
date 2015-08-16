@@ -53,7 +53,7 @@ static void copy_row(heman_image* src, heman_image* dst, int dstx, int y)
     }
 }
 
-heman_image* heman_ops_stitch(heman_image** images, int count)
+heman_image* heman_ops_stitch_horizontal(heman_image** images, int count)
 {
     assert(count > 0);
     int width = images[0]->width;
@@ -67,10 +67,30 @@ heman_image* heman_ops_stitch(heman_image** images, int count)
 
 #pragma omp parallel for
     for (int y = 0; y < height; y++) {
-        int x = 0;
         for (int tile = 0; tile < count; tile++) {
-            copy_row(images[tile], result, x, y);
-            x += width;
+            copy_row(images[tile], result, tile * width, y);
+        }
+    }
+
+    return result;
+}
+
+heman_image* heman_ops_stitch_vertical(heman_image** images, int count)
+{
+    assert(count > 0);
+    int width = images[0]->width;
+    int height = images[0]->height;
+    for (int i = 0; i < count; i++) {
+        assert(images[i]->width == width);
+        assert(images[i]->height == height);
+        assert(images[i]->nbands == 1 || images[i]->nbands == 3);
+    }
+    heman_image* result = heman_image_create(width, height * count, 3);
+
+#pragma omp parallel for
+    for (int y = 0; y < height; y++) {
+        for (int tile = 0; tile < count; tile++) {
+            copy_row(images[tile], result, 0, y + height * tile);
         }
     }
 
