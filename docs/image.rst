@@ -7,6 +7,10 @@ Images are simply arrays of floats.  By default, the value type is ``float``, bu
 
 Each image has a specified number of `bands`, which is usually 1 (height maps, distance fields) or 3 (colors, normal maps).
 
+.. c:type:: heman_image
+
+   Encapsulates a flat array of floats and its dimensions.  The struct itself is not public, so clients must refer to it using a pointer.
+
 Creating and Destroying
 =======================
 

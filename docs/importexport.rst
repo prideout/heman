@@ -1,7 +1,7 @@
 Import / Export
 ###############
 
-Heman only knows how to work with in-memory floating-point images.  It doesn't know how to read and write image files, although its test suite uses `stb <https://github.com/nothings/stb>`_ for handling image files.
+Heman only knows how to work with in-memory floating-point images.  It doesn't know how to read and write image files, although its test suite uses `stb <https://github.com/nothings/stb>`_ for handling image files.  See the heman utility header (`hut.h <https://github.com/prideout/heman/blob/master/test/hut.h>`_) for an example of this.
 
 Heman can, however, convert floating-point to unsigned bytes, or vice versa:
 
@@ -41,7 +41,7 @@ This function uses ``stbi_load`` to load the given PNG file and convert it into 
 3D Mesh Data
 ============
 
-Heman also provides the ability to export a binary mesh file representing the height field data, with each grid cell in the mesh corresponding to a single texel in the height field:
+Heman can export a binary mesh file representing height field data, where each grid cell in the mesh corresponds to a single texel in the height field:
 
 .. code-block:: c
 

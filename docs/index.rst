@@ -5,7 +5,7 @@ Heman is a C library of image utilities for dealing with height maps and other f
 
 .. image:: _static/islands.png
 
-Heman currently supports:
+Heman can be used for:
 
 * Generating a normal map from a height map using forwarding differencing.
 * Efficiently computing ambient occlusion from a height map.
@@ -33,6 +33,7 @@ Documentation
    :maxdepth: 2
 
    image
+   lighting
    distance
    importexport
 
