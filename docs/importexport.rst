@@ -1,7 +1,7 @@
 Import / Export
 ###############
 
-Heman only knows how to work with in-memory floating-point images.  It doesn't know how to read and write image files, although its test suite uses `stb <https://github.com/nothings/stb>`_ for handling image files.  See the heman utility header (`hut.h <https://github.com/prideout/heman/blob/master/test/hut.h>`_) for an example of this.
+Heman only knows how to work with in-memory floating-point images.  It doesn't know how to read and write image files, although the test suite uses `stb <https://github.com/nothings/stb>`_ for handling image files.  See the heman utility header (`hut.h <https://github.com/prideout/heman/blob/master/test/hut.h>`_) for an example of this.
 
 Heman can, however, convert floating-point to unsigned bytes, or vice versa, using one of the following functions.
 

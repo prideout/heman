@@ -27,3 +27,13 @@ Islands
 
 .. image:: _static/island.png
    :width: 256px
+
+Planets
+=======
+
+.. c:function:: heman_image* heman_generate_planet_heightmap(int width, int height, int seed)
+
+    High-level function that sums up several octaves of `OpenSimplex <https://en.wikipedia.org/wiki/OpenSimplex_noise>`_ noise over a 3D domain to generate an interesting lat-long height map.  Clients should specify a **width** that is twice the value of **height**.
+
+.. image:: _static/planet.png
+   :width: 512px

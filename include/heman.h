@@ -48,6 +48,10 @@ heman_image* heman_color_apply_gradient(heman_image* heightmap,
 // distance field to generate an interesting height map.
 heman_image* heman_generate_island_heightmap(int width, int height, int seed);
 
+// High-level function that uses several octaves of OpenSimplex noise over a 3D
+// domain to generate an interesting lat-long height map.
+heman_image* heman_generate_planet_heightmap(int width, int height, int seed);
+
 // High-level function that sums up a number of noise octaves, also known as
 // Fractional Brownian Motion.  Taken alone, Perlin / Simplex noise are not
 // fractals; this makes them more fractal-like. A good starting point is to use

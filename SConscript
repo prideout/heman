@@ -21,8 +21,9 @@ Alias('lib', heman)
 
 env = env.Clone(LIBS=['m', heman])
 
-env.Program('test_heman', source=['test/test_heman.c'])
-env.Program('test_earth', source=['test/test_earth.c'])
-env.Program('test_sdf', source=['test/test_sdf.c'])
+for test in TESTS:
+    name = 'test_' + test
+    path = 'test/' + name + '.c'
+    env.Program(name, source=[path])
 
 Default('test_heman')

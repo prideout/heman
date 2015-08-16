@@ -4,11 +4,6 @@
 #include <memory.h>
 #include <kazmath/vec3.h>
 
-#define MIN(a, b) (a > b ? b : a)
-#define MAX(a, b) (a > b ? a : b)
-#define SGN(x) ((x > 0) - (x < 0))
-#define EDGE(value, upper) MAX(0, MIN(upper - 1, value))
-
 heman_image* heman_lighting_compute_normals(heman_image* heightmap)
 {
     assert(heightmap->nbands == 1);
@@ -103,7 +98,6 @@ heman_image* heman_lighting_apply(heman_image* heightmap, heman_image* albedo,
 
 #define NUM_SCANS (16)
 #define INV_SCANS (1.0f / 16.0f)
-#define TWO_OVER_PI (0.63661977236)
 
 static HEMAN_FLOAT azimuth_slope(kmVec3 a, kmVec3 b)
 {

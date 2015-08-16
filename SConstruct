@@ -1,28 +1,28 @@
+import os.path
+
+TESTS = Split('heman earth sdf planet')
+
 BUILD_DIR = 'build'
-
-
-def add_test(target, filename):
-    import os.path
-    binpath = os.path.join(BUILD_DIR, filename)
-    Command(target, binpath, binpath)
-    AlwaysBuild(target)
 
 AddOption('--double',
           dest='double',
           action='store_true',
           help='use 64-bit floats')
 
-# Building Targets
+# Targets that build code.
 
+Export('TESTS')
 SConscript('SConscript', variant_dir=BUILD_DIR, src_dir='.', duplicate=0)
 
-# Executing Tests
+# Targets that run code.
 
-add_test('test', 'test_heman')
-add_test('earth', 'test_earth')
-add_test('sdf',  'test_sdf')
+for test in TESTS:
+    filename = 'test_' + test
+    binpath = os.path.join(BUILD_DIR, filename)
+    Command(test, binpath, binpath)
+    AlwaysBuild(test)
 
-# Code Formatting
+# Targets that format code.
 
 additions = ['include/heman.h'] + Glob('test/*.c')
 exclusions = Glob('src/noise.*')
@@ -32,7 +32,7 @@ Command('format', cfiles, 'clang-format-3.6 -i $SOURCES && ' +
         'uncrustify -c uncrustify.cfg --no-backup $SOURCES')
 AlwaysBuild('format')
 
-# Sphinx Docs
+# Targets that generate documentation.
 
 Command('docs', Glob('docs/*.rst'), 'cd docs ; rm -rf _build ; make html')
 AlwaysBuild('docs')
