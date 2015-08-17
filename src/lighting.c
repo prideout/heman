@@ -225,12 +225,6 @@ heman_image* heman_lighting_compute_occlusion(heman_image* heightmap)
         horizon_scan(heightmap, result, startpts, dx, dy);
     }
 
-    // Sanity check.  We'll remove this after the implementation is done.
-    for (int i = 0; i < width * height; i++) {
-        result->data[i] = 1.0f - result->data[i];
-        assert(result->data[i] >= 0.0 && result->data[i] <= 1.0f);
-    }
-
     free(startpts);
     return result;
 }
