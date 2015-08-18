@@ -73,12 +73,17 @@ scons test
 ## Roadmap
 
 Here are some to-be-done items:
-- Provide gamma decode and encode functions.
-- Provide a way to compute noise normals analytically.
-- **heman_image_sample** doesn't do any interpolation.
-- Provide functionality from _Scalable Height-Field Self-Shadowing_
-- If we need more string handling, we can integrate [SDS](https://github.com/antirez/sds).
 - Create a simple C++ wrapper in a top-level folder called `bindings`.
 - Create a Python wrapper in `bindings` that uses **boost.python** and provides docstrings.
+- More distance field stuff.
+  - Allow non-monochrome source images.
+  - Allow computation of unsigned, squared distance.
+  - [Spherical distance](http://experilous.com/1/blog/post/generating-spherical-distance-fields-from-polygons).
+  - Coordinate fields (each pixel contains the XY of the nearest contour)
+- Provide gamma decode and encode functions.
+- Provide a way to compute noise normals analytically.
+- **heman_image_sample** doesn't do any interpolation.  Maybe it should at least do a 2x2 box filter.
+- Provide functionality from _Scalable Height-Field Self-Shadowing_
+- If we need more string handling, we can integrate [SDS](https://github.com/antirez/sds).
 - Integrate aaOcean, or some other implementation of Tessendorf waves.
-- If we need to read JSON, we might use [johanson](https://github.com/mitsuhiko/johanson).
+- If we need to read JSON, we might use [this](https://github.com/sheredom/json.h) or [this](https://github.com/mitsuhiko/johanson).
