@@ -26,7 +26,7 @@ The above images were generated from code that looks like this:
 heman_image* elevation = heman_generate_island_heightmap(1024, 1024, rand());
 
 // Compute ambient occlusion from the height map.
-heman_image* occ = heman_lighting_compute_occlusion(hmap);
+heman_image* occ = heman_lighting_compute_occlusion(elevation);
 
 // Visualize the normal vectors.
 heman_image* normals = heman_lighting_compute_normals(elevation);
