@@ -73,8 +73,7 @@ scons test
 ## Roadmap
 
 Here are some to-be-done items:
-- Create a simple C++ wrapper in a top-level folder called `bindings`.
-- Create a Python wrapper in `bindings` that uses **boost.python** and provides docstrings.
+- Flesh out the [Python Bindings](https://github.com/prideout/heman-python) and provide docstrings.
 - More distance field stuff.
   - Allow non-monochrome source images.
   - Allow computation of unsigned, squared distance.
