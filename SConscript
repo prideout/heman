@@ -4,8 +4,8 @@ CORE_SRC = Glob('src/*.c')
 MATH_SRC = Glob('kazmath/*.c')
 
 env = Environment(
-    LIBS=['boost_python', 'python2.7', 'm'],
-    CPPPATH=['include', '/usr/include/python2.7', '.'],
+    LIBS=['m'],
+    CPPPATH=['include', '.'],
     SHLIBPREFIX='',
     LINKFLAGS='-fopenmp',
     CFLAGS='-fopenmp -g -O3 -Wall -std=c99')
