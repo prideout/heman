@@ -5,6 +5,12 @@
 
 HEMAN_FLOAT* heman_image_data(heman_image* img) { return img->data; }
 
+void heman_image_array(heman_image* img, HEMAN_FLOAT** data, int* nfloats)
+{
+    *data = img->data;
+    *nfloats = img->width * img->height * img->nbands;
+}
+
 void heman_image_info(heman_image* img, int* width, int* height, int* nbands)
 {
     *width = img->width;

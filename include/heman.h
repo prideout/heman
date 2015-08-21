@@ -18,6 +18,9 @@ void heman_image_info(heman_image*, int* width, int* height, int* nbands);
 // Peek at the stored texel values.
 HEMAN_FLOAT* heman_image_data(heman_image*);
 
+// Peek at the stored texel values in a SWIG-amenable way.
+void heman_image_array(heman_image* img, HEMAN_FLOAT** data, int* nfloats);
+
 // Peek at the given texel value.
 HEMAN_FLOAT* heman_image_texel(heman_image*, int x, int y);
 
