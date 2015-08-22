@@ -31,7 +31,8 @@ static float LIGHTPOS[] = {-0.5f, 0.5f, 1.0f};
 
 heman_image* make_planet(int seed, heman_image* grad)
 {
-    heman_image* hmap = heman_generate_planet_heightmap(HEIGHT * 2, HEIGHT, seed);
+    heman_image* hmap =
+        heman_generate_planet_heightmap(HEIGHT * 2, HEIGHT, seed);
     heman_image* albedo = heman_color_apply_gradient(hmap, -0.5, 0.5, grad);
     heman_image* planet =
         heman_lighting_apply(hmap, albedo, 1, 1, 0.75, LIGHTPOS);
