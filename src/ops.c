@@ -39,8 +39,6 @@ static void copy_row(heman_image* src, heman_image* dst, int dstx, int y)
         for (int x = 0; x < width; x++) {
             HEMAN_FLOAT* srcp = heman_image_texel(src, x, y);
             HEMAN_FLOAT* dstp = heman_image_texel(dst, dstx + x, y);
-            *dstp++ = *srcp;
-            *dstp++ = *srcp;
             *dstp = *srcp;
         }
         return;
@@ -48,9 +46,10 @@ static void copy_row(heman_image* src, heman_image* dst, int dstx, int y)
     for (int x = 0; x < width; x++) {
         HEMAN_FLOAT* srcp = heman_image_texel(src, x, y);
         HEMAN_FLOAT* dstp = heman_image_texel(dst, dstx + x, y);
-        *dstp++ = *srcp++;
-        *dstp++ = *srcp++;
-        *dstp = *srcp;
+        int nbands = src->nbands;
+        while (nbands--) {
+            *dstp++ = *srcp++;
+        }
     }
 }
 
@@ -59,12 +58,13 @@ heman_image* heman_ops_stitch_horizontal(heman_image** images, int count)
     assert(count > 0);
     int width = images[0]->width;
     int height = images[0]->height;
-    for (int i = 0; i < count; i++) {
+    int nbands = images[0]->nbands;
+    for (int i = 1; i < count; i++) {
         assert(images[i]->width == width);
         assert(images[i]->height == height);
-        assert(images[i]->nbands == 1 || images[i]->nbands == 3);
+        assert(images[i]->nbands == nbands);
     }
-    heman_image* result = heman_image_create(width * count, height, 3);
+    heman_image* result = heman_image_create(width * count, height, nbands);
 
 #pragma omp parallel for
     for (int y = 0; y < height; y++) {
@@ -82,12 +82,12 @@ heman_image* heman_ops_stitch_vertical(heman_image** images, int count)
     int width = images[0]->width;
     int height = images[0]->height;
     int nbands = images[0]->nbands;
-    for (int i = 0; i < count; i++) {
+    for (int i = 1; i < count; i++) {
         assert(images[i]->width == width);
         assert(images[i]->height == height);
         assert(images[i]->nbands == nbands);
     }
-    heman_image* result = heman_image_create(width, height * count, 3);
+    heman_image* result = heman_image_create(width, height * count, nbands);
     int size = width * height * nbands;
     HEMAN_FLOAT* dst = result->data;
     for (int tile = 0; tile < count; tile++) {
