@@ -66,8 +66,9 @@ There's a script in the repo, [env.sh](https://github.com/prideout/heman/blob/ma
 # Lots of stuff spews out as it builds the container...
 heman-bash
 # You're now inside the VM -- press enter twice for the prompt.
-scons test
-# You should now see PNG files in your build folder!
+scons && build/test_heman
+# You can now look at the generated images:
+ls build/*.png
 ```
 
 ## Roadmap

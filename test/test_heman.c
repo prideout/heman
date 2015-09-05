@@ -128,11 +128,15 @@ static void test_lighting()
     heman_image* final =
         heman_lighting_apply(hmap, albedo, 1, 1, 0.5, lightpos);
 
-    heman_image* frames[] = {hmapviz, occ, normviz, albedo, final};
+    heman_image* frames[] = {0, 0, normviz, albedo, final};
+    frames[0] = heman_color_from_grayscale(hmapviz);
+    frames[1] = heman_color_from_grayscale(occ);
     heman_image* filmstrip = heman_ops_stitch_horizontal(frames, 5);
     hut_write_image(OUTFOLDER "filmstrip.png", filmstrip, 0, 1);
     heman_export_ply(hmap, OUTFOLDER "heightmap.ply");
     heman_export_with_colors_ply(hmap, final, OUTFOLDER "colors.ply");
+    heman_image_destroy(frames[0]);
+    heman_image_destroy(frames[1]);
     heman_image_destroy(hmap);
     heman_image_destroy(hmapviz);
     heman_image_destroy(occ);

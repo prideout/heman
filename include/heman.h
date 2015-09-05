@@ -47,6 +47,9 @@ void heman_color_set_gamma(float f);
 heman_image* heman_color_apply_gradient(heman_image* heightmap,
     HEMAN_FLOAT minheight, HEMAN_FLOAT maxheight, heman_image* gradient);
 
+// Convert a single-channel image into a 3-channel image via duplication.
+heman_image* heman_color_from_grayscale(heman_image* gray);
+
 // High-level function that uses several octaves of simplex noise and a signed
 // distance field to generate an interesting height map.
 heman_image* heman_generate_island_heightmap(int width, int height, int seed);

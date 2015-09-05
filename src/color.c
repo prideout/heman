@@ -87,3 +87,21 @@ heman_image* heman_color_apply_gradient(heman_image* heightmap,
     }
     return result;
 }
+
+heman_image* heman_color_from_grayscale(heman_image* grayscale)
+{
+    assert(grayscale->nbands == 1);
+    int w = grayscale->width;
+    int h = grayscale->height;
+    heman_image* result = heman_image_create(w, h, 3);
+    int size = w * h;
+    HEMAN_FLOAT* dst = result->data;
+    const HEMAN_FLOAT* src = grayscale->data;
+    for (int i = 0; i < size; i++) {
+        HEMAN_FLOAT v = *src++;
+        *dst++ = v;
+        *dst++ = v;
+        *dst++ = v;
+    }
+    return result;
+}
