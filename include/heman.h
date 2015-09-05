@@ -2,6 +2,7 @@
 
 struct heman_image_s;
 typedef struct heman_image_s heman_image;
+typedef struct heman_image_s heman_points;
 typedef unsigned char heman_byte;
 typedef unsigned int heman_color;
 
@@ -26,6 +27,9 @@ HEMAN_FLOAT* heman_image_texel(heman_image*, int x, int y);
 
 // Find a reasonable value for the given normalized texture coord.
 void heman_image_sample(heman_image*, float u, float v, HEMAN_FLOAT* result);
+
+// Set every band of every texel to the given value.
+void heman_image_clear(heman_image*, HEMAN_FLOAT value);
 
 // Free memory for a image.
 void heman_image_destroy(heman_image*);
@@ -68,7 +72,7 @@ heman_image* heman_generate_simplex_fbm(int width, int height, float frequency,
 // Apply ambient occlusion and diffuse lighting to the given heightmap.
 heman_image* heman_lighting_apply(heman_image* heightmap,
     heman_image* colorbuffer, float occlusion, float diffuse,
-    float diffuse_softening, float* light_position);
+    float diffuse_softening, const float* light_position);
 
 // Given a 1-band heightmap image, create a 3-band image with surface normals,
 // using simple forward differencing and OpenMP.
@@ -116,3 +120,31 @@ heman_image* heman_ops_step(heman_image* image, HEMAN_FLOAT threshold);
 
 // Generate a height x 1 x 1 image by averaging the values across each row.
 heman_image* heman_ops_sweep(heman_image* image);
+
+// Free memory for a point list.  Point lists are actually one-dimensional
+// images in disguise, usually with two bands (X and Y coordinates).
+void heman_points_destroy(heman_points*);
+
+// Perform simple stratified sampling over a grid.
+// Creates a two-band point list of X Y coordinates.
+heman_points* heman_points_from_grid(HEMAN_FLOAT width, HEMAN_FLOAT height,
+    HEMAN_FLOAT cellsize, HEMAN_FLOAT jitter);
+
+// Perform Bridson's algorithm for Fast Poisson Disk sampling.
+// Creates a two-band point list of X Y coordinates.
+heman_points* heman_points_from_poisson(
+    HEMAN_FLOAT width, HEMAN_FLOAT height, HEMAN_FLOAT mindist);
+
+// Perform Bridson's sampling algorithm, modulated by a density field.
+// Creates a two-band point list, sorted from high-density (low radius) to
+// low-density (high radius).
+heman_points* heman_points_from_density(
+    heman_image* density, HEMAN_FLOAT mindist, HEMAN_FLOAT maxdist);
+
+// Set the given list of texels to the given value.
+void heman_draw_points(heman_image* target, heman_points* pts, HEMAN_FLOAT val);
+
+// Draw a Gaussian splat at each given point.
+// The blend_mode parameter is ignored for now (it's always ADD).
+void heman_draw_splats(
+    heman_image* target, heman_points* pts, int radius, int blend_mode);

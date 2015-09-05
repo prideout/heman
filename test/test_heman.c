@@ -146,6 +146,80 @@ static void test_lighting()
     heman_image_destroy(final);
 }
 
+static void test_points_grid()
+{
+    const int imgres = 192;
+    const int ptsize = 4;
+    const float cellsize = 0.05;
+    const float maxjitter = 0.02;
+    const float lpos[] = {-0.5f, 0.5f, 1.0f};
+    const int cp_locations[] = {0, 126, 255};
+    const heman_color cp_colors[] = {0x2C5A7C, 0x2C5A7C, 0xE0F0A0};
+
+    heman_points* points = heman_points_from_grid(1, 1, cellsize, 0);
+    heman_image* uniform = heman_image_create(imgres, imgres, 1);
+    heman_image_clear(uniform, 0);
+    heman_draw_splats(uniform, points, ptsize, 0);
+    heman_points_destroy(points);
+
+    points = heman_points_from_grid(1, 1, cellsize, maxjitter);
+    heman_image* jittered = heman_image_create(imgres, imgres, 1);
+    heman_image_clear(jittered, 0);
+    heman_draw_splats(jittered, points, ptsize, 0);
+    heman_points_destroy(points);
+
+    points = heman_points_from_poisson(1, 1, cellsize / sqrtf(2));
+    heman_image* poisson = heman_image_create(imgres, imgres, 1);
+    heman_image_clear(poisson, 0);
+    heman_draw_splats(poisson, points, ptsize, 0);
+    heman_points_destroy(points);
+
+    heman_image* frames[] = {uniform, jittered, poisson};
+    heman_image* elev = heman_ops_stitch_horizontal(frames, 3);
+    heman_image_destroy(uniform);
+    heman_image_destroy(jittered);
+    heman_image_destroy(poisson);
+
+    heman_image* grad = heman_color_create_gradient(
+        256, COUNT(cp_colors), cp_locations, cp_colors);
+    heman_image* albedo = heman_color_apply_gradient(elev, 0.0, 0.05, grad);
+    heman_image* final = heman_lighting_apply(elev, albedo, 1, 1, 0.75, lpos);
+
+    hut_write_image(OUTFOLDER "gridpoints.png", final, 0, 1);
+    heman_image_destroy(final);
+    heman_image_destroy(grad);
+    heman_image_destroy(albedo);
+    heman_image_destroy(elev);
+}
+
+static void test_points_density()
+{
+    const int imgres = 256;
+
+    heman_image* density = heman_generate_island_heightmap(imgres, imgres, 1);
+    density = heman_ops_normalize_f32(density, -0.5, 0.5);
+
+    heman_points* points = heman_points_from_density(density, 0.001, 0.02);
+    heman_image* modulated = heman_image_create(imgres, imgres, 1);
+    heman_image_clear(modulated, 0);
+    heman_draw_points(modulated, points, 1);
+
+    heman_image* splats = heman_image_create(imgres, imgres, 1);
+    heman_image_clear(splats, 0);
+    heman_draw_splats(splats, points, 4, 0);
+    splats = heman_ops_normalize_f32(splats, 0, 0.4);
+    heman_points_destroy(points);
+
+    heman_image* frames[] = {density, modulated, splats};
+    heman_image* elev = heman_ops_stitch_horizontal(frames, 3);
+    heman_image_destroy(density);
+    heman_image_destroy(modulated);
+    heman_image_destroy(splats);
+
+    hut_write_image(OUTFOLDER "densitypoints.png", elev, 0, 1);
+    heman_image_destroy(elev);
+}
+
 int main(int argc, char** argv)
 {
     printf("%d threads available.\n", omp_get_max_threads());
@@ -153,4 +227,6 @@ int main(int argc, char** argv)
     test_distance();
     test_color();
     test_lighting();
+    test_points_grid();
+    test_points_density();
 }

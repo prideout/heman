@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.org/prideout/heman.svg?branch=master)](https://travis-ci.org/prideout/heman) [![Documentation](https://readthedocs.org/projects/heman/badge/?version=latest)](http://heman.readthedocs.org/en/latest/)
 
-This is a tiny MIT-licensed C99 library of image utilities for dealing with **he**ight **ma**ps, **n**ormal maps, distance fields, and the like.  It has a very low-level API, where an "image" is simply a flat array of floats.  It's pretty fast too, since it's parallelized using OpenMP.
+This is a tiny MIT-licensed C library of image utilities for dealing with **he**ight **ma**ps, **n**ormal maps, distance fields, and the like.  It has a very low-level API, where an "image" is simply a flat array of floats.  It's pretty fast too, since it's parallelized with OpenMP.
 
 ![](https://github.com/prideout/heman/blob/master/docs/_static/islands.png)
 
@@ -11,11 +11,20 @@ This is a tiny MIT-licensed C99 library of image utilities for dealing with **he
 - Create a random height field using simplex noise and FBM.
 - Generate a normal map from a height map.
 - Compute ambient occlusion from a height map.
-- Generate a signed distance field (SDF) using a [fast algorithm](http://cs.brown.edu/~pff/dt/index.html).
-- Export a 3D mesh in [PLY](http://paulbourke.net/dataformats/ply/) format.
+- Generate a signed distance field (SDF).
+ Export a 3D mesh in [PLY](http://paulbourke.net/dataformats/ply/) format.
 - Apply a color gradient to a heightmap.
 - Generate a color gradient, given a list of control points.
 - Compute diffuse lighting with an infinite light source.
+- Generate a nicely-distributed list of points according to a density field.
+
+Heman implements some really nice 21st-century algorithms:
+
+- Ambient occlusion is generated using Sean Barrett's efficient method that makes 16 sweeps over the height field.
+- Distance field computation uses the beautiful algorithm from _Distance Transforms of Sampled Functions_ (Felzenszwalb and Huttenlocher).
+- Density field samples are generated using Robert Bridson's _Fast Poisson Disk Sampling in Arbitrary Dimensions_.
+
+Unit tests are performed using the Python bindings, which live in [prideout/heman-python](https://github.com/prideout/heman-python).
 
 ## Example
 
@@ -75,13 +84,26 @@ ls build/*.png
 
 Here are some to-be-done items:
 - Flesh out the [Python Bindings](https://github.com/prideout/heman-python) and provide docstrings.
+- Implement a contour extractor:
+   - `heman_ops_extract_contour(image, threshold, thickness)`
+   - this just does a Sobel operator, that's all
 - More distance field stuff.
   - Allow non-monochrome source images.
   - Allow computation of unsigned, squared distance.
   - [Spherical distance](http://experilous.com/1/blog/post/generating-spherical-distance-fields-from-polygons).
   - Coordinate fields (each pixel contains the XY of the nearest contour)
+- Smarter Mesh Output
+  - Create a hull from poisson samples
+  - Curvature => Density Field => Poisson Samples
+  - Sobel filter on mask, gets added to Density Field
+  - Do not use marching squares!
+  - Two meshes: overwater and underwater
 - Provide gamma decode and encode functions.
-- Provide a way to compute noise normals analytically.
+- More noise routines!
+    - Bridson's Curl noise (and a routine that performs advection?)
+    - Worley noise (useful for billows as seen in _Real-time Volumetric Cloudscapes of Horizon_)
+    - Analytic noise normals
+    - Wavelet Noise
 - **heman_image_sample** doesn't do any interpolation.  Maybe it should at least do a 2x2 box filter.
 - Provide functionality from _Scalable Height-Field Self-Shadowing_
 - If we need more string handling, we can integrate [SDS](https://github.com/antirez/sds).

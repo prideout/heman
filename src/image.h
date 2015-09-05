@@ -20,3 +20,6 @@ extern float _gamma;
 #define EDGE(value, upper) MAX(0, MIN(upper - 1, value))
 #define TWO_OVER_PI (0.63661977236)
 #define PI (3.1415926535)
+
+void generate_gaussian_row(int* target, int fwidth);
+void generate_gaussian_splat(HEMAN_FLOAT* target, int fwidth);

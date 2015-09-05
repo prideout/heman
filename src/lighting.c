@@ -49,7 +49,7 @@ heman_image* heman_lighting_compute_normals(heman_image* heightmap)
 
 heman_image* heman_lighting_apply(heman_image* heightmap, heman_image* albedo,
     float occlusion, float diffuse, float diffuse_softening,
-    float* light_position)
+    const float* light_position)
 {
     assert(heightmap->nbands == 1);
     assert(albedo->nbands == 3);

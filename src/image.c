@@ -48,3 +48,12 @@ void heman_image_sample(heman_image* img, float u, float v, HEMAN_FLOAT* result)
         *result++ = *data++;
     }
 }
+
+void heman_image_clear(heman_image* img, HEMAN_FLOAT value)
+{
+    int size = img->width * img->height * img->nbands;
+    HEMAN_FLOAT* dst = img->data;
+    while (size--) {
+        *dst++ = value;
+    }
+}
