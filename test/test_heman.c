@@ -197,9 +197,17 @@ static void test_points_density()
     const int imgres = 256;
 
     heman_image* density = heman_generate_island_heightmap(imgres, imgres, 1);
-    density = heman_ops_normalize_f32(density, -0.5, 0.5);
+    heman_image* tmp = heman_ops_normalize_f32(density, -0.5, 0.5);
+    heman_image_destroy(density);
+    density = tmp;
 
-    heman_points* points = heman_points_from_density(density, 0.001, 0.02);
+    heman_image* curvature = heman_ops_laplacian(density);
+    tmp = heman_ops_normalize_f32(curvature, 0, 0.0005);
+    heman_image_destroy(curvature);
+    curvature = tmp;
+    heman_ops_accumulate(curvature, density);
+
+    heman_points* points = heman_points_from_density(curvature, 0.001, 0.03);
     heman_image* modulated = heman_image_create(imgres, imgres, 1);
     heman_image_clear(modulated, 0);
     heman_draw_points(modulated, points, 1);
@@ -210,14 +218,15 @@ static void test_points_density()
     splats = heman_ops_normalize_f32(splats, 0, 0.4);
     heman_points_destroy(points);
 
-    heman_image* frames[] = {density, modulated, splats};
-    heman_image* elev = heman_ops_stitch_horizontal(frames, 3);
+    heman_image* frames[] = {density, curvature, modulated, splats};
+    heman_image* filmstrip = heman_ops_stitch_horizontal(frames, 4);
     heman_image_destroy(density);
+    heman_image_destroy(curvature);
     heman_image_destroy(modulated);
     heman_image_destroy(splats);
 
-    hut_write_image(OUTFOLDER "densitypoints.png", elev, 0, 1);
-    heman_image_destroy(elev);
+    hut_write_image(OUTFOLDER "densitypoints.png", filmstrip, 0, 1);
+    heman_image_destroy(filmstrip);
 }
 
 int main(int argc, char** argv)

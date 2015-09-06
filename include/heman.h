@@ -121,6 +121,13 @@ heman_image* heman_ops_step(heman_image* image, HEMAN_FLOAT threshold);
 // Generate a height x 1 x 1 image by averaging the values across each row.
 heman_image* heman_ops_sweep(heman_image* image);
 
+// Provide a cheap way of measuring "curvature" that doesn't work well
+// at saddle points.  Returns a single-band image.
+heman_image* heman_ops_laplacian(heman_image* heightmap);
+
+// Add the values of src into dst.
+void heman_ops_accumulate(heman_image* dst, heman_image* src);
+
 // Free memory for a point list.  Point lists are actually one-dimensional
 // images in disguise, usually with two bands (X and Y coordinates).
 void heman_points_destroy(heman_points*);

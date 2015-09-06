@@ -112,3 +112,41 @@ heman_image* heman_ops_normalize_f32(
     }
     return result;
 }
+
+heman_image* heman_ops_laplacian(heman_image* heightmap)
+{
+    assert(heightmap->nbands == 1);
+    int width = heightmap->width;
+    int height = heightmap->height;
+    heman_image* result = heman_image_create(width, height, 1);
+    int maxx = width - 1;
+    int maxy = height - 1;
+
+#pragma omp parallel for
+    for (int y = 0; y < height; y++) {
+        int y1 = MIN(y + 1, maxy);
+        HEMAN_FLOAT* dst = result->data + y * width;
+        for (int x = 0; x < width; x++) {
+            int x1 = MIN(x + 1, maxx);
+            HEMAN_FLOAT p = *heman_image_texel(heightmap, x, y);
+            HEMAN_FLOAT px = *heman_image_texel(heightmap, x1, y);
+            HEMAN_FLOAT py = *heman_image_texel(heightmap, x, y1);
+            *dst++ = (p - px) * (p - px) + (p - py) * (p - py);
+        }
+    }
+
+    return result;
+}
+
+void heman_ops_accumulate(heman_image* dst, heman_image* src)
+{
+    assert(dst->nbands == src->nbands);
+    assert(dst->width == src->width);
+    assert(dst->height == src->height);
+    int size = dst->height * dst->width;
+    HEMAN_FLOAT* sdata = src->data;
+    HEMAN_FLOAT* ddata = dst->data;
+    for (int i = 0; i < size; ++i) {
+        *ddata++ += (*sdata++);
+    }
+}
