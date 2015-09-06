@@ -276,7 +276,7 @@ heman_points* heman_points_from_density(
             maxj.y = CLAMP((int) maxj.y, 0, maxrow);
             int reject = 0;
 
-            float densityval;
+            HEMAN_FLOAT densityval;
             heman_image_sample(density, pt.x, pt.y, &densityval);
 
             // The following square root seems to lead to more satisfying

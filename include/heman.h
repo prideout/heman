@@ -6,6 +6,12 @@ typedef struct heman_image_s heman_points;
 typedef unsigned char heman_byte;
 typedef unsigned int heman_color;
 
+#ifdef USE_DOUBLE_PRECISION
+#ifndef HEMAN_FLOAT
+#define HEMAN_FLOAT double
+#endif
+#endif
+
 #ifndef HEMAN_FLOAT
 #define HEMAN_FLOAT float
 #endif

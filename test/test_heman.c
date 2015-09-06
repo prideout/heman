@@ -35,7 +35,7 @@ static heman_image* draw_circle()
     for (int y = 0; y < SIZE; ++y) {
         float v = y * inv;
         float dv2 = (v - 0.5f) * (v - 0.5f);
-        float* dst = heman_image_data(img) + y * SIZE;
+        HEMAN_FLOAT* dst = heman_image_data(img) + y * SIZE;
         for (int x = 0; x < SIZE; ++x) {
             float u = x * inv;
             float du2 = (u - 0.5f) * (u - 0.5f);

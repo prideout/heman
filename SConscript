@@ -11,7 +11,7 @@ env = Environment(
     CFLAGS='-fopenmp -g -O3 -Wall -std=c99')
 
 if GetOption('double'):
-    env['CPPDEFINES'] = {'HEMAN_FLOAT': 'double'}
+    env['CPPDEFINES'] = {'USE_DOUBLE_PRECISION': '1'}
 
 if env['PLATFORM'] == 'darwin':
     env['LINKFLAGS'] = ''
