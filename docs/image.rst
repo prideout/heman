@@ -3,7 +3,7 @@ Heman Images
 
 All functions with the ``heman_image_`` prefix are meant for creating empty images, freeing memory, or examining image contents.
 
-Images are simply arrays of floats.  By default, the value type is ``float``, but this can be overriden by setting the ``HEMAN_FLOAT`` macro to ``double``.  By design, integer-typed images are not allowed, although heman provides some conversion utilities (see `Import / Export <importexport>`_).
+Images are simply arrays of floats.  By default, the value type is ``float``, but this can be overriden by setting the ``HEMAN_FLOAT`` macro to ``double``.  By design, integer-typed images are not allowed, although heman provides some conversion utilities (see `Import / Export <importexport.html>`_).
 
 Each image has a specified number of `bands`, which is usually 1 (height maps, distance fields) or 3 (colors, normal maps).
 
