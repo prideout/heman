@@ -12,7 +12,7 @@ This is a tiny MIT-licensed C library of image utilities for dealing with **he**
 - Generate a normal map from a height map.
 - Compute ambient occlusion from a height map.
 - Generate a signed distance field (SDF).
- Export a 3D mesh in [PLY](http://paulbourke.net/dataformats/ply/) format.
+- Export a 3D mesh in [PLY](http://paulbourke.net/dataformats/ply/) format.
 - Apply a color gradient to a heightmap.
 - Generate a color gradient, given a list of control points.
 - Compute diffuse lighting with an infinite light source.
