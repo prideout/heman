@@ -1,0 +1,63 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Height Map Generator</title>
+        <meta name="description" content="Height Map Generator">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="css/normalize.min.css">
+        <link rel="stylesheet" href="css/main.css">
+        <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+    </head>
+    <body>
+
+        <div class="app">
+            <main>
+                <nav>
+                    <div class="menu">
+                        <button id="perlin">Perlin Noise</button>
+                        <button id="island">Generate Island</button>
+                        <button id="lighting">Lighting &amp; Coloring</button>
+                    </div>
+                </nav>
+                <article>
+                    <div class="canvas-container">
+                        <canvas id="canvas3d" style="width:100%;height:100%">
+                        </canvas>
+                    </div>
+                    <div id="menu-toggle"></div>
+                </article>
+            </main>
+        </div>
+
+        <script id="simplevs" type="x-shader/x-vertex">
+          attribute vec4 Position;
+          attribute vec2 TexCoord;
+          varying vec2 vTexCoord;
+          uniform mat4 modelview;
+          uniform mat4 projection;
+          void main()
+          {
+              gl_Position = projection * modelview * Position;
+              vTexCoord = TexCoord;
+          }
+        </script>
+
+        <script id="simplefs" type="x-shader/x-fragment">
+          precision highp float;
+          varying vec2 vTexCoord;
+          uniform sampler2D Texture;
+          void main()
+          {
+              gl_FragColor = texture2D(Texture, vTexCoord);
+          }
+        </script>
+
+        <script src="js/vendor/jquery-1.11.2.min.js"></script>
+        <script src="js/heman.js"></script>
+        <script src="js/giza.min.js"></script>
+        <script src="js/main.js"></script>
+    </body>
+</html>
