@@ -174,3 +174,22 @@ void heman_draw_colored_points(
 // The blend_mode parameter is ignored for now (it's always ADD).
 void heman_draw_splats(
     heman_image* target, heman_points* pts, int radius, int blend_mode);
+
+// Consumes a tree of abstract nodes and a completely separate list of
+// coordinate-radius pairs.  Produces a point list that associates each
+// coordinate with a node in the tree.
+//
+// Arguments:
+//  - pts (sorted two-band list of X Y)
+//  - density (image used to generate the samples)
+//  - graph (one-band list of parent indices)
+//  - scheme (ignored for now)
+// Returns:
+//  - three-band point list of X Y Parent_Index
+//
+// The size of the returned point list is the same as the number of nodes in
+// the input tree, which must be less than or equal to the # of input points.
+// The returned list is ordered using the same ordering as the input tree.
+//
+heman_points* heman_layout_tree(
+    heman_points* graph, heman_points* pts, heman_image* density, int scheme);
