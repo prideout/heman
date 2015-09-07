@@ -197,7 +197,7 @@ heman_points* heman_points_from_poisson(
 #define GRID_INSERT(fpt, sindex)                       \
     gindex = NGRID_INDEX(fpt);                         \
     grid[gcapacity * gindex + ngrid[gindex]] = sindex; \
-    ngrid[gindex]++;
+    ngrid[gindex]++
 
 #define NGRID_BEGIN(ipt) ((int) ipt.y * ncols + (int) ipt.x)
 
@@ -247,7 +247,7 @@ heman_points* heman_points_from_density(
     pt.x = width * randhash(seed++) * rscale;
     pt.y = height * randhash(seed++) * rscale;
     actives[nactives++] = nsamples;
-    GRID_INSERT(pt, nsamples)
+    GRID_INSERT(pt, nsamples);
     samples[nsamples++] = pt;
 
     while (nsamples < maxsamples) {

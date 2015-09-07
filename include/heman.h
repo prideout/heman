@@ -60,6 +60,10 @@ heman_image* heman_color_apply_gradient(heman_image* heightmap,
 // Convert a single-channel image into a 3-channel image via duplication.
 heman_image* heman_color_from_grayscale(heman_image* gray);
 
+// Dereference a coordinate field (see heman_distance_create_cf) by making
+// lookups into a color texture.  Useful for creating Voronoi diagrams.
+heman_image* heman_color_from_cf(heman_image* cfield, heman_image* texture);
+
 // High-level function that uses several octaves of simplex noise and a signed
 // distance field to generate an interesting height map.
 heman_image* heman_generate_island_heightmap(int width, int height, int seed);
@@ -88,9 +92,14 @@ heman_image* heman_lighting_compute_normals(heman_image* heightmap);
 // http://nothings.org/gamedev/horizon/.
 heman_image* heman_lighting_compute_occlusion(heman_image* heightmap);
 
-// Create a signed distance field based on the given input, using the very
-// fast algorithm described in Felzenszwalb 2012.
+// Create a one-band "signed distance field" based on the given input, using
+// the fast algorithm described in Felzenszwalb 2012.
 heman_image* heman_distance_create_sdf(heman_image* monochrome);
+
+// Create a two-band "coordinate field" containing the non-normalized texture
+// coordinates of the nearest seed; this is related to the distance field but
+// has a greater amount of information.  Also uses Felzenszwalb 2012.
+heman_image* heman_distance_create_cf(heman_image* seed);
 
 // Create a single-channel floating point point image from bytes, such that
 // [0, 255] map to the given [minval, maxval] range.
@@ -156,6 +165,10 @@ heman_points* heman_points_from_density(
 
 // Set the given list of texels to the given value.
 void heman_draw_points(heman_image* target, heman_points* pts, HEMAN_FLOAT val);
+
+// Set the given list of texels to the given list of colors.
+void heman_draw_colored_points(
+    heman_image* target, heman_points* coords, const heman_color* colors);
 
 // Draw a Gaussian splat at each given point.
 // The blend_mode parameter is ignored for now (it's always ADD).

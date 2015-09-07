@@ -8,12 +8,6 @@ extern "C" {
 
 using namespace emscripten;
 
-struct Image {};
-struct Generate {};
-struct Ops {};
-struct Lighting {};
-struct Color {};
-
 static int buffer_width(heman_image* img) {
     return img->width;
 }
@@ -53,15 +47,18 @@ EMSCRIPTEN_BINDINGS(heman) {
         .function("begin", &buffer_begin, arp)
         .function("end", &buffer_end, arp);
 
+    struct Image {};
     class_<Image>("Image")
         .class_function("create", &heman_image_create, arp)
         .class_function("destroy", &heman_image_destroy, arp);
 
+    struct Generate {};
     class_<Generate>("Generate")
         .class_function("island_heightmap", &heman_generate_island_heightmap, arp)
         .class_function("planet_heightmap", &heman_generate_planet_heightmap, arp)
         .class_function("simplex_fbm", &heman_generate_simplex_fbm, arp);
 
+    struct Ops {};
     class_<Ops>("Ops")
         .class_function("stitch_horizontal", &heman_ops_stitch_horizontal, arp)
         .class_function("stitch_vertical", &heman_ops_stitch_vertical, arp)
@@ -71,15 +68,22 @@ EMSCRIPTEN_BINDINGS(heman) {
         .class_function("laplacian", &heman_ops_laplacian, arp)
         .class_function("accumulate", &heman_ops_accumulate, arp);
 
+    struct Lighting {};
     class_<Lighting>("Lighting")
         .class_function("apply", &lighting_apply, arp)
         .class_function("compute_normals", &heman_lighting_compute_normals, arp)
         .class_function("compute_occlusion", &heman_lighting_compute_occlusion, arp);
 
+    struct Color {};
     class_<Color>("Color")
         .class_function("create_gadient", &heman_color_create_gradient, arp)
         .class_function("set_gamma", &heman_color_set_gamma)
         .class_function("apply_gradient", &heman_color_apply_gradient, arp)
         .class_function("from_grayscale", &heman_color_from_grayscale, arp);
+
+    struct Distance {};
+    class_<Distance>("Distance")
+        .class_function("create_sdf", &heman_distance_create_sdf, arp)
+        .class_function("create_cf", &heman_distance_create_cf, arp);
 
 }

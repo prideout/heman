@@ -94,11 +94,9 @@ Here are some to-be-done items:
   - Allow non-monochrome source images.
   - Allow computation of unsigned, squared distance.
   - [Spherical distance](http://experilous.com/1/blog/post/generating-spherical-distance-fields-from-polygons).
-  - Coordinate fields (each pixel contains the XY of the nearest contour)
 - Smarter Mesh Output
   - Create a hull from poisson samples
-  - Curvature => Density Field => Poisson Samples
-  - Sobel filter on mask, gets added to Density Field
+  - Sobel + (Step => Sobel) => Density Field => Poisson Samples
   - Do not use marching squares!
   - Two meshes: overwater and underwater
 - Provide gamma decode and encode functions.

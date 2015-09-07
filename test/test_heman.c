@@ -1,6 +1,7 @@
 #include <heman.h>
 #include <omp.h>
 #include <time.h>
+#include <kazmath/vec2.h>
 #include "hut.h"
 
 static const int SIZE = 512;
@@ -229,6 +230,36 @@ static void test_points_density()
     heman_image_destroy(filmstrip);
 }
 
+void test_coordfield()
+{
+    const int imgres = 768;
+    const int npoints = 3;
+
+    heman_image* seed = heman_image_create(imgres, imgres, 3);
+    heman_points* pts = heman_image_create(npoints, 1, 2);
+    kmVec2* coords = (kmVec2*) heman_image_data(pts);
+    heman_color* colors = malloc(sizeof(heman_color) * npoints);
+    coords[0] = (kmVec2){0.5, 0.2};
+    colors[0] = 0xff0000;
+    coords[1] = (kmVec2){0.2, 0.8};
+    colors[1] = 0x00ff00;
+    coords[2] = (kmVec2){0.8, 0.8};
+    colors[2] = 0x0000ff;
+    heman_image_clear(seed, 0);
+    heman_draw_colored_points(seed, pts, colors);
+    heman_points_destroy(pts);
+    free(colors);
+    hut_write_image(OUTFOLDER "seed.png", seed, 0, 1);
+
+    heman_image* cf = heman_distance_create_cf(seed);
+    heman_image* voronoi = heman_color_from_cf(cf, seed);
+    hut_write_image(OUTFOLDER "coordfield.png", voronoi, 0, 1);
+
+    heman_image_destroy(voronoi);
+    heman_image_destroy(seed);
+    heman_image_destroy(cf);
+}
+
 int main(int argc, char** argv)
 {
     printf("%d threads available.\n", omp_get_max_threads());
@@ -238,4 +269,5 @@ int main(int argc, char** argv)
     test_lighting();
     test_points_grid();
     test_points_density();
+    test_coordfield();
 }
