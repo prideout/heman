@@ -25,26 +25,25 @@ $(function() {
     GL.getExtension('OES_texture_float_linear');
 
     var attribs = {
-        POSITION: 0,
-        TEXCOORD: 1,
+        Position: 0,
+        TexCoord: 1,
     };
 
     var programs = GIZA.compile({
         color: {
           vs: ['simplevs'],
           fs: ['colorfs'],
-          attribs: {
-            Position: attribs.POSITION,
-            TexCoord: attribs.TEXCOORD,
-          }
+          attribs: attribs
         },
         gray: {
           vs: ['simplevs'],
           fs: ['grayfs'],
-          attribs: {
-            Position: attribs.POSITION,
-            TexCoord: attribs.TEXCOORD,
-          }
+          attribs: attribs
+        },
+        final: {
+          vs: ['simplevs'],
+          fs: ['finalfs'],
+          attribs: attribs
         }
     });
 
@@ -53,6 +52,8 @@ $(function() {
     var texture = null;
     var dirty = false;
     var program = programs.gray;
+    var elevation = null;
+    var lighting = null;
 
     GIZA.refreshSize = function() {
         var w, h;
@@ -75,54 +76,75 @@ $(function() {
         GIZA.refreshSize();
     };
 
-    $('#perlin').click(function() {
-        var frequency = 4;
-        var amplitude = 1;
-        var octaves = 10;
-        var lacunarity = 2;
-        var gain = 0.65;
-        var seed = Math.floor(Math.random() * 1000);
-        var elev = heman.Generate.simplex_fbm(
-            SIZE, SIZE, frequency, amplitude, octaves, lacunarity, gain, seed);
-        texture = texture || GL.createTexture();
-        GL.bindTexture(GL.TEXTURE_2D, texture);
-        GL.texImage2D(GL.TEXTURE_2D, 0, GL.LUMINANCE, elev.width(), elev.height(), 0, GL.LUMINANCE, GL.FLOAT, elev.data());
-        GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
-        GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
-        heman.Image.destroy(elev);
-        program = programs.gray;
+    var generate = function(seed) {
+        seed = seed % 2147483647;
+        if (elevation) {
+            heman.Image.destroy(elevation);
+        }
+        var hmap = heman.Generate.island_heightmap(SIZE, SIZE, seed);
+        elevation = heman.Ops.normalize_f32(hmap, -0.5, 0.5);
+        heman.Image.destroy(hmap);
         refresh();
+    };
+
+    $('#generate').click(function() {
+        generate(Date.now());
+        $('#colors').trigger('click');
     });
 
-    $('#island').click(function() {
-        var seed = Math.floor(Math.random() * 1000);
-        var hmap = heman.Generate.island_heightmap(SIZE, SIZE, seed);
-        var elev = heman.Ops.normalize_f32(hmap, -0.5, 0.5);
-        heman.Image.destroy(hmap);
-        texture = texture || GL.createTexture();
+    $('#colors').click(function() {
+        $('.radio').removeClass('selected');
+        $('#colors').toggleClass('selected');
         GL.bindTexture(GL.TEXTURE_2D, texture);
-        GL.texImage2D(GL.TEXTURE_2D, 0, GL.LUMINANCE, elev.width(), elev.height(), 0, GL.LUMINANCE, GL.FLOAT, elev.data());
-        GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
-        GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
-        heman.Image.destroy(elev);
+        GL.texImage2D(GL.TEXTURE_2D, 0, GL.LUMINANCE, elevation.width(), elevation.height(), 0, GL.LUMINANCE, GL.FLOAT, elevation.data());
         program = programs.color;
         refresh();
     });
 
-    $('#lighting').click(function() {
-        var seed = Math.floor(Math.random() * 1000);
-        var hmap = heman.Generate.island_heightmap(SIZE, SIZE, seed);
-        var elev = heman.Ops.normalize_f32(hmap, -0.5, 0.5);
-        heman.Image.destroy(hmap);
-        var rgb = heman.Lighting.apply(elev, 1, 1, 0.5);
-        heman.Image.destroy(elev);
-        texture = texture || GL.createTexture();
+    $('#elevation').click(function() {
+        $('.radio').removeClass('selected');
+        $('#elevation').toggleClass('selected');
+        GL.bindTexture(GL.TEXTURE_2D, texture);
+        GL.texImage2D(GL.TEXTURE_2D, 0, GL.LUMINANCE, elevation.width(), elevation.height(), 0, GL.LUMINANCE, GL.FLOAT, elevation.data());
+        program = programs.gray;
+        refresh();
+    });
+
+    $('#normals').click(function() {
+        $('.radio').removeClass('selected');
+        $('#normals').toggleClass('selected');
+        var rgb = heman.Lighting.compute_normals(elevation);
         GL.bindTexture(GL.TEXTURE_2D, texture);
         GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB, rgb.width(), rgb.height(), 0, GL.RGB, GL.FLOAT, rgb.data());
-        GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
-        GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
         heman.Image.destroy(rgb);
         program = programs.gray;
+        refresh();
+    });
+
+    $('#ao').click(function() {
+        $('.radio').removeClass('selected');
+        $('#ao').toggleClass('selected');
+        var rgb = heman.Lighting.compute_occlusion(elevation);
+        GL.bindTexture(GL.TEXTURE_2D, texture);
+        GL.texImage2D(GL.TEXTURE_2D, 0, GL.LUMINANCE, rgb.width(), rgb.height(), 0, GL.LUMINANCE, GL.FLOAT, rgb.data());
+        heman.Image.destroy(rgb);
+        program = programs.gray;
+        refresh();
+    });
+
+    $('#final').click(function() {
+        $('.radio').removeClass('selected');
+        $('#final').toggleClass('selected');
+        var rgb = heman.Lighting.apply(elevation, 1, 1, 0.5);
+        lighting = lighting || GL.createTexture();
+        GL.bindTexture(GL.TEXTURE_2D, lighting);
+        GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+        GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+        GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB, rgb.width(), rgb.height(), 0, GL.RGB, GL.FLOAT, rgb.data());
+        heman.Image.destroy(rgb);
+        GL.bindTexture(GL.TEXTURE_2D, texture);
+        GL.texImage2D(GL.TEXTURE_2D, 0, GL.LUMINANCE, elevation.width(), elevation.height(), 0, GL.LUMINANCE, GL.FLOAT, elevation.data());
+        program = programs.final;
         refresh();
     });
 
@@ -165,7 +187,16 @@ $(function() {
     };
 
     var draw = function(currentTime) {
-        if (!texture || !dirty || !gradient) {
+
+        if (!texture) {
+            texture = GL.createTexture();
+            GL.bindTexture(GL.TEXTURE_2D, texture);
+            GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+            GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+            $('#colors').trigger('click');
+        }
+
+        if (!dirty || !gradient) {
             return;
         }
         dirty = false;
@@ -175,22 +206,29 @@ $(function() {
             -1, +1, // bottom top
             0, 100);  // near far
 
+        if (lighting) {
+            GL.activeTexture(GL.TEXTURE2);
+            GL.bindTexture(GL.TEXTURE_2D, lighting);
+        }
+
         GL.activeTexture(GL.TEXTURE1);
         GL.bindTexture(GL.TEXTURE_2D, gradient);
         GL.activeTexture(GL.TEXTURE0);
         GL.bindTexture(GL.TEXTURE_2D, texture);
         GL.clear(GL.COLOR_BUFFER_BIT);
         GL.bindBuffer(GL.ARRAY_BUFFER, vertexBuffer);
-        GL.enableVertexAttribArray(attribs.POSITION);
-        GL.vertexAttribPointer(attribs.POSITION, 2, GL.FLOAT, false, 16, 0);
-        GL.enableVertexAttribArray(attribs.TEXCOORD);
-        GL.vertexAttribPointer(attribs.TEXCOORD, 2, GL.FLOAT, false, 16, 8);
+        GL.enableVertexAttribArray(attribs.Position);
+        GL.vertexAttribPointer(attribs.Position, 2, GL.FLOAT, false, 16, 0);
+        GL.enableVertexAttribArray(attribs.TexCoord);
+        GL.vertexAttribPointer(attribs.TexCoord, 2, GL.FLOAT, false, 16, 8);
         GL.useProgram(program);
         GL.uniformMatrix4fv(program.projection, false, proj);
         GL.uniformMatrix4fv(program.modelview, false, mv);
         GL.uniform1i(program.gradient, 1);
+        GL.uniform1i(program.lighting, 2);
         GL.drawArrays(GL.TRIANGLE_STRIP, 0, 4);
     };
 
+    generate(Date.now());
     GIZA.animate(draw);
 });

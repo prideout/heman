@@ -17,10 +17,13 @@
             <main>
                 <nav>
                     <div class="menu">
-                        <button id="perlin">Perlin Noise</button>
+                        <button id="generate">Regenerate</button>
                         <hr>
-                        <button id="island">Generate Island</button>
-                        <button id="lighting">Lighting &amp; Coloring</button>
+                        <button id="colors" class="selected radio">Colors</button>
+                        <button id="elevation" class="radio">Elevation</button>
+                        <button id="normals" class="radio">Normals</button>
+                        <button id="ao" class="radio">Ambient Occlusion</button>
+                        <button id="final" class="radio">Colors &amp; Lighting</button>
                         <br>
                         <a href="https://github.com/prideout/heman/tree/master/src">heman source</a>
                         <br>
@@ -74,6 +77,20 @@
           {
               vec4 texel = texture2D(height, vTexCoord);
               gl_FragColor = texture2D(gradient, vec2(texel.r, 0.5));
+          }
+        </script>
+
+        <script id="finalfs" type="x-shader/x-fragment">
+          precision highp float;
+          varying vec2 vTexCoord;
+          uniform sampler2D height;
+          uniform sampler2D gradient;
+          uniform sampler2D lighting;
+          void main()
+          {
+              vec4 texel = texture2D(height, vTexCoord);
+              gl_FragColor = texture2D(gradient, vec2(texel.r, 0.5));
+              gl_FragColor.rgb *= texture2D(lighting, vTexCoord).r;
           }
         </script>
 
