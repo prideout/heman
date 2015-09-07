@@ -71,10 +71,6 @@ html, body, .app {
     user-select: none;
 }
 
-canvas {
-    display: block;
-}
-
 #menu-toggle {
     position:absolute;
     top:10px;
@@ -104,9 +100,7 @@ canvas {
 
 .app {
 	overflow: hidden;
-	display: -webkit-flex;
     display: flex;
-    -webkit-flex-direction: column;
     flex-direction: column;
 }
 
@@ -155,12 +149,23 @@ article {
 }
 
 .canvas-container {
-    -webkit-flex: 1;
+    display: flex;
     flex: 1;
+    align-items: center;
+    justify-content: center;
     background: #303030;
 }
 
-nav a, nav button {
+nav a {
+    color: #07f;
+    text-decoration: none;
+}
+
+nav a:hover {
+    cursor: pointer;
+}
+
+nav button {
     width: 100%;
 	background-color: rgba(255,255,255,0.125);
     font-family: 'Roboto Condensed', sans-serif;
@@ -175,7 +180,7 @@ nav a, nav button {
     margin-bottom: 5px;
 }
 
-nav a:hover, nav button:hover {
+nav button:hover {
     background: #0078e7;
     color: #eee;
     cursor: pointer;
@@ -187,7 +192,7 @@ nav button.selected {
     cursor: pointer;
 }
 
-nav a:focus, nav button:focus {
+nav button:focus {
     outline: 0;
 }
 

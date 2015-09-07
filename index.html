@@ -18,16 +18,26 @@
                 <nav>
                     <div class="menu">
                         <button id="perlin">Perlin Noise</button>
+                        <hr>
                         <button id="island">Generate Island</button>
                         <button id="lighting">Lighting &amp; Coloring</button>
+                        <br>
+                        <a href="https://github.com/prideout/heman/tree/master/src">heman source</a>
+                        <br>
+                        <a href="http://heman.readthedocs.org/en/latest/">heman docs</a>
+                        <br>
+                        <br>
+                        <a href="http://emscripten.org">
+                            <img src="img/emscripten.png" style="width:200px">
+                        </a>
                     </div>
                 </nav>
                 <article>
                     <div class="canvas-container">
-                        <canvas id="canvas3d" style="width:100%;height:100%">
+                        <canvas id="canvas3d">
                         </canvas>
                     </div>
-                    <div id="menu-toggle"></div>
+                    <!--div id="menu-toggle"></div-->
                 </article>
             </main>
         </div>
@@ -45,13 +55,25 @@
           }
         </script>
 
-        <script id="simplefs" type="x-shader/x-fragment">
+        <script id="grayfs" type="x-shader/x-fragment">
           precision highp float;
           varying vec2 vTexCoord;
-          uniform sampler2D Texture;
+          uniform sampler2D height;
           void main()
           {
-              gl_FragColor = texture2D(Texture, vTexCoord);
+              gl_FragColor = texture2D(height, vTexCoord);
+          }
+        </script>
+
+        <script id="colorfs" type="x-shader/x-fragment">
+          precision highp float;
+          varying vec2 vTexCoord;
+          uniform sampler2D height;
+          uniform sampler2D gradient;
+          void main()
+          {
+              vec4 texel = texture2D(height, vTexCoord);
+              gl_FragColor = texture2D(gradient, vec2(texel.r, 0.5));
           }
         </script>
 
