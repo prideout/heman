@@ -72,21 +72,13 @@ $(function() {
         var hmap = heman.Generate.island_heightmap(SIZE, SIZE, seed);
         var elev = heman.Ops.normalize_f32(hmap, -0.5, 0.5);
         heman.Image.destroy(hmap);
-
-        // var rgb = heman.Color.from_grayscale(elev);
-        // heman.Image.destroy(elev);
-
         var rgb = heman.Lighting.apply(elev, 1, 1, 0.5);
         heman.Image.destroy(elev);
-
-        // heman_image* albedo = heman_color_apply_gradient(hmap, -0.5, 0.5, grad);
-        // heman_image_destroy(grad);
-
         texture = texture || GL.createTexture();
         GL.bindTexture(GL.TEXTURE_2D, texture);
         GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB, rgb.width(), rgb.height(), 0, GL.RGB, GL.FLOAT, rgb.data());
-        GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
-        GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
+        GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+        GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
         heman.Image.destroy(rgb);
     });
 
