@@ -31,6 +31,7 @@ $(function() {
 
     GIZA.refreshSize();
     GL.getExtension('OES_texture_float');
+    GL.getExtension('OES_texture_float_linear');
 
     var vertexBuffer = GL.createBuffer();
     var texture = null;
