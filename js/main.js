@@ -125,28 +125,40 @@ $(function() {
     $('#ao').click(function() {
         $('.radio').removeClass('selected');
         $('#ao').toggleClass('selected');
-        var rgb = heman.Lighting.compute_occlusion(elevation);
-        GL.bindTexture(GL.TEXTURE_2D, texture);
-        GL.texImage2D(GL.TEXTURE_2D, 0, GL.LUMINANCE, rgb.width(), rgb.height(), 0, GL.LUMINANCE, GL.FLOAT, rgb.data());
-        heman.Image.destroy(rgb);
-        program = programs.gray;
-        refresh();
+        $('#progress').show();
+        $('#canvas3d').hide();
+        setTimeout(function() {
+            var rgb = heman.Lighting.compute_occlusion(elevation);
+            $('#progress').hide();
+            $('#canvas3d').show();
+            GL.bindTexture(GL.TEXTURE_2D, texture);
+            GL.texImage2D(GL.TEXTURE_2D, 0, GL.LUMINANCE, rgb.width(), rgb.height(), 0, GL.LUMINANCE, GL.FLOAT, rgb.data());
+            heman.Image.destroy(rgb);
+            program = programs.gray;
+            refresh();
+        }, 20);
     });
 
     $('#final').click(function() {
         $('.radio').removeClass('selected');
         $('#final').toggleClass('selected');
-        var rgb = heman.Lighting.apply(elevation, 1, 1, 0.5);
-        lighting = lighting || GL.createTexture();
-        GL.bindTexture(GL.TEXTURE_2D, lighting);
-        GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
-        GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
-        GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB, rgb.width(), rgb.height(), 0, GL.RGB, GL.FLOAT, rgb.data());
-        heman.Image.destroy(rgb);
-        GL.bindTexture(GL.TEXTURE_2D, texture);
-        GL.texImage2D(GL.TEXTURE_2D, 0, GL.LUMINANCE, elevation.width(), elevation.height(), 0, GL.LUMINANCE, GL.FLOAT, elevation.data());
-        program = programs.final;
-        refresh();
+        $('#progress').show();
+        $('#canvas3d').hide();
+        setTimeout(function() {
+            var rgb = heman.Lighting.apply(elevation, 1, 1, 0.5);
+            $('#progress').hide();
+            $('#canvas3d').show();
+            lighting = lighting || GL.createTexture();
+            GL.bindTexture(GL.TEXTURE_2D, lighting);
+            GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+            GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+            GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB, rgb.width(), rgb.height(), 0, GL.RGB, GL.FLOAT, rgb.data());
+            heman.Image.destroy(rgb);
+            GL.bindTexture(GL.TEXTURE_2D, texture);
+            GL.texImage2D(GL.TEXTURE_2D, 0, GL.LUMINANCE, elevation.width(), elevation.height(), 0, GL.LUMINANCE, GL.FLOAT, elevation.data());
+            program = programs.final;
+            refresh();
+        }, 20);
     });
 
     $('.res').click(function(a,b) {
@@ -240,4 +252,6 @@ $(function() {
 
     generate();
     GIZA.animate(draw);
+    $('#progress').hide();
+    $('#canvas3d').show();
 });
