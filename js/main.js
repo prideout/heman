@@ -54,6 +54,7 @@ $(function() {
     var program = programs.gray;
     var elevation = null;
     var lighting = null;
+    var seed = Date.now() % 2147483647;
 
     GIZA.refreshSize = function() {
         var w, h;
@@ -76,8 +77,7 @@ $(function() {
         GIZA.refreshSize();
     };
 
-    var generate = function(seed) {
-        seed = seed % 2147483647;
+    var generate = function() {
         if (elevation) {
             heman.Image.destroy(elevation);
         }
@@ -88,7 +88,8 @@ $(function() {
     };
 
     $('#generate').click(function() {
-        generate(Date.now());
+        seed = Date.now() % 2147483647;
+        generate();
         $('#colors').trigger('click');
     });
 
@@ -146,6 +147,14 @@ $(function() {
         GL.texImage2D(GL.TEXTURE_2D, 0, GL.LUMINANCE, elevation.width(), elevation.height(), 0, GL.LUMINANCE, GL.FLOAT, elevation.data());
         program = programs.final;
         refresh();
+    });
+
+    $('.res').click(function(a,b) {
+        $('.res').removeClass('selected');
+        $(this).addClass('selected');
+        SIZE = parseInt($(this).text(), 10);
+        generate();
+        $('#colors').trigger('click');
     });
 
     // Set up a description of the vertex format.
@@ -229,6 +238,6 @@ $(function() {
         GL.drawArrays(GL.TRIANGLE_STRIP, 0, 4);
     };
 
-    generate(Date.now());
+    generate();
     GIZA.animate(draw);
 });
