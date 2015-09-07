@@ -52,14 +52,22 @@ heman_image* heman_lighting_apply(heman_image* heightmap, heman_image* albedo,
     const float* light_position)
 {
     assert(heightmap->nbands == 1);
-    assert(albedo->nbands == 3);
     int width = heightmap->width;
     int height = heightmap->height;
-    assert(albedo->width == width);
-    assert(albedo->height == height);
     heman_image* final = heman_image_create(width, height, 3);
     heman_image* normals = heman_lighting_compute_normals(heightmap);
     heman_image* occ = heman_lighting_compute_occlusion(heightmap);
+
+    if (albedo) {
+        assert(albedo->nbands == 3);
+        assert(albedo->width == width);
+        assert(albedo->height == height);
+    }
+
+    static float default_pos[] = {-0.5f, 0.5f, 1.0f};
+    if (!light_position) {
+        light_position = default_pos;
+    }
 
     kmVec3* colors = (kmVec3*) final->data;
     HEMAN_FLOAT invgamma = 1.0f / _gamma;
@@ -80,7 +88,11 @@ heman_image* heman_lighting_apply(heman_image* heightmap, heman_image* albedo,
                 1 - diffuse * (1 - kmClamp(kmVec3Dot(N, &L), 0, 1));
             HEMAN_FLOAT of =
                 1 - occlusion * (1 - *heman_image_texel(occ, x, y));
-            *color = *((kmVec3*) heman_image_texel(albedo, x, y));
+            if (albedo) {
+                *color = *((kmVec3*) heman_image_texel(albedo, x, y));
+            } else {
+                color->x = color->y = color->z = 1;
+            }
             color->x = pow(color->x, _gamma);
             color->y = pow(color->y, _gamma);
             color->z = pow(color->z, _gamma);

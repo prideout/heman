@@ -24,7 +24,10 @@ Heman implements some really nice 21st-century algorithms:
 - Distance field computation uses the beautiful algorithm from _Distance Transforms of Sampled Functions_ (Felzenszwalb and Huttenlocher).
 - Density field samples are generated using Robert Bridson's _Fast Poisson Disk Sampling in Arbitrary Dimensions_.
 
+### Python and JavaScript too!
 Unit tests are performed using the Python bindings, which live in [prideout/heman-python](https://github.com/prideout/heman-python).
+
+Heman also provides emscripten bindings for its API.  The JavaScript demo is [here](http://prideout.github.io/heman).
 
 ## Example
 

@@ -9,6 +9,11 @@ AddOption('--double',
           action='store_true',
           help='use 64-bit floats')
 
+AddOption('--javascript',
+          dest='javascript',
+          action='store_true',
+          help='build with emcc')
+
 # Targets that build code.
 
 Export('TESTS')
