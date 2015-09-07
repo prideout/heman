@@ -100,6 +100,7 @@ html, body, .app {
 
 .app {
 	overflow: hidden;
+    display: -webkit-flex;
     display: flex;
     flex-direction: column;
 }
@@ -149,9 +150,13 @@ article {
 }
 
 .canvas-container {
+    display: -webkit-flex;
     display: flex;
+    -webkit-flex: 1;
     flex: 1;
+    -webkit-align-items: center;
     align-items: center;
+    -webkit-justify-content: center;
     justify-content: center;
     background: #303030;
 }
