@@ -23,7 +23,7 @@ if GetOption('javascript'):
     env['CFLAGS'] = '-O3 -Wall -std=c99 '
     env['CXXFLAGS'] = '-O3 -Wall --bind -std=c++11 '
     env['LINKFLAGS'] = (
-        "--bind " +
+        "-O3 --memory-init-file 0 --bind " +
         "-s 'MODULARIZE=1' " +
         "-s 'EXPORT_NAME=\"CreateHeman\"' " +
         "-s 'ALLOW_MEMORY_GROWTH=1' " +
