@@ -51,7 +51,7 @@ heman_image* albedo = heman_color_apply_gradient(elevation, -0.5, 0.5, grad);
 heman_image* final = heman_lighting_apply(elevation, albedo, ...);
 ```
 
-For the unabridged version, see `test_lighting` in [test/main.c](https://github.com/prideout/heman/blob/master/test/main.c).
+For the unabridged version, see `test_lighting` in [test/test_heman.c](https://github.com/prideout/heman/blob/master/test/test_heman.c).
 
 ## Documentation
 
