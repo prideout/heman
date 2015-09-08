@@ -72,6 +72,14 @@ heman_image* heman_generate_island_heightmap(int width, int height, int seed);
 // domain to generate an interesting lat-long height map.
 heman_image* heman_generate_planet_heightmap(int width, int height, int seed);
 
+// Similar to the island generator but uses a rounded rectangle as a guide
+// instead of a circle.  Potentially useful for creating unrealistic maps.
+// The padding and weight parameters control the size and strength
+// of the weight function that is used to influence Perlin noise.
+// For starters, try padding = 0.3 * height and weight = 0.25.
+heman_image* heman_generate_rectangular_heightmap(int width, int height,
+    int padding, float weight, int seed);
+
 // High-level function that sums up a number of noise octaves, also known as
 // Fractional Brownian Motion.  Taken alone, Perlin / Simplex noise are not
 // fractals; this makes them more fractal-like. A good starting point is to use
@@ -96,9 +104,13 @@ heman_image* heman_lighting_compute_occlusion(heman_image* heightmap);
 // the fast algorithm described in Felzenszwalb 2012.
 heman_image* heman_distance_create_sdf(heman_image* monochrome);
 
+// Create a one-band unsigned distance field based on the given input, using
+// the fast algorithm described in Felzenszwalb 2012.
+heman_image* heman_distance_create_df(heman_image* monochrome);
+
 // Create a two-band "coordinate field" containing the non-normalized texture
-// coordinates of the nearest seed; this is related to the distance field but
-// has a greater amount of information.  Also uses Felzenszwalb 2012.
+// coordinates of the nearest seed.  The result is related to the distance field
+// but has a greater amount of information.
 heman_image* heman_distance_create_cf(heman_image* seed);
 
 // Create a single-channel floating point point image from bytes, such that

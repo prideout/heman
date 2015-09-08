@@ -37,3 +37,17 @@ void hut_write_image(const char* filename, heman_image* img, float minv, float m
     stbi_write_png(filename, width, height, ncomp, bytes, width * ncomp);
     free(bytes);
 }
+
+void hut_write_image_scaled(const char* filename, heman_image* img, int dwidth, int dheight)
+{
+    printf("Writing to \"%s\".\n", filename);
+    int width, height, ncomp;
+    heman_image_info(img, &width, &height, &ncomp);
+    unsigned char* bytes = malloc(width * height * ncomp);
+    heman_export_u8(img, 0, 1, bytes);
+    unsigned char* resized = malloc(dwidth * dheight * 3);
+    stbir_resize_uint8(bytes, width, height, 0, resized, dwidth, dheight, 0, 3);
+    stbi_write_png(filename, dwidth, dheight, ncomp, resized, dwidth * ncomp);
+    free(resized);
+    free(bytes);
+}

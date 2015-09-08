@@ -15,8 +15,8 @@ API
     heman_image* heman_distance_create_sdf(heman_image* monochrome);
 
     // Create a two-band "coordinate field" containing the non-normalized texture
-    // coordinates of the nearest seed; this is related to the distance field but
-    // has a greater amount of information.  Also uses Felzenszwalb 2012.
+    // coordinates of the nearest seed.  The result is related to the distance field
+    // but has a greater amount of information.
     heman_image* heman_distance_create_cf(heman_image* seed);
 
 Example

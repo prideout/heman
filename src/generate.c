@@ -177,3 +177,84 @@ heman_image* heman_generate_planet_heightmap(int width, int height, int seed)
     open_simplex_noise_free(ctx);
     return result;
 }
+
+heman_image* heman_generate_rectangular_heightmap(int width, int height,
+    int padding, float wscale, int seed)
+{
+    heman_image* seedimg = heman_image_create(width, height, 1);
+    HEMAN_FLOAT* dst = seedimg->data;
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            *dst++ = x > padding && x < width - padding &&
+                y > padding && y < height - padding;
+        }
+    }
+    heman_image* sdf = heman_distance_create_df(seedimg);
+    heman_image_destroy(seedimg);
+    dst = sdf->data;
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x, ++dst) {
+            *dst = 1 - ((float) width / padding) * *dst;
+        }
+    }
+
+    heman_image* noisetex = generate_island_noise(width, height, seed);
+    heman_image* coastmask = heman_image_create(width, height, 1);
+    HEMAN_FLOAT* data = coastmask->data;
+    HEMAN_FLOAT invh = 1.0f / height;
+    HEMAN_FLOAT invw = 1.0f / width;
+    int hh = height / 2;
+    int hw = width / 2;
+
+#pragma omp parallel for
+    for (int y = 0; y < height; ++y) {
+        HEMAN_FLOAT vv = (y - hh) * invh;
+        HEMAN_FLOAT* dst = data + y * width;
+        for (int x = 0; x < width; ++x) {
+            HEMAN_FLOAT n[3];
+            HEMAN_FLOAT v = y * invh;
+            HEMAN_FLOAT u = x * invw;
+            heman_image_sample(noisetex, u, v, n);
+            HEMAN_FLOAT m = 1;
+            heman_image_sample(sdf, u, v, &m);
+            u = (x - hw) * invw;
+            v = vv;
+            u += n[1];
+            v += n[2];
+            m = (m + 1) * wscale;
+            m += n[0];
+            *dst++ = m < SEALEVEL ? 0 : 1;
+        }
+    }
+
+    heman_image* heightmap = heman_distance_create_sdf(coastmask);
+    heman_image_destroy(coastmask);
+    heman_image* result = heman_image_create(width, height, 1);
+    data = result->data;
+
+#pragma omp parallel for
+    for (int y = 0; y < height; ++y) {
+        HEMAN_FLOAT* dst = data + y * width;
+        for (int x = 0; x < width; ++x) {
+            HEMAN_FLOAT n[3];
+            HEMAN_FLOAT u = x * invw;
+            HEMAN_FLOAT v = y * invh;
+            heman_image_sample(noisetex, u, v, n);
+            HEMAN_FLOAT z;
+            heman_image_sample(heightmap, u, v, &z);
+            if (z > 0.0) {
+                HEMAN_FLOAT influence = z;
+                u += influence * n[1];
+                v += influence * n[2];
+                heman_image_sample(heightmap, u, v, &z);
+                z += 6 * influence * n[0];
+            }
+            *dst++ = z;
+        }
+    }
+
+    heman_image_destroy(noisetex);
+    heman_image_destroy(heightmap);
+    heman_image_destroy(sdf);
+    return result;
+}

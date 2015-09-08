@@ -201,6 +201,25 @@ heman_image* heman_distance_create_sdf(heman_image* src)
     return positive;
 }
 
+heman_image* heman_distance_create_df(heman_image* src)
+{
+    assert(src->nbands == 1 && "Distance field input must have only 1 band.");
+    heman_image* positive = heman_image_create(src->width, src->height, 1);
+    int size = src->height * src->width;
+    HEMAN_FLOAT* pptr = positive->data;
+    HEMAN_FLOAT* sptr = src->data;
+    for (int i = 0; i < size; ++i, ++sptr) {
+        *pptr++ = *sptr ? 0 : INF;
+    }
+    transform_to_distance(positive);
+    HEMAN_FLOAT inv = 1.0f / src->width;
+    pptr = positive->data;
+    for (int i = 0; i < size; ++i, ++pptr) {
+        *pptr = sqrt(*pptr) * inv;
+    }
+    return positive;
+}
+
 heman_image* heman_distance_create_cf(heman_image* src)
 {
     heman_image* positive = heman_image_create(src->width, src->height, 1);

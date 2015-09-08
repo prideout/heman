@@ -9,6 +9,26 @@ static const int SIZE = 512;
 #define COUNT(a) (sizeof(a) / sizeof(a[0]))
 #define OUTFOLDER "build/"
 
+// Create a reasonable ocean-to-land color gradient.
+int cp_locations[] = {
+    000,  // Dark Blue
+    126,  // Light Blue
+    127,  // Yellow
+    128,  // Dark Green
+    160,  // Brown
+    200,  // White
+    255,  // White
+};
+heman_color cp_colors[] = {
+    0x001070,  // Dark Blue
+    0x2C5A7C,  // Light Blue
+    0xE0F0A0,  // Yellow
+    0x5D943C,  // Dark Green
+    0x606011,  // Brown
+    0xFFFFFF,  // White
+    0xFFFFFF,  // White
+};
+
 static void test_noise()
 {
     printf("Generating noise.\n");
@@ -71,41 +91,12 @@ static void test_color()
     heman_image* grad = heman_color_create_gradient(
         256, COUNT(cp_colors), cp_locations, cp_colors);
 
-    const char* filename = OUTFOLDER "gradient.png";
-    printf("Writing to \"%s\".\n", filename);
-    unsigned char* bytes = malloc(256 * 3);
-    unsigned char* resized = malloc(256 * 256 * 3);
-    heman_export_u8(grad, 0.0, 1.0, bytes);
-    stbir_resize_uint8(bytes, 256, 1, 0, resized, 256, 256, 0, 3);
-    stbi_write_png(filename, 256, 256, 3, resized, 256 * 3);
-    free(bytes);
-    free(resized);
-
+    hut_write_image_scaled(OUTFOLDER "gradient.png", grad, 256, 256);
     heman_image_destroy(grad);
 }
 
 static void test_lighting()
 {
-    // Create a reasonable ocean-to-land color gradient.
-    int cp_locations[] = {
-        000,  // Dark Blue
-        126,  // Light Blue
-        127,  // Yellow
-        128,  // Dark Green
-        160,  // Brown
-        200,  // White
-        255,  // White
-    };
-    heman_color cp_colors[] = {
-        0x001070,  // Dark Blue
-        0x2C5A7C,  // Light Blue
-        0xE0F0A0,  // Yellow
-        0x5D943C,  // Dark Green
-        0x606011,  // Brown
-        0xFFFFFF,  // White
-        0xFFFFFF,  // White
-    };
-    assert(COUNT(cp_locations) == COUNT(cp_colors));
     heman_image* grad = heman_color_create_gradient(
         256, COUNT(cp_colors), cp_locations, cp_colors);
 
@@ -260,6 +251,24 @@ void test_coordfield()
     heman_image_destroy(cf);
 }
 
+void test_generate()
+{
+    srand(time(0));
+    int seed = rand();
+    float wscale = 0.25;
+    heman_image* elev = heman_generate_rectangular_heightmap(1600, 900, 300,
+        wscale, seed);
+    heman_image* grad = heman_color_create_gradient(
+        256, COUNT(cp_colors), cp_locations, cp_colors);
+    heman_image* albedo = heman_color_apply_gradient(elev, -0.5, 0.5, grad);
+    heman_image* final = heman_lighting_apply(elev, albedo, 1, 1, 0.5, 0);
+    hut_write_image_scaled(OUTFOLDER "rectangular.png", final, 800, 450);
+    heman_image_destroy(elev);
+    heman_image_destroy(grad);
+    heman_image_destroy(albedo);
+    heman_image_destroy(final);
+}
+
 int main(int argc, char** argv)
 {
     printf("%d threads available.\n", omp_get_max_threads());
@@ -270,4 +279,5 @@ int main(int argc, char** argv)
     test_points_grid();
     test_points_density();
     test_coordfield();
+    test_generate();
 }
