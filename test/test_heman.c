@@ -19,6 +19,7 @@ int cp_locations[] = {
     200,  // White
     255,  // White
 };
+
 heman_color cp_colors[] = {
     0x001070,  // Dark Blue
     0x2C5A7C,  // Light Blue
@@ -255,18 +256,50 @@ void test_generate()
 {
     srand(time(0));
     int seed = rand();
-    float wscale = 0.25;
-    heman_image* elev = heman_generate_rectangular_heightmap(1600, 900, 300,
-        wscale, seed);
     heman_image* grad = heman_color_create_gradient(
         256, COUNT(cp_colors), cp_locations, cp_colors);
-    heman_image* albedo = heman_color_apply_gradient(elev, -0.5, 0.5, grad);
-    heman_image* final = heman_lighting_apply(elev, albedo, 1, 1, 0.5, 0);
+    HEMAN_FLOAT* grad_data = heman_image_data(grad);
+
+    // Create some interesting contour lines by injecting brightness
+    // at certain spots in the color gradient.
+    for (int x = 0; x < 128; x += 8) {
+        grad_data[x * 3 + 0] *= 1 + x / 128.0;
+        grad_data[x * 3 + 1] *= 1 + x / 128.0;
+        grad_data[x * 3 + 2] *= 1 + x / 128.0;
+    }
+
+    float wscale = 0.25;
+    heman_image* elev =
+        heman_generate_rectangular_heightmap(1600, 900, 300, wscale, seed);
+    heman_image* final = heman_lighting_apply(elev, 0, 1, 1, 0.5, 0);
     hut_write_image_scaled(OUTFOLDER "rectangular.png", final, 800, 450);
     heman_image_destroy(elev);
-    heman_image_destroy(grad);
-    heman_image_destroy(albedo);
     heman_image_destroy(final);
+
+    heman_image* finals[3];
+    heman_image** pfinal = finals;
+    for (float noise = 0; noise < 1; noise += 0.3) {
+        heman_points* pts = heman_image_create(3, 1, 2);
+        kmVec2* coords = (kmVec2*) heman_image_data(pts);
+        coords[0] = (kmVec2){0.5, 0.4};
+        coords[1] = (kmVec2){0.3, 0.5};
+        coords[2] = (kmVec2){0.7, 0.7};
+        elev = heman_generate_archipelago_heightmap(800, 450, pts, noise, seed);
+        heman_image_destroy(pts);
+        heman_image* albedo = heman_color_apply_gradient(elev, -0.5, 0.5, grad);
+        *pfinal++ = heman_lighting_apply(elev, albedo, 1, 1, 0.5, 0);
+        heman_image_destroy(elev);
+        heman_image_destroy(albedo);
+    }
+
+    final = heman_ops_stitch_horizontal(finals, 3);
+    for (int i = 0; i < 3; i++) {
+        heman_image_destroy(finals[i]);
+    }
+
+    hut_write_image_scaled(OUTFOLDER "archipelago.png", final, 400 * 3, 225);
+    heman_image_destroy(final);
+    heman_image_destroy(grad);
 }
 
 int main(int argc, char** argv)

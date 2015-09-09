@@ -1,5 +1,6 @@
 #include "image.h"
 #include <stdlib.h>
+#include <memory.h>
 #include <assert.h>
 #include <limits.h>
 #include <kazmath/vec2.h>
@@ -19,13 +20,15 @@ inline float randhashf(unsigned int seed, float a, float b)
     return (b - a) * randhash(seed) / (float) UINT_MAX + a;
 }
 
-heman_points* heman_points_create(int count)
+heman_image* heman_points_create(HEMAN_FLOAT* xy, int npoints)
 {
     heman_points* img = malloc(sizeof(heman_image));
-    img->width = count;
+    img->width = npoints;
     img->height = 1;
     img->nbands = 2;
-    img->data = malloc(sizeof(HEMAN_FLOAT) * count * 2);
+    int nbytes = sizeof(HEMAN_FLOAT) * npoints * 2;
+    img->data = malloc(nbytes);
+    memcpy(img->data, xy, nbytes);
     return img;
 }
 
@@ -41,7 +44,7 @@ heman_points* heman_points_from_grid(HEMAN_FLOAT width, HEMAN_FLOAT height,
     int cols = width / cellsize;
     int rows = height / cellsize;
     int ncells = cols * rows;
-    heman_points* result = heman_points_create(ncells);
+    heman_points* result = heman_image_create(ncells, 1, 2);
     HEMAN_FLOAT rscale = 2.0 * jitter / (HEMAN_FLOAT) RAND_MAX;
 
 // TODO it would be good to avoid ANSI rand() and add some determinism
@@ -115,7 +118,7 @@ heman_points* heman_points_from_poisson(
     // Active list and resulting sample list.
     int* actives = malloc(ncells * sizeof(int));
     int nactives = 0;
-    heman_points* result = heman_points_create(ncells);
+    heman_points* result = heman_image_create(ncells, 1, 2);
     kmVec2* samples = (kmVec2*) result->data;
     int nsamples = 0;
 
@@ -238,7 +241,7 @@ heman_points* heman_points_from_density(
     int* actives = malloc(ncells * sizeof(int));
     int nactives = 0;
     int maxsamples = ncells * gcapacity;
-    heman_points* result = heman_points_create(maxsamples);
+    heman_points* result = heman_image_create(maxsamples, 1, 2);
     kmVec2* samples = (kmVec2*) result->data;
     int nsamples = 0;
 

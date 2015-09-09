@@ -77,8 +77,13 @@ heman_image* heman_generate_planet_heightmap(int width, int height, int seed);
 // The padding and weight parameters control the size and strength
 // of the weight function that is used to influence Perlin noise.
 // For starters, try padding = 0.3 * height and weight = 0.25.
-heman_image* heman_generate_rectangular_heightmap(int width, int height,
-    int padding, float weight, int seed);
+heman_image* heman_generate_rectangular_heightmap(
+    int width, int height, int padding, float weight, int seed);
+
+// Similar to generate_island, but takes a two-band (X Y) list of centers.
+// 0.4 is a good choise for the noiseamt, but 0 is useful for diagnostics.
+heman_image* heman_generate_archipelago_heightmap(
+    int width, int height, heman_points* points, float noiseamt, int seed);
 
 // High-level function that sums up a number of noise octaves, also known as
 // Fractional Brownian Motion.  Taken alone, Perlin / Simplex noise are not
@@ -155,8 +160,11 @@ heman_image* heman_ops_laplacian(heman_image* heightmap);
 // Add the values of src into dst.
 void heman_ops_accumulate(heman_image* dst, heman_image* src);
 
-// Free memory for a point list.  Point lists are actually one-dimensional
+// Create a point list.  Point lists are actually one-dimensional
 // images in disguise, usually with two bands (X and Y coordinates).
+heman_image* heman_points_create(HEMAN_FLOAT* xy, int npoints);
+
+// Free memory for a point list.
 void heman_points_destroy(heman_points*);
 
 // Perform simple stratified sampling over a grid.
