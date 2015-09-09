@@ -1,20 +1,26 @@
 #pragma once
 
-struct heman_image_s;
+// An "image" encapsulates three integers (width, height, number of bands)
+// and an array of (w * h * nbands) floats, in scanline order.  For simplicity
+// the API disallows struct definitions, so this is just an opaque handle.
 typedef struct heman_image_s heman_image;
+
+// Point lists are actually one-dimensional images in disguise, usually with
+// two bands (X and Y coordinates).
 typedef struct heman_image_s heman_points;
-typedef unsigned char heman_byte;
-typedef unsigned int heman_color;
 
+// Image values in heman are always floating point, but clients may
+// choose either 32-bit floats or 64-bit floats at compile time.
 #ifdef USE_DOUBLE_PRECISION
-#ifndef HEMAN_FLOAT
 #define HEMAN_FLOAT double
-#endif
-#endif
-
-#ifndef HEMAN_FLOAT
+#else
 #define HEMAN_FLOAT float
 #endif
+
+// Occasionally the heman API accepts four-byte color for convenience.  For now
+// we're only using the lower three bytes (XRGB).
+typedef unsigned int heman_color;
+typedef unsigned char heman_byte;
 
 // Allocate a floating-point image with dimensions width x height x nbands.
 heman_image* heman_image_create(int width, int height, int nbands);
@@ -160,8 +166,7 @@ heman_image* heman_ops_laplacian(heman_image* heightmap);
 // Add the values of src into dst.
 void heman_ops_accumulate(heman_image* dst, heman_image* src);
 
-// Create a point list.  Point lists are actually one-dimensional
-// images in disguise, usually with two bands (X and Y coordinates).
+// Create a point list.
 heman_image* heman_points_create(HEMAN_FLOAT* xy, int npoints);
 
 // Free memory for a point list.
