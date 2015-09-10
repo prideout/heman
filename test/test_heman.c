@@ -269,14 +269,6 @@ void test_generate()
         grad_data[x * 3 + 2] *= 1 + x / 128.0;
     }
 
-    float wscale = 0.25;
-    heman_image* elev =
-        heman_generate_rectangular_heightmap(1600, 900, 300, wscale, seed);
-    heman_image* final = heman_lighting_apply(elev, 0, 1, 1, 0.5, 0);
-    hut_write_image_scaled(OUTFOLDER "rectangular.png", final, 800, 450);
-    heman_image_destroy(elev);
-    heman_image_destroy(final);
-
     heman_image* finals[3];
     heman_image** pfinal = finals;
     for (float noise = 0.0; noise < 0.7; noise += 0.2) {
@@ -285,7 +277,8 @@ void test_generate()
         coords[0] = (kmVec3){0.5, 0.4, 0.4};
         coords[1] = (kmVec3){0.3, 0.5, 0.6};
         coords[2] = (kmVec3){0.7, 0.7, 0.2};
-        elev = heman_generate_archipelago_heightmap(800, 450, pts, noise, seed);
+        heman_image* elev =
+            heman_generate_archipelago_heightmap(800, 450, pts, noise, seed);
         heman_image_destroy(pts);
         heman_image* albedo = heman_color_apply_gradient(elev, -0.5, 0.5, grad);
         *pfinal++ = heman_lighting_apply(elev, albedo, 1, 1, 0.5, 0);
@@ -293,7 +286,7 @@ void test_generate()
         heman_image_destroy(albedo);
     }
 
-    final = heman_ops_stitch_horizontal(finals, 3);
+    heman_image* final = heman_ops_stitch_horizontal(finals, 3);
     for (int i = 0; i < 3; i++) {
         heman_image_destroy(finals[i]);
     }

@@ -78,14 +78,6 @@ heman_image* heman_generate_island_heightmap(int width, int height, int seed);
 // domain to generate an interesting lat-long height map.
 heman_image* heman_generate_planet_heightmap(int width, int height, int seed);
 
-// Similar to the island generator but uses a rounded rectangle as a guide
-// instead of a circle.  Potentially useful for creating unrealistic maps.
-// The padding and weight parameters control the size and strength
-// of the weight function that is used to influence Perlin noise.
-// For starters, try padding = 0.3 * height and weight = 0.25.
-heman_image* heman_generate_rectangular_heightmap(
-    int width, int height, int padding, float weight, int seed);
-
 // Similar to generate_island, but takes a two-band (X Y) list of centers.
 // 0.3 is a good choice for the noiseamt, but 0 is useful for diagnostics.
 // Points can be 3-tuples, in which case the 3rd component represents the
