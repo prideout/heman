@@ -6,7 +6,6 @@
 
 const HEMAN_FLOAT INF = 1E20;
 
-#define SQR(x) ((x) * (x))
 #define NEW(t, n) calloc(n, sizeof(t))
 #define SDISTFIELD_TEXEL(x, y) (*(sdf->data + y * width + x))
 #define COORDFIELD_TEXEL(x, y, c) (*(cf->data + 2 * (y * width + x) + c))

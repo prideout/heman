@@ -87,7 +87,9 @@ heman_image* heman_generate_rectangular_heightmap(
     int width, int height, int padding, float weight, int seed);
 
 // Similar to generate_island, but takes a two-band (X Y) list of centers.
-// 0.4 is a good choise for the noiseamt, but 0 is useful for diagnostics.
+// 0.3 is a good choice for the noiseamt, but 0 is useful for diagnostics.
+// Points can be 3-tuples, in which case the 3rd component represents the
+// strength of the seed point.
 heman_image* heman_generate_archipelago_heightmap(
     int width, int height, heman_points* points, float noiseamt, int seed);
 

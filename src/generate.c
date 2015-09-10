@@ -5,6 +5,7 @@
 #include <kazmath/vec3.h>
 
 static const HEMAN_FLOAT SEALEVEL = 0.5;
+static const HEMAN_FLOAT DEFAULT_STRENGTH = 0.6;
 
 #define NOISE(U, V) open_simplex_noise2(ctx, U, V)
 #define NOISE3(p) open_simplex_noise3(ctx, p.x, p.y, p.z)
@@ -259,23 +260,54 @@ heman_image* heman_generate_rectangular_heightmap(
     return result;
 }
 
+static void draw_seeds(heman_image* target, heman_points* pts)
+{
+    int radius = target->width;
+    int fwidth = radius * 2 + 1;
+    HEMAN_FLOAT* src = pts->data;
+    int w = target->width;
+    int h = target->height;
+    for (int i = 0; i < pts->width; i++) {
+        HEMAN_FLOAT x = *src++;
+        HEMAN_FLOAT y = *src++;
+        HEMAN_FLOAT strength = DEFAULT_STRENGTH;
+        if (pts->nbands == 3) {
+            strength = *src++;
+        }
+        strength = SEALEVEL + strength * 0.1;
+        int ix = x * w;
+        int iy = y * h;
+        int ii = ix - radius;
+        int jj = iy - radius;
+        for (int kj = 0; kj < fwidth; kj++) {
+            for (int ki = 0; ki < fwidth; ki++) {
+                int i = ii + ki;
+                int j = jj + kj;
+                if (i < 0 || i >= w || j < 0 || j >= h) {
+                    continue;
+                }
+                HEMAN_FLOAT* texel = heman_image_texel(target, i, j);
+                int d2 = SQR(i - ix) + SQR(j - iy);
+                HEMAN_FLOAT dist = 1 - sqrt(d2) / radius;
+                *texel = MAX(*texel, strength * dist);
+            }
+        }
+    }
+}
+
 heman_image* heman_generate_archipelago_heightmap(
     int width, int height, heman_points* points, float noiseamt, int seed)
 {
     heman_image* noisetex = generate_island_noise(width, height, seed);
-    heman_image* seedimg = heman_image_create(width, height, 1);
-    heman_image_clear(seedimg, 0);
-    heman_draw_points(seedimg, points, 1);
-    heman_image* coastmask = heman_distance_create_df(seedimg);
-    heman_image_destroy(seedimg);
+    heman_image* coastmask = heman_image_create(width, height, 1);
+    heman_image_clear(coastmask, 0);
+    draw_seeds(coastmask, points);
 
     HEMAN_FLOAT* data = coastmask->data;
     HEMAN_FLOAT invh = 1.0f / height;
     HEMAN_FLOAT invw = 1.0f / width;
     int hh = height / 2;
     int hw = width / 2;
-
-    const float BLOBSIZE = 0.6;
 
 #pragma omp parallel for
     for (int y = 0; y < height; ++y) {
@@ -290,7 +322,7 @@ heman_image* heman_generate_archipelago_heightmap(
             v = vv;
             u += noiseamt * n[1];
             v += noiseamt * n[2];
-            HEMAN_FLOAT m = BLOBSIZE - (*dst);
+            HEMAN_FLOAT m = *dst;
             m += noiseamt * n[0];
             *dst++ = m < SEALEVEL ? 0 : 1;
         }

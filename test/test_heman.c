@@ -2,6 +2,7 @@
 #include <omp.h>
 #include <time.h>
 #include <kazmath/vec2.h>
+#include <kazmath/vec3.h>
 #include "hut.h"
 
 static const int SIZE = 512;
@@ -278,12 +279,12 @@ void test_generate()
 
     heman_image* finals[3];
     heman_image** pfinal = finals;
-    for (float noise = 0; noise < 1; noise += 0.3) {
-        heman_points* pts = heman_image_create(3, 1, 2);
-        kmVec2* coords = (kmVec2*) heman_image_data(pts);
-        coords[0] = (kmVec2){0.5, 0.4};
-        coords[1] = (kmVec2){0.3, 0.5};
-        coords[2] = (kmVec2){0.7, 0.7};
+    for (float noise = 0.0; noise < 0.7; noise += 0.2) {
+        heman_points* pts = heman_image_create(3, 1, 3);
+        kmVec3* coords = (kmVec3*) heman_image_data(pts);
+        coords[0] = (kmVec3){0.5, 0.4, 0.4};
+        coords[1] = (kmVec3){0.3, 0.5, 0.6};
+        coords[2] = (kmVec3){0.7, 0.7, 0.2};
         elev = heman_generate_archipelago_heightmap(800, 450, pts, noise, seed);
         heman_image_destroy(pts);
         heman_image* albedo = heman_color_apply_gradient(elev, -0.5, 0.5, grad);
