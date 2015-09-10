@@ -56,6 +56,7 @@ EMSCRIPTEN_BINDINGS(heman) {
     class_<Generate>("Generate")
         .class_function("island_heightmap", &heman_generate_island_heightmap, arp)
         .class_function("planet_heightmap", &heman_generate_planet_heightmap, arp)
+        .class_function("archipelago_heightmap", &heman_generate_archipelago_heightmap, arp)
         .class_function("simplex_fbm", &heman_generate_simplex_fbm, arp);
 
     struct Ops {};
