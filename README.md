@@ -110,3 +110,4 @@ Here are some to-be-done items:
 - If we need more string handling, we can integrate [SDS](https://github.com/antirez/sds).
 - Integrate aaOcean, or some other implementation of Tessendorf waves.
 - If we need to read JSON, we might use [this](https://github.com/sheredom/json.h) or [this](https://github.com/mitsuhiko/johanson).
+- There are cool data structures in http://concurrencykit.org/
