@@ -298,22 +298,7 @@ void test_generate()
 
 void test_political()
 {
-    const float noise = 0.0;
     const int imgres = 256;
-
-    srand(0);
-    int seed = rand();
-    heman_image* grad = heman_color_create_gradient(
-        256, COUNT(cp_colors), cp_locations, cp_colors);
-    HEMAN_FLOAT* grad_data = heman_image_data(grad);
-
-    // Create some interesting contour lines by injecting brightness
-    // at certain spots in the color gradient.
-    for (int x = 0; x < 128; x += 8) {
-        grad_data[x * 3 + 0] *= 1 + x / 128.0;
-        grad_data[x * 3 + 1] *= 1 + x / 128.0;
-        grad_data[x * 3 + 2] *= 1 + x / 128.0;
-    }
 
     heman_points* pts = heman_image_create(3, 1, 3);
     kmVec3* coords = (kmVec3*) heman_image_data(pts);
@@ -325,24 +310,21 @@ void test_political()
         0xDE935A,
         0xE0BB5E
     };
-    heman_image* elev =
-        heman_generate_archipelago_heightmap(imgres, imgres, pts, noise, seed);
-    heman_image* albedo = heman_color_apply_gradient(elev, -0.5, 0.5, grad);
-    heman_image* shaded = heman_lighting_apply(elev, albedo, 1, 1, 0.5, 0);
-    heman_image_destroy(elev);
-    heman_image_destroy(albedo);
 
     heman_image* contour = heman_image_create(imgres, imgres, 3);
-    heman_image_clear(contour, 0.3);
+    heman_image_clear(contour, 0);
     heman_draw_contour_from_points(contour, pts, 0x83B2B2);
 
     heman_draw_colored_points(contour, pts, colors);
     heman_image_destroy(pts);
 
-    heman_image* frames[] = {contour, shaded};
+    heman_image* cf = heman_distance_create_cf(contour);
+    heman_image* voronoi = heman_color_from_cf(cf, contour);
+
+    heman_image* frames[] = {contour, voronoi};
     heman_image* filmstrip = heman_ops_stitch_horizontal(frames, 2);
-    heman_image_destroy(shaded);
     heman_points_destroy(contour);
+    heman_points_destroy(voronoi);
 
     hut_write_image(OUTFOLDER "political.png", filmstrip, 0, 1);
     heman_points_destroy(filmstrip);
