@@ -193,3 +193,8 @@ void heman_draw_colored_points(
 // The blend_mode parameter is ignored for now (it's always ADD).
 void heman_draw_splats(
     heman_image* target, heman_points* pts, int radius, int blend_mode);
+
+// Treats a set of points like blobs and draws a contour around them.
+// Points can be 2-tuples (X Y) or 3-tuples (X Y Radius).
+void heman_draw_contour_from_points(
+    heman_image* target, heman_points* coords, heman_color color);

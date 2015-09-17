@@ -179,7 +179,7 @@ heman_image* heman_generate_planet_heightmap(int width, int height, int seed)
     return result;
 }
 
-static void draw_seeds(heman_image* target, heman_points* pts)
+void heman_internal_draw_seeds(heman_image* target, heman_points* pts)
 {
     int radius = target->width;
     int fwidth = radius * 2 + 1;
@@ -220,7 +220,7 @@ heman_image* heman_generate_archipelago_heightmap(
     heman_image* noisetex = generate_island_noise(width, height, seed);
     heman_image* coastmask = heman_image_create(width, height, 1);
     heman_image_clear(coastmask, 0);
-    draw_seeds(coastmask, points);
+    heman_internal_draw_seeds(coastmask, points);
 
     HEMAN_FLOAT* data = coastmask->data;
     HEMAN_FLOAT invh = 1.0f / height;

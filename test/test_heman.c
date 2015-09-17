@@ -296,15 +296,68 @@ void test_generate()
     heman_image_destroy(grad);
 }
 
+void test_political()
+{
+    const float noise = 0.0;
+    const int imgres = 256;
+
+    srand(0);
+    int seed = rand();
+    heman_image* grad = heman_color_create_gradient(
+        256, COUNT(cp_colors), cp_locations, cp_colors);
+    HEMAN_FLOAT* grad_data = heman_image_data(grad);
+
+    // Create some interesting contour lines by injecting brightness
+    // at certain spots in the color gradient.
+    for (int x = 0; x < 128; x += 8) {
+        grad_data[x * 3 + 0] *= 1 + x / 128.0;
+        grad_data[x * 3 + 1] *= 1 + x / 128.0;
+        grad_data[x * 3 + 2] *= 1 + x / 128.0;
+    }
+
+    heman_points* pts = heman_image_create(3, 1, 3);
+    kmVec3* coords = (kmVec3*) heman_image_data(pts);
+    coords[0] = (kmVec3){0.5, 0.4, 0.4};
+    coords[1] = (kmVec3){0.3, 0.5, 0.6};
+    coords[2] = (kmVec3){0.7, 0.7, 0.2};
+    heman_color colors[3] = {
+        0xC8758A,
+        0xDE935A,
+        0xE0BB5E
+    };
+    heman_image* elev =
+        heman_generate_archipelago_heightmap(imgres, imgres, pts, noise, seed);
+    heman_image* albedo = heman_color_apply_gradient(elev, -0.5, 0.5, grad);
+    heman_image* shaded = heman_lighting_apply(elev, albedo, 1, 1, 0.5, 0);
+    heman_image_destroy(elev);
+    heman_image_destroy(albedo);
+
+    heman_image* contour = heman_image_create(imgres, imgres, 3);
+    heman_image_clear(contour, 0.3);
+    heman_draw_contour_from_points(contour, pts, 0x83B2B2);
+
+    heman_draw_colored_points(contour, pts, colors);
+    heman_image_destroy(pts);
+
+    heman_image* frames[] = {contour, shaded};
+    heman_image* filmstrip = heman_ops_stitch_horizontal(frames, 2);
+    heman_image_destroy(shaded);
+    heman_points_destroy(contour);
+
+    hut_write_image(OUTFOLDER "political.png", filmstrip, 0, 1);
+    heman_points_destroy(filmstrip);
+}
+
 int main(int argc, char** argv)
 {
     printf("%d threads available.\n", omp_get_max_threads());
-    test_noise();
-    test_distance();
-    test_color();
-    test_lighting();
-    test_points_grid();
-    test_points_density();
-    test_coordfield();
-    test_generate();
+    // test_noise();
+    // test_distance();
+    // test_color();
+    // test_lighting();
+    // test_points_grid();
+    // test_points_density();
+    // test_coordfield();
+    // test_generate();
+    test_political();
 }
