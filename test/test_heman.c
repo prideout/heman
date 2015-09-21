@@ -305,11 +305,7 @@ void test_political()
     coords[0] = (kmVec3){0.5, 0.4, 0.4};
     coords[1] = (kmVec3){0.3, 0.5, 0.6};
     coords[2] = (kmVec3){0.7, 0.7, 0.2};
-    heman_color colors[3] = {
-        0xC8758A,
-        0xDE935A,
-        0xE0BB5E
-    };
+    heman_color colors[3] = {0xC8758A, 0xDE935A, 0xE0BB5E};
 
     heman_image* contour = heman_image_create(imgres, imgres, 3);
     heman_image_clear(contour, 0);
@@ -320,11 +316,13 @@ void test_political()
 
     heman_image* cf = heman_distance_create_cf(contour);
     heman_image* voronoi = heman_color_from_cf(cf, contour);
+    heman_image* toon = heman_ops_sobel(voronoi, 0);
 
-    heman_image* frames[] = {contour, voronoi};
-    heman_image* filmstrip = heman_ops_stitch_horizontal(frames, 2);
+    heman_image* frames[] = {contour, voronoi, toon};
+    heman_image* filmstrip = heman_ops_stitch_horizontal(frames, 3);
     heman_points_destroy(contour);
     heman_points_destroy(voronoi);
+    heman_points_destroy(toon);
 
     hut_write_image(OUTFOLDER "political.png", filmstrip, 0, 1);
     heman_points_destroy(filmstrip);

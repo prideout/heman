@@ -66,6 +66,9 @@ heman_image* heman_color_apply_gradient(heman_image* heightmap,
 // Convert a single-channel image into a 3-channel image via duplication.
 heman_image* heman_color_from_grayscale(heman_image* gray);
 
+// Convert 3-channel image into 1-channel image based on perceptive luminance.
+heman_image* heman_color_to_grayscale(heman_image* colorimg);
+
 // Dereference a coordinate field (see heman_distance_create_cf) by making
 // lookups into a color texture.  Useful for creating Voronoi diagrams.
 heman_image* heman_color_from_cf(heman_image* cfield, heman_image* texture);
@@ -156,6 +159,9 @@ heman_image* heman_ops_sweep(heman_image* image);
 // Provide a cheap way of measuring "curvature" that doesn't work well
 // at saddle points.  Returns a single-band image.
 heman_image* heman_ops_laplacian(heman_image* heightmap);
+
+// Highlight edges using the Sobel operator
+heman_image* heman_ops_sobel(heman_image* dst, heman_color edge_color);
 
 // Add the values of src into dst.
 void heman_ops_accumulate(heman_image* dst, heman_image* src);

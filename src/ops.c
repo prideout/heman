@@ -1,6 +1,7 @@
 #include "image.h"
 #include <assert.h>
 #include <memory.h>
+#include <kazmath/vec3.h>
 
 heman_image* heman_ops_step(heman_image* hmap, HEMAN_FLOAT threshold)
 {
@@ -149,4 +150,45 @@ void heman_ops_accumulate(heman_image* dst, heman_image* src)
     for (int i = 0; i < size; ++i) {
         *ddata++ += (*sdata++);
     }
+}
+
+heman_image* heman_ops_sobel(heman_image* img, heman_color edge_color)
+{
+    int width = img->width;
+    int height = img->height;
+    assert(img->nbands == 3);
+    heman_image* result = heman_image_create(width, height, 3);
+    heman_image* gray = heman_color_to_grayscale(img);
+
+    kmVec3 edge_rgb;
+    edge_rgb.x = 0;
+    edge_rgb.y = 0;
+    edge_rgb.z = 0;
+
+#pragma omp parallel for
+    for (int y = 0; y < height; y++) {
+        kmVec3* dst = (kmVec3*) result->data + y * width;
+        const kmVec3* src = (kmVec3*) img->data + y * width;
+        for (int x = 0; x < width; x++) {
+            int xm1 = MAX(x - 1, 0);
+            int xp1 = MIN(x + 1, width - 1);
+            int ym1 = MAX(y - 1, 0);
+            int yp1 = MIN(y + 1, height - 1);
+            HEMAN_FLOAT t00 = *heman_image_texel(gray, xm1, ym1);
+            HEMAN_FLOAT t10 = *heman_image_texel(gray, x, ym1);
+            HEMAN_FLOAT t20 = *heman_image_texel(gray, xp1, ym1);
+            HEMAN_FLOAT t01 = *heman_image_texel(gray, xm1, 0);
+            HEMAN_FLOAT t21 = *heman_image_texel(gray, xp1, 0);
+            HEMAN_FLOAT t02 = *heman_image_texel(gray, xm1, yp1);
+            HEMAN_FLOAT t12 = *heman_image_texel(gray, x, yp1);
+            HEMAN_FLOAT t22 = *heman_image_texel(gray, xp1, yp1);
+            HEMAN_FLOAT gx = t00 + 2.0 * t01 + t02 - t20 - 2.0 * t21 - t22;
+            HEMAN_FLOAT gy = t00 + 2.0 * t10 + t20 - t02 - 2.0 * t12 - t22;
+            HEMAN_FLOAT is_edge = gx * gx + gy * gy > 1e-5;
+            kmVec3Lerp(dst++, src++, &edge_rgb, is_edge);
+        }
+    }
+
+    heman_image_destroy(gray);
+    return result;
 }

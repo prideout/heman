@@ -22,5 +22,13 @@ extern float _gamma;
 #define PI (3.1415926535)
 #define SQR(x) ((x) * (x))
 
+inline HEMAN_FLOAT smoothstep(
+    HEMAN_FLOAT edge0, HEMAN_FLOAT edge1, HEMAN_FLOAT x)
+{
+    HEMAN_FLOAT t;
+    t = CLAMP01((x - edge0) / (edge1 - edge0));
+    return t * t * (3.0 - 2.0 * t);
+}
+
 void generate_gaussian_row(int* target, int fwidth);
 void generate_gaussian_splat(HEMAN_FLOAT* target, int fwidth);
