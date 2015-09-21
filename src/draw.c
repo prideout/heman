@@ -43,6 +43,39 @@ void heman_draw_colored_points(
     }
 }
 
+void heman_draw_colored_circles(heman_image* target, heman_points* pts,
+    int radius, const heman_color* colors)
+{
+    int fwidth = radius * 2 + 1;
+    int radius2 = radius * radius;
+    HEMAN_FLOAT* src = pts->data;
+    HEMAN_FLOAT inv = 1.0f / 255.0f;
+    int w = target->width;
+    int h = target->height;
+    for (int k = 0; k < pts->width; k++) {
+        HEMAN_FLOAT x = src[0];
+        HEMAN_FLOAT y = src[1];
+        src += pts->nbands;
+        int ii = x * w - radius;
+        int jj = y * h - radius;
+        for (int kj = 0; kj < fwidth; kj++) {
+            for (int ki = 0; ki < fwidth; ki++) {
+                int i = ii + ki;
+                int j = jj + kj;
+                int r2 = SQR(i - x * w) + SQR(j - y * h);
+                if (r2 > radius2) {
+                    continue;
+                }
+                HEMAN_FLOAT* texel = heman_image_texel(target, i, j);
+                heman_color rgb = colors[k];
+                *texel++ = (HEMAN_FLOAT)(rgb >> 16) * inv;
+                *texel++ = (HEMAN_FLOAT)((rgb >> 8) & 0xff) * inv;
+                *texel = (HEMAN_FLOAT)(rgb & 0xff) * inv;
+            }
+        }
+    }
+}
+
 void heman_draw_splats(
     heman_image* target, heman_points* pts, int radius, int blend_mode)
 {

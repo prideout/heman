@@ -1,7 +1,14 @@
 #include "image.h"
+#include "noise.h"
 #include <assert.h>
 #include <memory.h>
 #include <kazmath/vec3.h>
+
+#define NOISEX(U, V, A, F) \
+    (A * open_simplex_noise2(ctx, U * F, V * F))
+
+#define NOISEY(U, V, A, F) \
+    (A * open_simplex_noise2(ctx, U * F + 0.5, V * F))
 
 heman_image* heman_ops_step(heman_image* hmap, HEMAN_FLOAT threshold)
 {
@@ -152,18 +159,19 @@ void heman_ops_accumulate(heman_image* dst, heman_image* src)
     }
 }
 
-heman_image* heman_ops_sobel(heman_image* img, heman_color edge_color)
+heman_image* heman_ops_sobel(heman_image* img, heman_color rgb)
 {
     int width = img->width;
     int height = img->height;
     assert(img->nbands == 3);
     heman_image* result = heman_image_create(width, height, 3);
     heman_image* gray = heman_color_to_grayscale(img);
+    HEMAN_FLOAT inv = 1.0f / 255.0f;
 
     kmVec3 edge_rgb;
-    edge_rgb.x = 0;
-    edge_rgb.y = 0;
-    edge_rgb.z = 0;
+    edge_rgb.x = (HEMAN_FLOAT)(rgb >> 16) * inv;
+    edge_rgb.y = (HEMAN_FLOAT)((rgb >> 8) & 0xff) * inv;
+    edge_rgb.z = (HEMAN_FLOAT)(rgb & 0xff) * inv;
 
 #pragma omp parallel for
     for (int y = 0; y < height; y++) {
@@ -190,5 +198,45 @@ heman_image* heman_ops_sobel(heman_image* img, heman_color edge_color)
     }
 
     heman_image_destroy(gray);
+    return result;
+}
+
+heman_image* heman_ops_warp(heman_image* img, int seed)
+{
+    struct osn_context* ctx;
+    open_simplex_noise(seed, &ctx);
+    int width = img->width;
+    int height = img->height;
+    int nbands = img->nbands;
+    heman_image* result = heman_image_create(width, height, nbands);
+    HEMAN_FLOAT invw = 1.0 / width;
+    HEMAN_FLOAT invh = 1.0 / height;
+
+#pragma omp parallel for
+    for (int y = 0; y < height; y++) {
+        HEMAN_FLOAT* dst = result->data + y * width * nbands;
+        for (int x = 0; x < width; x++) {
+            float s = x * invw;
+            float t = y * invh;
+            float u = s;
+            float v = t;
+            u += NOISEX(s, t, 0.08, 8.0);
+            v += NOISEY(s, t, 0.08, 8.0);
+            u += NOISEX(s, t, 0.04, 16.0);
+            v += NOISEY(s, t, 0.04, 16.0);
+            u += NOISEX(s, t, 0.04, 32.0);
+            v += NOISEY(s, t, 0.04, 32.0);
+            u += NOISEX(s, t, 0.02, 64.0);
+            v += NOISEY(s, t, 0.02, 64.0);
+            int i = CLAMP(u * width, 0, width - 1);
+            int j = CLAMP(v * height, 0, height - 1);
+            HEMAN_FLOAT* src = heman_image_texel(img, i, j);
+            for (int n = 0; n < nbands; n++) {
+                *dst++ = *src++;
+            }
+        }
+    }
+
+    open_simplex_noise_free(ctx);
     return result;
 }

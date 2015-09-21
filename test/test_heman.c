@@ -298,7 +298,8 @@ void test_generate()
 
 void test_political()
 {
-    const int imgres = 256;
+    const int imgres = 1024;
+    const int seed = 0;
 
     heman_points* pts = heman_image_create(3, 1, 3);
     kmVec3* coords = (kmVec3*) heman_image_data(pts);
@@ -312,19 +313,29 @@ void test_political()
     heman_draw_contour_from_points(contour, pts, 0x83B2B2);
 
     heman_draw_colored_points(contour, pts, colors);
+    heman_draw_colored_circles(contour, pts, 10, colors);
     heman_image_destroy(pts);
 
     heman_image* cf = heman_distance_create_cf(contour);
-    heman_image* voronoi = heman_color_from_cf(cf, contour);
-    heman_image* toon = heman_ops_sobel(voronoi, 0);
+    heman_image* voronoi1 = heman_color_from_cf(cf, contour);
+    heman_image* toon1 = heman_ops_sobel(voronoi1, 0x303030);
 
-    heman_image* frames[] = {contour, voronoi, toon};
+    heman_image* warped_cf = heman_ops_warp(cf, seed);
+    heman_image* voronoi2 = heman_color_from_cf(warped_cf, contour);
+    heman_image* toon2 = heman_ops_sobel(voronoi2, 0x303030);
+
+    heman_image* frames[] = {contour, toon1, toon2};
     heman_image* filmstrip = heman_ops_stitch_horizontal(frames, 3);
     heman_points_destroy(contour);
-    heman_points_destroy(voronoi);
-    heman_points_destroy(toon);
+    heman_points_destroy(voronoi1);
+    heman_points_destroy(toon1);
+    heman_points_destroy(voronoi2);
+    heman_points_destroy(toon2);
+    heman_points_destroy(cf);
+    heman_points_destroy(warped_cf);
 
-    hut_write_image(OUTFOLDER "political.png", filmstrip, 0, 1);
+    // hut_write_image_scaled(OUTFOLDER "gradient.png", grad, 256, 256);
+    hut_write_image_scaled(OUTFOLDER "political.png", filmstrip, 1152, 384);
     heman_points_destroy(filmstrip);
 }
 

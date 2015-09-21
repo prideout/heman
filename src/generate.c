@@ -10,7 +10,8 @@ static const HEMAN_FLOAT DEFAULT_STRENGTH = 0.6;
 #define NOISE(U, V) open_simplex_noise2(ctx, U, V)
 #define NOISE3(p) open_simplex_noise3(ctx, p.x, p.y, p.z)
 
-static heman_image* generate_island_noise(int width, int height, int seed)
+heman_image* heman_internal_generate_island_noise(
+    int width, int height, int seed)
 {
     struct osn_context* ctx;
     open_simplex_noise(seed, &ctx);
@@ -44,7 +45,8 @@ static heman_image* generate_island_noise(int width, int height, int seed)
 
 heman_image* heman_generate_island_heightmap(int width, int height, int seed)
 {
-    heman_image* noisetex = generate_island_noise(width, height, seed);
+    heman_image* noisetex =
+        heman_internal_generate_island_noise(width, height, seed);
     heman_image* coastmask = heman_image_create(width, height, 1);
     HEMAN_FLOAT* data = coastmask->data;
     HEMAN_FLOAT invh = 1.0f / height;
@@ -217,7 +219,8 @@ void heman_internal_draw_seeds(heman_image* target, heman_points* pts)
 heman_image* heman_generate_archipelago_heightmap(
     int width, int height, heman_points* points, float noiseamt, int seed)
 {
-    heman_image* noisetex = generate_island_noise(width, height, seed);
+    heman_image* noisetex =
+        heman_internal_generate_island_noise(width, height, seed);
     heman_image* coastmask = heman_image_create(width, height, 1);
     heman_image_clear(coastmask, 0);
     heman_internal_draw_seeds(coastmask, points);

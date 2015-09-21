@@ -166,6 +166,9 @@ heman_image* heman_ops_sobel(heman_image* dst, heman_color edge_color);
 // Add the values of src into dst.
 void heman_ops_accumulate(heman_image* dst, heman_image* src);
 
+// Use FBM and Perlin noise to warp the given image.
+heman_image* heman_ops_warp(heman_image* src, int seed);
+
 // Create a point list.
 heman_image* heman_points_create(HEMAN_FLOAT* xy, int npoints);
 
@@ -194,6 +197,10 @@ void heman_draw_points(heman_image* target, heman_points* pts, HEMAN_FLOAT val);
 // Set the given list of texels to the given list of colors.
 void heman_draw_colored_points(
     heman_image* target, heman_points* coords, const heman_color* colors);
+
+// Draw colored circles into the given render target.
+void heman_draw_colored_circles(heman_image* target, heman_points* pts,
+    int radius, const heman_color* colors);
 
 // Draw a Gaussian splat at each given point.
 // The blend_mode parameter is ignored for now (it's always ADD).
