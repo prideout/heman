@@ -124,8 +124,30 @@ heman_image* heman_color_to_grayscale(heman_image* colorimg)
     return result;
 }
 
+heman_image* heman_internal_rg(heman_image* cfield)
+{
+    assert(cfield->nbands == 2);
+    int w = cfield->width;
+    int h = cfield->height;
+    heman_image* target = heman_image_create(w, h, 3);
+    HEMAN_FLOAT* dst = target->data;
+    HEMAN_FLOAT* src = cfield->data;
+    int size = w * h;
+    for (int i = 0; i < size; i++) {
+        HEMAN_FLOAT u = *src++ / w;
+        HEMAN_FLOAT v = *src++ / h;
+        *dst++ = u;
+        *dst++ = v;
+        *dst++ = 0;
+    }
+    return target;
+}
+
 heman_image* heman_color_from_cf(heman_image* cfield, heman_image* texture)
 {
+    if (!texture) {
+        return heman_internal_rg(cfield);
+    }
     assert(cfield->nbands == 2);
     assert(texture->nbands == 3);
     assert(cfield->width == texture->width);

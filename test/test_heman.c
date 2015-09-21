@@ -318,25 +318,36 @@ void test_political()
 
     heman_image* cf = heman_distance_create_cf(contour);
     heman_image* voronoi1 = heman_color_from_cf(cf, contour);
+    heman_image* rg1 = heman_color_from_cf(cf, 0);
     heman_image* toon1 = heman_ops_sobel(voronoi1, 0x303030);
 
     heman_image* warped_cf = heman_ops_warp(cf, seed);
     heman_image* voronoi2 = heman_color_from_cf(warped_cf, contour);
+    heman_image* rg2 = heman_color_from_cf(warped_cf, 0);
     heman_image* toon2 = heman_ops_sobel(voronoi2, 0x303030);
 
-    heman_image* frames[] = {contour, toon1, toon2};
-    heman_image* filmstrip = heman_ops_stitch_horizontal(frames, 3);
-    heman_points_destroy(contour);
-    heman_points_destroy(voronoi1);
-    heman_points_destroy(toon1);
-    heman_points_destroy(voronoi2);
-    heman_points_destroy(toon2);
+    heman_image* frames1[] = {contour, toon1, toon2};
+    heman_image* filmstrip1 = heman_ops_stitch_horizontal(frames1, 3);
+
     heman_points_destroy(cf);
     heman_points_destroy(warped_cf);
+    heman_points_destroy(voronoi1);
+    heman_points_destroy(voronoi2);
+    heman_points_destroy(toon1);
+    heman_points_destroy(toon2);
 
-    // hut_write_image_scaled(OUTFOLDER "gradient.png", grad, 256, 256);
-    hut_write_image_scaled(OUTFOLDER "political.png", filmstrip, 1152, 384);
-    heman_points_destroy(filmstrip);
+    heman_image* frames2[] = {contour, rg1, rg2};
+    heman_image* filmstrip2 = heman_ops_stitch_horizontal(frames2, 3);
+
+    heman_points_destroy(contour);
+    heman_points_destroy(rg1);
+    heman_points_destroy(rg2);
+
+    hut_write_image_scaled(OUTFOLDER "political.png", filmstrip1, 1152, 384);
+    heman_points_destroy(filmstrip1);
+
+    hut_write_image_scaled(OUTFOLDER "coordfields.png", filmstrip2, 1152, 384);
+    heman_points_destroy(filmstrip2);
 }
 
 int main(int argc, char** argv)
