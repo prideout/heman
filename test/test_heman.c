@@ -307,24 +307,54 @@ void test_political()
     coords[1] = (kmVec3){0.3, 0.5, 0.6};
     coords[2] = (kmVec3){0.7, 0.7, 0.2};
     heman_color colors[3] = {0xC8758A, 0xDE935A, 0xE0BB5E};
-
+    heman_color ocean = 0x83B2B2;
+    heman_color beach = 0x303030;
     heman_image* contour = heman_image_create(imgres, imgres, 3);
     heman_image_clear(contour, 0);
-    heman_draw_contour_from_points(contour, pts, 0x83B2B2);
-
-    heman_draw_colored_points(contour, pts, colors);
+    heman_draw_contour_from_points(contour, pts, ocean);
     heman_draw_colored_circles(contour, pts, 10, colors);
-    heman_image_destroy(pts);
 
+    heman_color previous = cp_colors[2];
+    cp_colors[2] = beach;
+    heman_image* grad = heman_color_create_gradient(
+        256, COUNT(cp_colors), cp_locations, cp_colors);
+    cp_colors[2] = previous;
+    HEMAN_FLOAT* grad_data = heman_image_data(grad);
+
+    // Create some interesting contour lines by injecting brightness
+    // at certain spots in the color gradient.
+    for (int x = 0; x < 128; x += 8) {
+        grad_data[x * 3 + 0] *= 1 + x / 128.0;
+        grad_data[x * 3 + 1] *= 1 + x / 128.0;
+        grad_data[x * 3 + 2] *= 1 + x / 128.0;
+    }
+
+    float noiseamt = 0.2;
+    heman_image* elev;
+    heman_image* poli;
+    heman_generate_archipelago_political(
+        imgres, imgres, pts, colors, ocean, noiseamt, seed, &elev, &poli);
+    heman_image* oceanimg = heman_color_apply_gradient(elev, -0.5, 0.5, grad);
+    poli = heman_ops_sobel(poli, beach);
+    poli = heman_ops_replace_color(poli, ocean, oceanimg);
+    heman_image* final = heman_lighting_apply(elev, poli, 1, 1, 0.5, 0);
+    hut_write_image_scaled(
+        OUTFOLDER "archifinal.png", final, imgres / 2, imgres / 2);
+    heman_image_destroy(oceanimg);
+    heman_image_destroy(elev);
+    heman_image_destroy(poli);
+    heman_image_destroy(final);
+
+    heman_image_destroy(pts);
     heman_image* cf = heman_distance_create_cf(contour);
     heman_image* voronoi1 = heman_color_from_cf(cf, contour);
     heman_image* rg1 = heman_color_from_cf(cf, 0);
-    heman_image* toon1 = heman_ops_sobel(voronoi1, 0x303030);
+    heman_image* toon1 = heman_ops_sobel(voronoi1, beach);
 
     heman_image* warped_cf = heman_ops_warp(cf, seed);
     heman_image* voronoi2 = heman_color_from_cf(warped_cf, contour);
     heman_image* rg2 = heman_color_from_cf(warped_cf, 0);
-    heman_image* toon2 = heman_ops_sobel(voronoi2, 0x303030);
+    heman_image* toon2 = heman_ops_sobel(voronoi2, beach);
 
     heman_image* frames1[] = {contour, toon1, toon2};
     heman_image* filmstrip1 = heman_ops_stitch_horizontal(frames1, 3);
@@ -353,13 +383,13 @@ void test_political()
 int main(int argc, char** argv)
 {
     printf("%d threads available.\n", omp_get_max_threads());
-    // test_noise();
-    // test_distance();
-    // test_color();
-    // test_lighting();
-    // test_points_grid();
-    // test_points_density();
-    // test_coordfield();
-    // test_generate();
+    test_noise();
+    test_distance();
+    test_color();
+    test_lighting();
+    test_points_grid();
+    test_points_density();
+    test_coordfield();
+    test_generate();
     test_political();
 }

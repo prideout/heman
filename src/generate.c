@@ -280,3 +280,54 @@ heman_image* heman_generate_archipelago_heightmap(
     heman_image_destroy(heightmap);
     return result;
 }
+
+void heman_generate_archipelago_political(int width, int height,
+    heman_points* points, const heman_color* colors, heman_color ocean,
+    float noiseamt, int seed, heman_image** elevation, heman_image** political)
+{
+    heman_image* contour = heman_image_create(width, height, 3);
+    heman_image_clear(contour, 0);
+    heman_draw_contour_from_points(contour, points, ocean);
+    heman_draw_colored_points(contour, points, colors);
+
+    heman_image* cf = heman_distance_create_cf(contour);
+    heman_image* warped_cf = heman_ops_warp(cf, seed);
+    *political = heman_color_from_cf(warped_cf, contour);
+    heman_image_destroy(warped_cf);
+    heman_image_destroy(cf);
+    heman_image_destroy(contour);
+
+    heman_image* coastmask = heman_ops_extract_mask(*political, ocean);
+    heman_image* sdf = heman_distance_create_sdf(coastmask);
+    heman_image_destroy(coastmask);
+    *elevation = heman_image_create(width, height, 1);
+    heman_image* noisetex =
+        heman_internal_generate_island_noise(width, height, seed);
+    HEMAN_FLOAT* data = (*elevation)->data;
+    HEMAN_FLOAT invw = 1.0 / width;
+    HEMAN_FLOAT invh = 1.0 / height;
+
+#pragma omp parallel for
+    for (int y = 0; y < height; ++y) {
+        HEMAN_FLOAT* dst = data + y * width;
+        for (int x = 0; x < width; ++x) {
+            HEMAN_FLOAT n[3];
+            HEMAN_FLOAT u = x * invw;
+            HEMAN_FLOAT v = y * invh;
+            heman_image_sample(noisetex, u, v, n);
+            HEMAN_FLOAT z;
+            heman_image_sample(sdf, u, v, &z);
+            if (z > 0.0) {
+                HEMAN_FLOAT influence = z;
+                u += influence * n[1];
+                v += influence * n[2];
+                heman_image_sample(sdf, u, v, &z);
+                z += 6 * influence * n[0];
+            }
+            *dst++ = z;
+        }
+    }
+
+    heman_image_destroy(noisetex);
+    heman_image_destroy(sdf);
+}

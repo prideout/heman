@@ -4,11 +4,9 @@
 #include <memory.h>
 #include <kazmath/vec3.h>
 
-#define NOISEX(U, V, A, F) \
-    (A * open_simplex_noise2(ctx, U * F, V * F))
+#define NOISEX(U, V, A, F) (A * open_simplex_noise2(ctx, U * F, V * F))
 
-#define NOISEY(U, V, A, F) \
-    (A * open_simplex_noise2(ctx, U * F + 0.5, V * F))
+#define NOISEY(U, V, A, F) (A * open_simplex_noise2(ctx, U * F + 0.5, V * F))
 
 heman_image* heman_ops_step(heman_image* hmap, HEMAN_FLOAT threshold)
 {
@@ -238,5 +236,64 @@ heman_image* heman_ops_warp(heman_image* img, int seed)
     }
 
     open_simplex_noise_free(ctx);
+    return result;
+}
+
+heman_image* heman_ops_extract_mask(heman_image* source, heman_color color)
+{
+    assert(source->nbands == 3);
+    HEMAN_FLOAT inv = 1.0f / 255.0f;
+    HEMAN_FLOAT r = (HEMAN_FLOAT)(color >> 16) * inv;
+    HEMAN_FLOAT g = (HEMAN_FLOAT)((color >> 8) & 0xff) * inv;
+    HEMAN_FLOAT b = (HEMAN_FLOAT)(color & 0xff) * inv;
+    int height = source->height;
+    int width = source->width;
+    heman_image* result = heman_image_create(width, height, 1);
+
+#pragma omp parallel for
+    for (int y = 0; y < height; y++) {
+        HEMAN_FLOAT* dst = result->data + y * width;
+        HEMAN_FLOAT* src = source->data + y * width * 3;
+        for (int x = 0; x < width; x++, src += 3) {
+            *dst++ = 1 - ((src[0] == r) && (src[1] == g) && (src[2] == b));
+        }
+    }
+
+    return result;
+}
+
+heman_image* heman_ops_replace_color(heman_image* source, heman_color color,
+    heman_image* texture)
+{
+    assert(source->nbands == 3);
+    assert(texture->nbands == 3);
+    int height = source->height;
+    int width = source->width;
+    assert(texture->width == width);
+    assert(texture->height == height);
+    HEMAN_FLOAT inv = 1.0f / 255.0f;
+    HEMAN_FLOAT r = (HEMAN_FLOAT)(color >> 16) * inv;
+    HEMAN_FLOAT g = (HEMAN_FLOAT)((color >> 8) & 0xff) * inv;
+    HEMAN_FLOAT b = (HEMAN_FLOAT)(color & 0xff) * inv;
+    heman_image* result = heman_image_create(width, height, 3);
+
+#pragma omp parallel for
+    for (int y = 0; y < height; y++) {
+        HEMAN_FLOAT* dst = result->data + y * width * 3;
+        HEMAN_FLOAT* src = source->data + y * width * 3;
+        HEMAN_FLOAT* tex = texture->data + y * width * 3;
+        for (int x = 0; x < width; x++, src += 3, dst += 3, tex += 3) {
+            if ((src[0] == r) && (src[1] == g) && (src[2] == b)) {
+                dst[0] = tex[0];
+                dst[1] = tex[1];
+                dst[2] = tex[2];
+            } else {
+                dst[0] = src[0];
+                dst[1] = src[1];
+                dst[2] = src[2];
+            }
+        }
+    }
+
     return result;
 }

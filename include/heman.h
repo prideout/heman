@@ -88,6 +88,12 @@ heman_image* heman_generate_planet_heightmap(int width, int height, int seed);
 heman_image* heman_generate_archipelago_heightmap(
     int width, int height, heman_points* points, float noiseamt, int seed);
 
+// Similar to generate_archipelago_heightmap, but generates a "political"
+// RGB image in addition to the heightmap.
+void heman_generate_archipelago_political(int width, int height,
+    heman_points* points, const heman_color* colors, heman_color ocean,
+    float noiseamt, int seed, heman_image** elevation, heman_image** political);
+
 // High-level function that sums up a number of noise octaves, also known as
 // Fractional Brownian Motion.  Taken alone, Perlin / Simplex noise are not
 // fractals; this makes them more fractal-like. A good starting point is to use
@@ -168,6 +174,13 @@ void heman_ops_accumulate(heman_image* dst, heman_image* src);
 
 // Use FBM and Perlin noise to warp the given image.
 heman_image* heman_ops_warp(heman_image* src, int seed);
+
+// Consume a 3-band image and a color of interest; produce a 1-band image.
+heman_image* heman_ops_extract_mask(heman_image* src, heman_color color);
+
+// Replace a region of solid color with texture.
+heman_image* heman_ops_replace_color(heman_image* src, heman_color color,
+    heman_image* texture);
 
 // Create a point list.
 heman_image* heman_points_create(HEMAN_FLOAT* xy, int npoints);
