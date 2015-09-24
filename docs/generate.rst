@@ -43,9 +43,9 @@ Planets
 Archipelagos
 ============
 
-.. c:function:: heman_image* heman_generate_archipelago_heightmap(int width, int height, heman_points* points, float noiseamt, int random_seed))
+Heman proffers two high-level functions for generating archipelagos.  They are similar to :c:data:`heman_generate_island_heightmap` but more flexible, allowing the user to specify custom seed points.  The first function below generates only a height map; the latter can also generate "political" colors.
 
-    Another high-level function, similar to :c:data:`heman_generate_island_heightmap` but more flexible, allowing the user to specify custom seed points.
+.. c:function:: heman_image* heman_generate_archipelago_heightmap(int width, int height, heman_points* points, float noiseamt, int random_seed)
 
     0.3 is a good choice for `noiseamt`, but 0 is useful for diagnostics, as seen in the leftmost panel below.
 
@@ -55,3 +55,10 @@ Archipelagos
 
 .. image:: _static/archipelago.png
    :width: 768px
+
+.. c:function:: void heman_generate_archipelago_political(int width, int height, heman_points* points, const heman_color* colors, heman_color ocean, float noiseamt, int seed, heman_image** elevation, heman_image** political)
+
+    This is a fancier API that generates political colors as well as elevation data.  Behind the scenes, it uses :c:data:`heman_distance_create_cf`.
+
+.. image:: _static/archifinal.png
+   :width: 240px

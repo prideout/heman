@@ -19,8 +19,8 @@ API
     // but has a greater amount of information.
     heman_image* heman_distance_create_cf(heman_image* seed);
 
-Example
-=======
+SDF Example
+===========
 
 Here's an example of a starting image (the "seed") and its resulting signed distance field (SDF).
 
@@ -35,3 +35,11 @@ The above image was generated with the following program:
     .. literalinclude:: ../test/test_sdf.c
        :language: c
        :linenos:
+
+CF Example
+===========
+
+Here's an example of a starting image (the "seed") and its resulting coordinate field (CF).
+
+.. image:: _static/coordfields.png
+   :width: 512px
