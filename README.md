@@ -86,6 +86,7 @@ ls build/*.png
 ## Roadmap
 
 Here are some to-be-done items:
+- Provide "Exponentially Distributed Noise", in addition to Simplex.
 - Flesh out the [Python Bindings](https://github.com/prideout/heman-python) and provide docstrings.
 - Implement a contour extractor:
    - `heman_ops_extract_contour(image, threshold, thickness)`
