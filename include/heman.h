@@ -127,6 +127,9 @@ heman_image* heman_distance_create_df(heman_image* monochrome);
 // but has a greater amount of information.
 heman_image* heman_distance_create_cf(heman_image* seed);
 
+// Convert a two-band coordinate field into an unsigned distance field.
+heman_image* heman_distance_from_cf(heman_image* cf);
+
 // Create a single-channel floating point point image from bytes, such that
 // [0, 255] map to the given [minval, maxval] range.
 heman_image* heman_import_u8(int width, int height, int nbands,

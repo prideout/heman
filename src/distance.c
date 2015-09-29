@@ -145,8 +145,7 @@ static void transform_to_coordfield(heman_image* sdf, heman_image* cf)
         free(pl2);
     }
 
-    // #pragma omp parallel for
-
+#pragma omp parallel for
     for (int y = 0; y < height; ++y) {
         HEMAN_FLOAT* pl1 = NEW(HEMAN_FLOAT, width * 2);
         HEMAN_FLOAT* pl2 = NEW(HEMAN_FLOAT, width * 2);
@@ -243,4 +242,22 @@ heman_image* heman_distance_create_cf(heman_image* src)
     transform_to_coordfield(negative, coordfield);
     heman_image_destroy(negative);
     return coordfield;
+}
+
+heman_image* heman_distance_from_cf(heman_image* cf)
+{
+    assert(cf->nbands == 2 && "Coordinate field input must have 2 bands.");
+    heman_image* udf = heman_image_create(cf->width, cf->height, 1);
+    HEMAN_FLOAT* dptr = udf->data;
+    HEMAN_FLOAT* sptr = cf->data;
+    HEMAN_FLOAT scale = 1.0f / sqrt(SQR(cf->width) + SQR(cf->height));
+    for (int y = 0; y < cf->height; y++) {
+        for (int x = 0; x < cf->width; x++) {
+            HEMAN_FLOAT u = *sptr++;
+            HEMAN_FLOAT v = *sptr++;
+            HEMAN_FLOAT dist = sqrt(SQR(u - x) + SQR(v - y)) * scale;
+            *dptr++ = dist;
+        }
+    }
+    return udf;
 }
