@@ -4,8 +4,8 @@
 # a container instance, then creates some aliases to make it easy to attach
 # or kill the container.
 
-boot2docker up
-eval "$(boot2docker shellinit)"
+docker-machine create --driver virtualbox heman
+eval "$(docker-machine env heman)"
 docker rm -f heman >/dev/null 2>&1
 docker build -t heman .
 docker run -itd -v $(pwd):/heman --name=heman heman bash

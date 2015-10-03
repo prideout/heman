@@ -71,9 +71,10 @@ Note that this will not use OpenMP or build any tests.
 
 Linux is required for OpenMP and tests.  If you are not using a Linux machine but you want OpenMP support, take a look at the provided [Dockerfile](https://github.com/prideout/heman/blob/master/Dockerfile).
 
-There's a script in the repo, [env.sh](https://github.com/prideout/heman/blob/master/env.sh), that makes using Docker easy.  It calls `boot2docker` and builds a container.  Here's how to use it:
+There's a script in the repo, [env.sh](https://github.com/prideout/heman/blob/master/env.sh), that makes using Docker easy.  It calls `docker-machine` and builds a container.  Here's how to use it:
 
 ```bash
+brew install docker-machine
 . env.sh
 # Lots of stuff spews out as it builds the container...
 heman-bash
