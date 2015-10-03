@@ -244,8 +244,8 @@ void test_coordfield()
     free(colors);
     hut_write_image(OUTFOLDER "seed.png", seed, 0, 1);
 
-    heman_image* cf = heman_distance_create_cf(seed);
-    heman_image* voronoi = heman_color_from_cf(cf, seed);
+    heman_image* cf = heman_distance_create_cpcf(seed);
+    heman_image* voronoi = heman_color_from_cpcf(cf, seed);
     hut_write_image(OUTFOLDER "coordfield.png", voronoi, 0, 1);
 
     heman_image_destroy(voronoi);
@@ -346,21 +346,21 @@ void test_political()
     heman_image_destroy(final);
 
     heman_image_destroy(pts);
-    heman_image* cf = heman_distance_create_cf(contour);
-    heman_image* voronoi1 = heman_color_from_cf(cf, contour);
-    heman_image* rg1 = heman_color_from_cf(cf, 0);
+    heman_image* cf = heman_distance_create_cpcf(contour);
+    heman_image* voronoi1 = heman_color_from_cpcf(cf, contour);
+    heman_image* rg1 = heman_color_from_cpcf(cf, 0);
     heman_image* toon1 = heman_ops_sobel(voronoi1, beach);
 
-    heman_image* warped_cf = heman_ops_warp(cf, seed);
-    heman_image* voronoi2 = heman_color_from_cf(warped_cf, contour);
-    heman_image* rg2 = heman_color_from_cf(warped_cf, 0);
+    heman_image* warped_cpcf = heman_ops_warp(cf, seed);
+    heman_image* voronoi2 = heman_color_from_cpcf(warped_cpcf, contour);
+    heman_image* rg2 = heman_color_from_cpcf(warped_cpcf, 0);
     heman_image* toon2 = heman_ops_sobel(voronoi2, beach);
 
     heman_image* frames1[] = {contour, toon1, toon2};
     heman_image* filmstrip1 = heman_ops_stitch_horizontal(frames1, 3);
 
     heman_points_destroy(cf);
-    heman_points_destroy(warped_cf);
+    heman_points_destroy(warped_cpcf);
     heman_points_destroy(voronoi1);
     heman_points_destroy(voronoi2);
     heman_points_destroy(toon1);

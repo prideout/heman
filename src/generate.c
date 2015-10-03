@@ -290,10 +290,10 @@ void heman_generate_archipelago_political(int width, int height,
     heman_draw_contour_from_points(contour, points, ocean);
     heman_draw_colored_points(contour, points, colors);
 
-    heman_image* cf = heman_distance_create_cf(contour);
-    heman_image* warped_cf = heman_ops_warp(cf, seed);
-    *political = heman_color_from_cf(warped_cf, contour);
-    heman_image_destroy(warped_cf);
+    heman_image* cf = heman_distance_create_cpcf(contour);
+    heman_image* warped_cpcf = heman_ops_warp(cf, seed);
+    *political = heman_color_from_cpcf(warped_cpcf, contour);
+    heman_image_destroy(warped_cpcf);
     heman_image_destroy(cf);
     heman_image_destroy(contour);
 

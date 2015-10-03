@@ -262,8 +262,8 @@ heman_image* heman_ops_extract_mask(heman_image* source, heman_color color)
     return result;
 }
 
-heman_image* heman_ops_replace_color(heman_image* source, heman_color color,
-    heman_image* texture)
+heman_image* heman_ops_replace_color(
+    heman_image* source, heman_color color, heman_image* texture)
 {
     assert(source->nbands == 3);
     assert(texture->nbands == 3);

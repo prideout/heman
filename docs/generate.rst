@@ -58,7 +58,7 @@ Heman proffers two high-level functions for generating archipelagos.  They are s
 
 .. c:function:: void heman_generate_archipelago_political(int width, int height, heman_points* points, const heman_color* colors, heman_color ocean, float noiseamt, int seed, heman_image** elevation, heman_image** political)
 
-    This is a fancier API that generates political colors as well as elevation data.  Behind the scenes, it uses :c:data:`heman_distance_create_cf`.
+    This is a fancier API that generates political colors as well as elevation data.  Behind the scenes, it uses :c:data:`heman_distance_create_cpcf`.
 
 .. image:: _static/archifinal.png
    :width: 240px

@@ -69,9 +69,9 @@ heman_image* heman_color_from_grayscale(heman_image* gray);
 // Convert 3-channel image into 1-channel image based on perceptive luminance.
 heman_image* heman_color_to_grayscale(heman_image* colorimg);
 
-// Dereference a coordinate field (see heman_distance_create_cf) by making
+// Dereference a coordinate field (see heman_distance_create_cpcf) by making
 // lookups into a color texture.  Useful for creating Voronoi diagrams.
-heman_image* heman_color_from_cf(heman_image* cfield, heman_image* texture);
+heman_image* heman_color_from_cpcf(heman_image* cfield, heman_image* texture);
 
 // High-level function that uses several octaves of simplex noise and a signed
 // distance field to generate an interesting height map.
@@ -122,13 +122,13 @@ heman_image* heman_distance_create_sdf(heman_image* monochrome);
 // the fast algorithm described in Felzenszwalb 2012.
 heman_image* heman_distance_create_df(heman_image* monochrome);
 
-// Create a two-band "coordinate field" containing the non-normalized texture
-// coordinates of the nearest seed.  The result is related to the distance field
-// but has a greater amount of information.
-heman_image* heman_distance_create_cf(heman_image* seed);
+// Create a two-band "closest point coordinate field" containing the
+// non-normalized texture coordinates of the nearest seed.  The result is
+// related to the distance field but has a greater amount of information.
+heman_image* heman_distance_create_cpcf(heman_image* seed);
 
 // Convert a two-band coordinate field into an unsigned distance field.
-heman_image* heman_distance_from_cf(heman_image* cf);
+heman_image* heman_distance_from_cpcf(heman_image* cf);
 
 // Create a single-channel floating point point image from bytes, such that
 // [0, 255] map to the given [minval, maxval] range.
@@ -182,8 +182,8 @@ heman_image* heman_ops_warp(heman_image* src, int seed);
 heman_image* heman_ops_extract_mask(heman_image* src, heman_color color);
 
 // Replace a region of solid color with texture.
-heman_image* heman_ops_replace_color(heman_image* src, heman_color color,
-    heman_image* texture);
+heman_image* heman_ops_replace_color(
+    heman_image* src, heman_color color, heman_image* texture);
 
 // Create a point list.
 heman_image* heman_points_create(HEMAN_FLOAT* xy, int npoints);

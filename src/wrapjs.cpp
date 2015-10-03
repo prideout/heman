@@ -86,6 +86,6 @@ EMSCRIPTEN_BINDINGS(heman) {
     class_<Distance>("Distance")
         .class_function("create_sdf", &heman_distance_create_sdf, arp)
         .class_function("create_df", &heman_distance_create_df, arp)
-        .class_function("create_cf", &heman_distance_create_cf, arp);
+        .class_function("create_cpcf", &heman_distance_create_cpcf, arp);
 
 }

@@ -143,7 +143,7 @@ heman_image* heman_internal_rg(heman_image* cfield)
     return target;
 }
 
-heman_image* heman_color_from_cf(heman_image* cfield, heman_image* texture)
+heman_image* heman_color_from_cpcf(heman_image* cfield, heman_image* texture)
 {
     if (!texture) {
         return heman_internal_rg(cfield);

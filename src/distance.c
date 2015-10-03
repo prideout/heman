@@ -218,7 +218,7 @@ heman_image* heman_distance_create_df(heman_image* src)
     return positive;
 }
 
-heman_image* heman_distance_create_cf(heman_image* src)
+heman_image* heman_distance_create_cpcf(heman_image* src)
 {
     heman_image* negative = heman_image_create(src->width, src->height, 1);
     heman_image* coordfield = heman_image_create(src->width, src->height, 2);
@@ -244,7 +244,7 @@ heman_image* heman_distance_create_cf(heman_image* src)
     return coordfield;
 }
 
-heman_image* heman_distance_from_cf(heman_image* cf)
+heman_image* heman_distance_from_cpcf(heman_image* cf)
 {
     assert(cf->nbands == 2 && "Coordinate field input must have 2 bands.");
     heman_image* udf = heman_image_create(cf->width, cf->height, 1);
