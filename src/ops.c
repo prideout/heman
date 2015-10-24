@@ -199,7 +199,7 @@ heman_image* heman_ops_sobel(heman_image* img, heman_color rgb)
     return result;
 }
 
-heman_image* heman_ops_warp(heman_image* img, int seed)
+heman_image* heman_ops_warp(heman_image* img, int seed, int octaves)
 {
     struct osn_context* ctx;
     open_simplex_noise(seed, &ctx);
@@ -209,23 +209,29 @@ heman_image* heman_ops_warp(heman_image* img, int seed)
     heman_image* result = heman_image_create(width, height, nbands);
     HEMAN_FLOAT invw = 1.0 / width;
     HEMAN_FLOAT invh = 1.0 / height;
+    HEMAN_FLOAT inv = MIN(invw, invh);
+    HEMAN_FLOAT aspect = (float) width / height;
+    float gain = 0.6;
+    float lacunarity = 2.0;
+    float initial_amplitude = 0.05;
+    float initial_frequency = 8.0;
 
 #pragma omp parallel for
     for (int y = 0; y < height; y++) {
         HEMAN_FLOAT* dst = result->data + y * width * nbands;
         for (int x = 0; x < width; x++) {
-            float s = x * invw;
-            float t = y * invh;
-            float u = s;
-            float v = t;
-            u += NOISEX(s, t, 0.08, 8.0);
-            v += NOISEY(s, t, 0.08, 8.0);
-            u += NOISEX(s, t, 0.04, 16.0);
-            v += NOISEY(s, t, 0.04, 16.0);
-            u += NOISEX(s, t, 0.04, 32.0);
-            v += NOISEY(s, t, 0.04, 32.0);
-            u += NOISEX(s, t, 0.02, 64.0);
-            v += NOISEY(s, t, 0.02, 64.0);
+            float s = x * inv;
+            float t = y * inv;
+            float u = x * invw;
+            float v = y * invh;
+            float a = initial_amplitude;
+            float f = initial_frequency;
+            for (int i = 0; i < octaves; i++) {
+                u += NOISEX(s, t, a, f);
+                v += aspect * NOISEY(s, t, a, f);
+                a *= gain;
+                f *= lacunarity;
+            }
             int i = CLAMP(u * width, 0, width - 1);
             int j = CLAMP(v * height, 0, height - 1);
             HEMAN_FLOAT* src = heman_image_texel(img, i, j);

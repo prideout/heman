@@ -176,7 +176,7 @@ heman_image* heman_ops_sobel(heman_image* dst, heman_color edge_color);
 void heman_ops_accumulate(heman_image* dst, heman_image* src);
 
 // Use FBM and Perlin noise to warp the given image.
-heman_image* heman_ops_warp(heman_image* src, int seed);
+heman_image* heman_ops_warp(heman_image* src, int seed, int octaves);
 
 // Consume a 3-band image and a color of interest; produce a 1-band image.
 heman_image* heman_ops_extract_mask(heman_image* src, heman_color color);
@@ -225,5 +225,5 @@ void heman_draw_splats(
 
 // Treats a set of points like blobs and draws a contour around them.
 // Points can be 2-tuples (X Y) or 3-tuples (X Y Radius).
-void heman_draw_contour_from_points(
-    heman_image* target, heman_points* coords, heman_color color);
+void heman_draw_contour_from_points(heman_image* target, heman_points* coords,
+    heman_color color, float mind, float maxd);

@@ -107,11 +107,9 @@ void heman_draw_splats(
 
 void heman_internal_draw_seeds(heman_image* target, heman_points* pts);
 
-void heman_draw_contour_from_points(
-    heman_image* target, heman_points* coords, heman_color rgb)
+void heman_draw_contour_from_points(heman_image* target, heman_points* coords,
+    heman_color rgb, float mind, float maxd)
 {
-    const float MIND = 0.40;
-    const float MAXD = 0.41;
     assert(target->nbands == 3);
     int width = target->width;
     int height = target->height;
@@ -129,7 +127,7 @@ void heman_draw_contour_from_points(
         HEMAN_FLOAT* dst = target->data + y * width * 3;
         for (int x = 0; x < width; x++) {
             HEMAN_FLOAT dist = *heman_image_texel(seed, x, y);
-            if (dist > MIND && dist < MAXD) {
+            if (dist > mind && dist < maxd) {
                 dst[0] = r;
                 dst[1] = g;
                 dst[2] = b;

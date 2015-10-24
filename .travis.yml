@@ -1,5 +1,5 @@
 language: c
-script: scons test earth sdf planet && scons lib --double
+script: scons test earth sdf planet pts && scons lib --double
 addons:
   apt:
     sources:

@@ -1,6 +1,6 @@
 import os.path
 
-TESTS = Split('heman earth sdf planet')
+TESTS = Split('heman earth sdf planet pts')
 
 BUILD_DIR = 'build'
 

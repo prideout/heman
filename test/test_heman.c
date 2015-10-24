@@ -311,7 +311,7 @@ void test_political()
     heman_color beach = 0x303030;
     heman_image* contour = heman_image_create(imgres, imgres, 3);
     heman_image_clear(contour, 0);
-    heman_draw_contour_from_points(contour, pts, ocean);
+    heman_draw_contour_from_points(contour, pts, ocean, 0.40, 0.41);
     heman_draw_colored_circles(contour, pts, 10, colors);
 
     heman_color previous = cp_colors[2];
@@ -351,7 +351,7 @@ void test_political()
     heman_image* rg1 = heman_color_from_cpcf(cf, 0);
     heman_image* toon1 = heman_ops_sobel(voronoi1, beach);
 
-    heman_image* warped_cpcf = heman_ops_warp(cf, seed);
+    heman_image* warped_cpcf = heman_ops_warp(cf, seed, 4);
     heman_image* voronoi2 = heman_color_from_cpcf(warped_cpcf, contour);
     heman_image* rg2 = heman_color_from_cpcf(warped_cpcf, 0);
     heman_image* toon2 = heman_ops_sobel(voronoi2, beach);
