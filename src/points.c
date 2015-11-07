@@ -20,13 +20,13 @@ inline float randhashf(unsigned int seed, float a, float b)
     return (b - a) * randhash(seed) / (float) UINT_MAX + a;
 }
 
-heman_image* heman_points_create(HEMAN_FLOAT* xy, int npoints)
+heman_image* heman_points_create(HEMAN_FLOAT* xy, int npoints, int nbands)
 {
     heman_points* img = malloc(sizeof(heman_image));
     img->width = npoints;
     img->height = 1;
-    img->nbands = 2;
-    int nbytes = sizeof(HEMAN_FLOAT) * npoints * 2;
+    img->nbands = nbands;
+    int nbytes = sizeof(HEMAN_FLOAT) * npoints * nbands;
     img->data = malloc(nbytes);
     memcpy(img->data, xy, nbytes);
     return img;

@@ -186,7 +186,7 @@ heman_image* heman_ops_replace_color(
     heman_image* src, heman_color color, heman_image* texture);
 
 // Create a point list.
-heman_image* heman_points_create(HEMAN_FLOAT* xy, int npoints);
+heman_image* heman_points_create(HEMAN_FLOAT* xy, int npoints, int nbands);
 
 // Free memory for a point list.
 void heman_points_destroy(heman_points*);
