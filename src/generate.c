@@ -281,9 +281,9 @@ heman_image* heman_generate_archipelago_heightmap(
     return result;
 }
 
-void heman_generate_archipelago_political(int width, int height,
+heman_image* heman_generate_archipelago_political_1(int width, int height,
     heman_points* points, const heman_color* colors, heman_color ocean,
-    float noiseamt, int seed, heman_image** elevation, heman_image** political)
+    float noiseamt, int seed)
 {
     heman_image* contour = heman_image_create(width, height, 3);
     heman_image_clear(contour, 0);
@@ -292,18 +292,23 @@ void heman_generate_archipelago_political(int width, int height,
 
     heman_image* cf = heman_distance_create_cpcf(contour);
     heman_image* warped_cpcf = heman_ops_warp(cf, seed, 4);
-    *political = heman_color_from_cpcf(warped_cpcf, contour);
+    heman_image* political = heman_color_from_cpcf(warped_cpcf, contour);
     heman_image_destroy(warped_cpcf);
     heman_image_destroy(cf);
     heman_image_destroy(contour);
+    return political;
+}
 
-    heman_image* coastmask = heman_ops_extract_mask(*political, ocean);
+heman_image* heman_generate_archipelago_political_2(int width, int height,
+    heman_color ocean, int seed, heman_image* political)
+{
+    heman_image* coastmask = heman_ops_extract_mask(political, ocean);
     heman_image* sdf = heman_distance_create_sdf(coastmask);
     heman_image_destroy(coastmask);
-    *elevation = heman_image_create(width, height, 1);
+    heman_image* elevation = heman_image_create(width, height, 1);
     heman_image* noisetex =
         heman_internal_generate_island_noise(width, height, seed);
-    HEMAN_FLOAT* data = (*elevation)->data;
+    HEMAN_FLOAT* data = elevation->data;
     HEMAN_FLOAT invw = 1.0 / width;
     HEMAN_FLOAT invh = 1.0 / height;
 
@@ -330,4 +335,15 @@ void heman_generate_archipelago_political(int width, int height,
 
     heman_image_destroy(noisetex);
     heman_image_destroy(sdf);
+    return elevation;
+}
+
+void heman_generate_archipelago_political(int width, int height,
+    heman_points* points, const heman_color* colors, heman_color ocean,
+    float noiseamt, int seed, heman_image** elevation, heman_image** political)
+{
+    *political = heman_generate_archipelago_political_1(
+        width, height, points, colors, ocean, noiseamt, seed);
+    *elevation = heman_generate_archipelago_political_2(
+        width, height, ocean, seed, *political);
 }
