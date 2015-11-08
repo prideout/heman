@@ -321,14 +321,12 @@ heman_image* heman_ops_stairstep(heman_image* hmap, int nsteps_water,
     for (int i = 0; i < size; ++i) {
         HEMAN_FLOAT e = *src++;
         if (e < 0) {
-            e = MIN(e, 0.0);
             e /= minv;
             e *= nsteps_water;
-            e = (floor(e * nsteps_water) + lip) / nsteps_water;
+            e = -(floor(e * nsteps_water) + lip) / nsteps_water;
         } else {
-            e = MAX(e, 0.0);
             e /= maxv;
-            e = floor(e * nsteps_land) / nsteps_land;
+            e = (floor(e * nsteps_land) + lip) / nsteps_land;
         }
         *dst++ = e;
     }
