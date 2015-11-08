@@ -363,3 +363,61 @@ heman_image* heman_ops_merge_political(
     }
     return result;
 }
+
+heman_image* heman_ops_emboss(heman_image* img, int mode)
+{
+    int seed = 1;
+    int octaves = 4;
+
+    struct osn_context* ctx;
+    open_simplex_noise(seed, &ctx);
+    int width = img->width;
+    int height = img->height;
+    assert(img->nbands == 1);
+    heman_image* result = heman_image_create(width, height, 1);
+    HEMAN_FLOAT invw = 1.0 / width;
+    HEMAN_FLOAT invh = 1.0 / height;
+    HEMAN_FLOAT inv = MIN(invw, invh);
+    HEMAN_FLOAT aspect = (float) width / height;
+    float gain = 0.6;
+    float lacunarity = 2.0;
+    float land_amplitude = 0.0005;
+    float land_frequency = 256.0;
+    float ocean_amplitude = 0.5;
+    float ocean_frequency = 2.0;
+
+#pragma omp parallel for
+    for (int y = 0; y < height; y++) {
+        HEMAN_FLOAT* dst = result->data + y * width;
+        for (int x = 0; x < width; x++) {
+            HEMAN_FLOAT z = *heman_image_texel(img, x, y);
+            if (z > 0 && mode == 1) {
+                float s = x * inv;
+                float t = y * inv;
+                float a = land_amplitude;
+                float f = land_frequency;
+                for (int i = 0; i < octaves; i++) {
+                    z += NOISEX(s, t, a, f);
+                    a *= gain;
+                    f *= lacunarity;
+                }
+            } else if (z <= 0 && mode == -1) {
+                z = MAX(z, -0.1);
+                float soften = fabsf(z);
+                float s = x * inv;
+                float t = y * inv;
+                float a = ocean_amplitude;
+                float f = ocean_frequency;
+                for (int i = 0; i < octaves; i++) {
+                    z += soften * NOISEX(s, t, a, f);
+                    a *= gain;
+                    f *= lacunarity;
+                }
+            }
+            *dst++ = z;
+        }
+    }
+
+    open_simplex_noise_free(ctx);
+    return result;
+}

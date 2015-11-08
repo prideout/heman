@@ -197,6 +197,9 @@ heman_image* heman_ops_replace_color(
 heman_image* heman_ops_merge_political(
     heman_image* elevation, heman_image* political, heman_color ocean_color);
 
+// Add coarse-grain noise to ocean and fine-grain noise to land.
+heman_image* heman_ops_emboss(heman_image* elevation, int mode);
+
 // Create a point list.
 heman_image* heman_points_create(HEMAN_FLOAT* xy, int npoints, int nbands);
 
