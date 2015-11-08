@@ -245,7 +245,7 @@ heman_image* heman_ops_warp(heman_image* img, int seed, int octaves)
     return result;
 }
 
-heman_image* heman_ops_extract_mask(heman_image* source, heman_color color)
+heman_image* heman_ops_extract_mask(heman_image* source, heman_color color, int invert)
 {
     assert(source->nbands == 3);
     HEMAN_FLOAT inv = 1.0f / 255.0f;
@@ -261,7 +261,11 @@ heman_image* heman_ops_extract_mask(heman_image* source, heman_color color)
         HEMAN_FLOAT* dst = result->data + y * width;
         HEMAN_FLOAT* src = source->data + y * width * 3;
         for (int x = 0; x < width; x++, src += 3) {
-            *dst++ = 1 - ((src[0] == r) && (src[1] == g) && (src[2] == b));
+            HEMAN_FLOAT val =((src[0] == r) && (src[1] == g) && (src[2] == b));
+            if (!invert) {
+                val = 1 - val;
+            }
+            *dst++ = val;
         }
     }
 

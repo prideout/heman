@@ -2,6 +2,7 @@
 #include "noise.h"
 #include <math.h>
 #include <memory.h>
+#include <stdlib.h>
 #include <kazmath/vec3.h>
 
 static const HEMAN_FLOAT SEALEVEL = 0.5;
@@ -300,9 +301,9 @@ heman_image* heman_generate_archipelago_political_1(int width, int height,
 }
 
 heman_image* heman_generate_archipelago_political_2(int width, int height,
-    heman_color ocean, int seed, heman_image* political)
+    heman_color ocean, int seed, heman_image* political, int invert)
 {
-    heman_image* coastmask = heman_ops_extract_mask(political, ocean);
+    heman_image* coastmask = heman_ops_extract_mask(political, ocean, invert);
     heman_image* sdf = heman_distance_create_sdf(coastmask);
     heman_image_destroy(coastmask);
     heman_image* elevation = heman_image_create(width, height, 1);
@@ -338,12 +339,45 @@ heman_image* heman_generate_archipelago_political_2(int width, int height,
     return elevation;
 }
 
+heman_image* heman_generate_archipelago_political_3(int width, int height,
+    const heman_color* colors, int ncolors, int seed, heman_image* political)
+{
+    heman_image** elevations = malloc(sizeof(heman_image*) * ncolors);
+    for (int cindex = 0; cindex < ncolors; cindex++) {
+        elevations[cindex] = heman_generate_archipelago_political_2(
+            width, height, colors[cindex], seed, political, 1);
+    }
+    heman_image* elevation = heman_image_create(width, height, 1);
+    heman_image_clear(elevation, 0);
+    for (int cindex = 0; cindex < ncolors; cindex++) {
+
+#pragma omp parallel for
+        for (int y = 0; y < height; ++y) {
+            HEMAN_FLOAT* dst = elevation->data + y * width;
+            HEMAN_FLOAT* src = elevations[cindex]->data + y * width;
+            for (int x = 0; x < width; ++x, ++dst, ++src) {
+                *dst = MAX(*src, *dst);
+            }
+        }
+
+        heman_image_destroy(elevations[cindex]);
+    }
+    free(elevations);
+    return elevation;
+}
+
 void heman_generate_archipelago_political(int width, int height,
     heman_points* points, const heman_color* colors, heman_color ocean,
-    int seed, heman_image** elevation, heman_image** political)
+    int seed, heman_image** elevation, heman_image** political, int elevation_mode)
 {
     *political = heman_generate_archipelago_political_1(
         width, height, points, colors, ocean, seed);
-    *elevation = heman_generate_archipelago_political_2(
-        width, height, ocean, seed, *political);
+    if (elevation_mode == 0) {
+        *elevation = heman_generate_archipelago_political_2(
+            width, height, ocean, seed, *political, 0);
+    } else {
+        int ncolors = points->width;
+        *elevation = heman_generate_archipelago_political_3(
+            width, height, colors, ncolors, seed, *political);
+    }
 }

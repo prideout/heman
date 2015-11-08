@@ -335,12 +335,12 @@ void test_political()
         grad_data[x * 3 + 2] *= 1 + x / 128.0;
     }
 
-    float noiseamt = 0.2;
     heman_image* elev;
     heman_image* poli;
     heman_generate_archipelago_political(
-        imgres, imgres, pts, colors, ocean, seed, &elev, &poli);
+        imgres, imgres, pts, colors, ocean, seed, &elev, &poli, 0);
     heman_image* oceanimg = heman_color_apply_gradient(elev, -0.5, 0.5, grad);
+    elev = heman_ops_stairstep(elev, 2, 4, 1);
     poli = heman_ops_sobel(poli, beach);
     poli = heman_ops_replace_color(poli, ocean, oceanimg);
     heman_image* final = heman_lighting_apply(elev, poli, 1, 1, 0.5, 0);
