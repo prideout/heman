@@ -5,7 +5,7 @@
 #include "hut.h"
 
 #ifdef __APPLE__
-double omp_get_wtime() { return 0; }
+double omp_get_wtime() { return 1; }
 int omp_get_max_threads() { return 1; }
 #else
 #include <omp.h>
@@ -338,7 +338,7 @@ void test_political()
     heman_image* elev;
     heman_image* poli;
     heman_generate_archipelago_political(
-        imgres, imgres, pts, colors, ocean, seed, &elev, &poli, 0);
+        imgres, imgres, pts, colors, ocean, seed, &elev, &poli, 1);
     heman_image* oceanimg = heman_color_apply_gradient(elev, -0.5, 0.5, grad);
     elev = heman_ops_stairstep(elev, 2, 4, 1);
     poli = heman_ops_sobel(poli, beach);

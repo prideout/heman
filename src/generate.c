@@ -340,7 +340,8 @@ heman_image* heman_generate_archipelago_political_2(int width, int height,
 }
 
 heman_image* heman_generate_archipelago_political_3(int width, int height,
-    const heman_color* colors, int ncolors, int seed, heman_image* political)
+    const heman_color* colors, int ncolors, heman_color ocean, int seed,
+    heman_image* political)
 {
     heman_image** elevations = malloc(sizeof(heman_image*) * ncolors);
     for (int cindex = 0; cindex < ncolors; cindex++) {
@@ -350,7 +351,6 @@ heman_image* heman_generate_archipelago_political_3(int width, int height,
     heman_image* elevation = heman_image_create(width, height, 1);
     heman_image_clear(elevation, 0);
     for (int cindex = 0; cindex < ncolors; cindex++) {
-
 #pragma omp parallel for
         for (int y = 0; y < height; ++y) {
             HEMAN_FLOAT* dst = elevation->data + y * width;
@@ -359,10 +359,24 @@ heman_image* heman_generate_archipelago_political_3(int width, int height,
                 *dst = MAX(*src, *dst);
             }
         }
-
         heman_image_destroy(elevations[cindex]);
     }
     free(elevations);
+
+    heman_image* ocean_elevation = heman_generate_archipelago_political_2(
+        width, height, ocean, seed, political, 0);
+#pragma omp parallel for
+        for (int y = 0; y < height; ++y) {
+            HEMAN_FLOAT* dst = elevation->data + y * width;
+            HEMAN_FLOAT* src = ocean_elevation->data + y * width;
+            for (int x = 0; x < width; ++x, ++dst, ++src) {
+                if (*src < 0) {
+                    *dst = *src;
+                }
+            }
+        }
+    heman_image_destroy(ocean_elevation);
+
     return elevation;
 }
 
@@ -378,6 +392,6 @@ void heman_generate_archipelago_political(int width, int height,
     } else {
         int ncolors = points->width;
         *elevation = heman_generate_archipelago_political_3(
-            width, height, colors, ncolors, seed, *political);
+            width, height, colors, ncolors, ocean, seed, *political);
     }
 }
