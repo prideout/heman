@@ -278,7 +278,7 @@ void test_generate()
         coords[1] = (kmVec3){0.3, 0.5, 0.6};
         coords[2] = (kmVec3){0.7, 0.7, 0.2};
         heman_image* elev =
-            heman_generate_archipelago_heightmap(800, 450, pts, noise, seed);
+            heman_generate_archipelago_heightmap(800, 450, pts, seed);
         heman_image_destroy(pts);
         heman_image* albedo = heman_color_apply_gradient(elev, -0.5, 0.5, grad);
         *pfinal++ = heman_lighting_apply(elev, albedo, 1, 1, 0.5, 0);
@@ -333,7 +333,7 @@ void test_political()
     heman_image* elev;
     heman_image* poli;
     heman_generate_archipelago_political(
-        imgres, imgres, pts, colors, ocean, noiseamt, seed, &elev, &poli);
+        imgres, imgres, pts, colors, ocean, seed, &elev, &poli);
     heman_image* oceanimg = heman_color_apply_gradient(elev, -0.5, 0.5, grad);
     poli = heman_ops_sobel(poli, beach);
     poli = heman_ops_replace_color(poli, ocean, oceanimg);
