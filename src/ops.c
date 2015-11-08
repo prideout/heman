@@ -384,7 +384,6 @@ heman_image* heman_ops_emboss(heman_image* img, int mode)
     HEMAN_FLOAT invw = 1.0 / width;
     HEMAN_FLOAT invh = 1.0 / height;
     HEMAN_FLOAT inv = MIN(invw, invh);
-    HEMAN_FLOAT aspect = (float) width / height;
     float gain = 0.6;
     float lacunarity = 2.0;
     float land_amplitude = 0.0005;
