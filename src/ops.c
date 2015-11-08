@@ -303,3 +303,32 @@ heman_image* heman_ops_replace_color(
 
     return result;
 }
+
+heman_image* heman_ops_stairstep(heman_image* hmap, int nsteps_water,
+    int nsteps_land)
+{
+    assert(hmap->nbands == 1);
+    heman_image* result = heman_image_create(hmap->width, hmap->height, 1);
+    int size = hmap->height * hmap->width;
+    HEMAN_FLOAT* src = hmap->data;
+    HEMAN_FLOAT* dst = result->data;
+    HEMAN_FLOAT minv = 1000;
+    HEMAN_FLOAT maxv = -1000;
+    for (int i = 0; i < size; ++i) {
+        minv = MIN(minv, src[i]);
+        maxv = MAX(maxv, src[i]);
+    }
+    for (int i = 0; i < size; ++i) {
+        HEMAN_FLOAT e = *src++;
+        if (e < 0) {
+            e /= minv;
+            e *= nsteps_water + 1;
+            *dst++ = floor(e) / (nsteps_water + 1);
+        } else {
+            e /= maxv;
+            e *= nsteps_land + 1;
+            *dst++ = floor(e) / (nsteps_land + 1);
+        }
+    }
+    return result;
+}

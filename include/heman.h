@@ -162,6 +162,10 @@ heman_image* heman_ops_normalize_f32(
 // Generate a monochrome image by applying a step function.
 heman_image* heman_ops_step(heman_image* image, HEMAN_FLOAT threshold);
 
+// Takes a 1-band elevation image and makes it tiered (scalloped).
+heman_image* heman_ops_stairstep(heman_image* image, int nsteps_water,
+    int nsteps_land);
+
 // Generate a height x 1 x 1 image by averaging the values across each row.
 heman_image* heman_ops_sweep(heman_image* image);
 
