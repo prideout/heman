@@ -114,6 +114,9 @@ heman_image* heman_lighting_compute_normals(heman_image* heightmap);
 // http://nothings.org/gamedev/horizon/.
 heman_image* heman_lighting_compute_occlusion(heman_image* heightmap);
 
+// Sets some global state that affects ambient occlusion computations.
+void heman_lighting_set_occlusion_scale(float s);
+
 // Create a one-band "signed distance field" based on the given input, using
 // the fast algorithm described in Felzenszwalb 2012.
 heman_image* heman_distance_create_sdf(heman_image* monochrome);

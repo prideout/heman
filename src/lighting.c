@@ -4,6 +4,13 @@
 #include <memory.h>
 #include <kazmath/vec3.h>
 
+static float _occlusion_scale = 1.0f;
+
+void heman_lighting_set_occlusion_scale(float s)
+{
+    _occlusion_scale = s;
+}
+
 heman_image* heman_lighting_compute_normals(heman_image* heightmap)
 {
     assert(heightmap->nbands == 1);
@@ -163,8 +170,8 @@ static void horizon_scan(
     // Each cell in the grid has a certain width and height.  These can be
     // multiplied by row / column indices to get world-space X / Y values,
     // which are in the same coordinate system as the height values.
-    HEMAN_FLOAT cellw = 1.0f / MAX(w, h);
-    HEMAN_FLOAT cellh = 1.0f / MAX(w, h);
+    HEMAN_FLOAT cellw = _occlusion_scale / MAX(w, h);
+    HEMAN_FLOAT cellh = _occlusion_scale / MAX(w, h);
 
     // Initialize a stack of candidate horizon points, one for each sweep.  In a
     // serial implementation we wouldn't need to allocate this much memory, but
