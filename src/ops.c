@@ -334,3 +334,34 @@ heman_image* heman_ops_stairstep(heman_image* hmap, int nsteps_water,
     }
     return result;
 }
+
+heman_image* heman_ops_merge_political(
+    heman_image* hmap, heman_image* cmap, heman_color ocean)
+{
+    assert(hmap->nbands == 1);
+    assert(cmap->nbands == 3);
+    heman_image* result = heman_image_create(hmap->width, hmap->height, 4);
+    HEMAN_FLOAT* pheight = hmap->data;
+    HEMAN_FLOAT* pcolour = cmap->data;
+    HEMAN_FLOAT* pmerged = result->data;
+    HEMAN_FLOAT inv = 1.0f / 255.0f;
+    HEMAN_FLOAT oceanr = (HEMAN_FLOAT)(ocean >> 16) * inv;
+    HEMAN_FLOAT oceang = (HEMAN_FLOAT)((ocean >> 8) & 0xff) * inv;
+    HEMAN_FLOAT oceanb = (HEMAN_FLOAT)(ocean & 0xff) * inv;
+    int size = hmap->height * hmap->width;
+    for (int i = 0; i < size; ++i) {
+        HEMAN_FLOAT h = *pheight++;
+        if (h < 0) {
+            *pmerged++ = oceanr;
+            *pmerged++ = oceang;
+            *pmerged++ = oceanb;
+            pcolour += 3;
+        } else {
+            *pmerged++ = *pcolour++;
+            *pmerged++ = *pcolour++;
+            *pmerged++ = *pcolour++;
+        }
+        *pmerged++ = h;
+    }
+    return result;
+}

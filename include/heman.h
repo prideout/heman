@@ -192,6 +192,11 @@ heman_image* heman_ops_extract_mask(heman_image* src, heman_color color);
 heman_image* heman_ops_replace_color(
     heman_image* src, heman_color color, heman_image* texture);
 
+// Create a 4-band image by merging a 3-band political image with
+// a 1-band elevation image.
+heman_image* heman_ops_merge_political(
+    heman_image* elevation, heman_image* political, heman_color ocean_color);
+
 // Create a point list.
 heman_image* heman_points_create(HEMAN_FLOAT* xy, int npoints, int nbands);
 
