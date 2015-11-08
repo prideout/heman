@@ -305,7 +305,7 @@ heman_image* heman_ops_replace_color(
 }
 
 heman_image* heman_ops_stairstep(heman_image* hmap, int nsteps_water,
-    int nsteps_land)
+    int nsteps_land, float lip)
 {
     assert(hmap->nbands == 1);
     heman_image* result = heman_image_create(hmap->width, hmap->height, 1);
@@ -321,14 +321,16 @@ heman_image* heman_ops_stairstep(heman_image* hmap, int nsteps_water,
     for (int i = 0; i < size; ++i) {
         HEMAN_FLOAT e = *src++;
         if (e < 0) {
+            e = MIN(e, 0.0);
             e /= minv;
-            e *= nsteps_water + 1;
-            *dst++ = floor(e) / (nsteps_water + 1);
+            e *= nsteps_water;
+            e = (floor(e * nsteps_water) + lip) / nsteps_water;
         } else {
+            e = MAX(e, 0.0);
             e /= maxv;
-            e *= nsteps_land + 1;
-            *dst++ = floor(e) / (nsteps_land + 1);
+            e = floor(e * nsteps_land) / nsteps_land;
         }
+        *dst++ = e;
     }
     return result;
 }
