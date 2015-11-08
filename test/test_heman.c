@@ -1,9 +1,15 @@
 #include <heman.h>
-#include <omp.h>
 #include <time.h>
 #include <kazmath/vec2.h>
 #include <kazmath/vec3.h>
 #include "hut.h"
+
+#ifdef __APPLE__
+double omp_get_wtime() { return 0; }
+int omp_get_max_threads() { return 1; }
+#else
+#include <omp.h>
+#endif
 
 static const int SIZE = 512;
 
