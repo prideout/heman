@@ -283,7 +283,7 @@ heman_image* heman_generate_archipelago_heightmap(
 
 heman_image* heman_generate_archipelago_political_1(int width, int height,
     heman_points* points, const heman_color* colors, heman_color ocean,
-    float noiseamt, int seed)
+    int seed)
 {
     heman_image* contour = heman_image_create(width, height, 3);
     heman_image_clear(contour, 0);
@@ -340,10 +340,10 @@ heman_image* heman_generate_archipelago_political_2(int width, int height,
 
 void heman_generate_archipelago_political(int width, int height,
     heman_points* points, const heman_color* colors, heman_color ocean,
-    float noiseamt, int seed, heman_image** elevation, heman_image** political)
+    int seed, heman_image** elevation, heman_image** political)
 {
     *political = heman_generate_archipelago_political_1(
-        width, height, points, colors, ocean, noiseamt, seed);
+        width, height, points, colors, ocean, seed);
     *elevation = heman_generate_archipelago_political_2(
         width, height, ocean, seed, *political);
 }

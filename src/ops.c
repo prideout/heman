@@ -347,6 +347,12 @@ heman_image* heman_ops_merge_political(
     HEMAN_FLOAT oceang = (HEMAN_FLOAT)((ocean >> 8) & 0xff) * inv;
     HEMAN_FLOAT oceanb = (HEMAN_FLOAT)(ocean & 0xff) * inv;
     int size = hmap->height * hmap->width;
+    float minh = 1000;
+    float maxh = -1000;
+    for (int i = 0; i < size; ++i) {
+        minh = MIN(minh, pheight[i]);
+        maxh = MIN(maxh, pheight[i]);
+    }
     for (int i = 0; i < size; ++i) {
         HEMAN_FLOAT h = *pheight++;
         if (h < 0) {
@@ -359,7 +365,7 @@ heman_image* heman_ops_merge_political(
             *pmerged++ = *pcolour++;
             *pmerged++ = *pcolour++;
         }
-        *pmerged++ = h;
+        *pmerged++ = (h - minh) / (maxh - minh);
     }
     return result;
 }
@@ -384,7 +390,7 @@ heman_image* heman_ops_emboss(heman_image* img, int mode)
     float land_amplitude = 0.0005;
     float land_frequency = 256.0;
     float ocean_amplitude = 0.5;
-    float ocean_frequency = 2.0;
+    float ocean_frequency = 1.0;
 
 #pragma omp parallel for
     for (int y = 0; y < height; y++) {

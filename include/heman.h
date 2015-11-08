@@ -92,7 +92,7 @@ heman_image* heman_generate_archipelago_heightmap(
 // RGB image in addition to the heightmap.
 void heman_generate_archipelago_political(int width, int height,
     heman_points* points, const heman_color* colors, heman_color ocean,
-    float noiseamt, int seed, heman_image** elevation, heman_image** political);
+    int seed, heman_image** elevation, heman_image** political);
 
 // High-level function that sums up a number of noise octaves, also known as
 // Fractional Brownian Motion.  Taken alone, Perlin / Simplex noise are not
