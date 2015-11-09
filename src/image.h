@@ -21,6 +21,7 @@ extern float _gamma;
 #define TWO_OVER_PI (0.63661977236)
 #define PI (3.1415926535)
 #define SQR(x) ((x) * (x))
+#define SWAP(type,a,b) {type _=a;a=b;b=_;}
 
 inline HEMAN_FLOAT smoothstep(
     HEMAN_FLOAT edge0, HEMAN_FLOAT edge1, HEMAN_FLOAT x)

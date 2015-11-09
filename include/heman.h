@@ -175,6 +175,12 @@ heman_image* heman_ops_stairstep(heman_image* image, int nsteps,
     heman_image* mask, heman_color mask_color, int invert_mask,
     HEMAN_FLOAT offset);
 
+// Similar to stairstep, but tries to guarantee that every tier
+// has the same total land area.
+heman_image* heman_ops_percentiles(heman_image* image, int nsteps,
+    heman_image* mask, heman_color mask_color, int invert_mask,
+    HEMAN_FLOAT offset);
+
 // Generate a height x 1 x 1 image by averaging the values across each row.
 heman_image* heman_ops_sweep(heman_image* image);
 

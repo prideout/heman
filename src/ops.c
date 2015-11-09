@@ -2,6 +2,7 @@
 #include "noise.h"
 #include <assert.h>
 #include <memory.h>
+#include <stdlib.h>
 #include <kazmath/vec3.h>
 
 #define NOISEX(U, V, A, F) (A * open_simplex_noise2(ctx, U * F, V * F))
@@ -320,6 +321,70 @@ static int _match(heman_image* mask, heman_color mask_color,
     unsigned char b2 = (mask_color & 0xff);
     int retval = r1 == r2 && g1 == g2 && b1 == b2;
     return invert_mask ? (1 - retval) : retval;
+}
+
+static float qselect(float *v, int len, int k)
+{
+    int i, st;
+    for(st = i = 0; i < len - 1; i++) {
+        if(v[i] > v[len - 1]) {
+            continue;
+        }
+        SWAP(float, v[i], v[st]);
+        st++;
+    }
+    SWAP(float, v[len - 1], v[st]);
+    return k == st ? v[st] : st > k ? qselect(v, st, k) : qselect(v + st, len - st, k - st);
+}
+
+heman_image* heman_ops_percentiles(heman_image* hmap, int nsteps,
+    heman_image* mask, heman_color mask_color, int invert_mask,
+    HEMAN_FLOAT offset)
+{
+    assert(hmap->nbands == 1);
+    assert(!mask || mask->nbands == 3);
+    int size = hmap->height * hmap->width;
+    HEMAN_FLOAT* src = hmap->data;
+    HEMAN_FLOAT minv = 1000;
+    HEMAN_FLOAT maxv = -1000;
+    int npixels = 0;
+    for (int i = 0; i < size; ++i) {
+        if (!mask || _match(mask, mask_color, invert_mask, i)) {
+            minv = MIN(minv, src[i]);
+            maxv = MAX(maxv, src[i]);
+            npixels++;
+        }
+    }
+
+    HEMAN_FLOAT* vals = malloc(sizeof(HEMAN_FLOAT) * npixels);
+    npixels = 0;
+    for (int i = 0; i < size; ++i) {
+        if (!mask || _match(mask, mask_color, invert_mask, i)) {
+            vals[npixels++] = src[i];
+        }
+    }
+    HEMAN_FLOAT* percentiles = malloc(sizeof(HEMAN_FLOAT) * nsteps);
+    for (int tier = 0; tier < nsteps; tier++) {
+        float height = qselect(vals, npixels, tier * npixels / nsteps);
+        percentiles[tier] = height;
+    }
+    free(vals);
+
+    for (int i = 0; i < size; ++i) {
+        HEMAN_FLOAT e = *src;
+        if (!mask || _match(mask, mask_color, invert_mask, i)) {
+            for (int tier = nsteps - 1; tier >= 0; tier--) {
+                if (e > percentiles[tier]) {
+                    e = percentiles[tier];
+                    break;
+                }
+            }
+        }
+        *src++ = e + offset;
+    }
+    free(percentiles);
+
+    return hmap;
 }
 
 heman_image* heman_ops_stairstep(heman_image* hmap, int nsteps,
