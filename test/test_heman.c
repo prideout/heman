@@ -340,7 +340,8 @@ void test_political()
     heman_generate_archipelago_political(
         imgres, imgres, pts, colors, ocean, seed, &elev, &poli, 1);
     heman_image* oceanimg = heman_color_apply_gradient(elev, -0.5, 0.5, grad);
-    elev = heman_ops_stairstep(elev, 2, 4, 1);
+    heman_ops_stairstep(elev, 3, poli, colors[0], 0, 0);
+    heman_ops_stairstep(elev, 2, poli, ocean, 0, 0);
     poli = heman_ops_sobel(poli, beach);
     poli = heman_ops_replace_color(poli, ocean, oceanimg);
     heman_image* final = heman_lighting_apply(elev, poli, 1, 1, 0.5, 0);

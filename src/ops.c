@@ -308,33 +308,48 @@ heman_image* heman_ops_replace_color(
     return result;
 }
 
-heman_image* heman_ops_stairstep(heman_image* hmap, int nsteps_water,
-    int nsteps_land, float lip)
+static int _match(heman_image* mask, heman_color mask_color,
+    int invert_mask, int pixel_index)
+{
+    HEMAN_FLOAT* mcolor = mask->data + pixel_index * 3;
+    unsigned char r1 = mcolor[0] * 255;
+    unsigned char g1 = mcolor[1] * 255;
+    unsigned char b1 = mcolor[2] * 255;
+    unsigned char r2 = mask_color >> 16;
+    unsigned char g2 = (mask_color >> 8) & 0xff;
+    unsigned char b2 = (mask_color & 0xff);
+    int retval = r1 == r2 && g1 == g2 && b1 == b2;
+    return invert_mask ? (1 - retval) : retval;
+}
+
+heman_image* heman_ops_stairstep(heman_image* hmap, int nsteps,
+    heman_image* mask, heman_color mask_color, int invert_mask,
+    HEMAN_FLOAT offset)
 {
     assert(hmap->nbands == 1);
-    heman_image* result = heman_image_create(hmap->width, hmap->height, 1);
+    assert(!mask || mask->nbands == 3);
     int size = hmap->height * hmap->width;
     HEMAN_FLOAT* src = hmap->data;
-    HEMAN_FLOAT* dst = result->data;
     HEMAN_FLOAT minv = 1000;
     HEMAN_FLOAT maxv = -1000;
     for (int i = 0; i < size; ++i) {
-        minv = MIN(minv, src[i]);
-        maxv = MAX(maxv, src[i]);
-    }
-    for (int i = 0; i < size; ++i) {
-        HEMAN_FLOAT e = *src++;
-        if (e < 0) {
-            e /= minv;
-            e *= nsteps_water;
-            e = -(floor(e * nsteps_water) + lip) / nsteps_water;
-        } else {
-            e /= maxv;
-            e = (floor(e * nsteps_land) + lip) / nsteps_land;
+        if (!mask || _match(mask, mask_color, invert_mask, i)) {
+            minv = MIN(minv, src[i]);
+            maxv = MAX(maxv, src[i]);
         }
-        *dst++ = e;
     }
-    return result;
+    HEMAN_FLOAT range = maxv - minv;
+    for (int i = 0; i < size; ++i) {
+        HEMAN_FLOAT e = *src;
+        if (!mask || _match(mask, mask_color, invert_mask, i)) {
+            e = e - minv;
+            e /= range;
+            e = floor(e * nsteps) / nsteps;
+            e = e * range + minv;
+        }
+        *src++ = e + offset;
+    }
+    return hmap;
 }
 
 heman_image* heman_ops_merge_political(
