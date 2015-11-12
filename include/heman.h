@@ -253,4 +253,4 @@ void heman_draw_splats(
 // Treats a set of points like blobs and draws a contour around them.
 // Points can be 2-tuples (X Y) or 3-tuples (X Y Radius).
 void heman_draw_contour_from_points(heman_image* target, heman_points* coords,
-    heman_color color, float mind, float maxd);
+    heman_color color, float mind, float maxd, int filterd);

@@ -182,9 +182,9 @@ heman_image* heman_generate_planet_heightmap(int width, int height, int seed)
     return result;
 }
 
-void heman_internal_draw_seeds(heman_image* target, heman_points* pts)
+void heman_internal_draw_seeds(heman_image* target, heman_points* pts, int filterd)
 {
-    int radius = target->width;
+    int radius = target->width / filterd;
     int fwidth = radius * 2 + 1;
     HEMAN_FLOAT* src = pts->data;
     int w = target->width;
@@ -224,7 +224,7 @@ heman_image* heman_generate_archipelago_heightmap(
         heman_internal_generate_island_noise(width, height, seed);
     heman_image* coastmask = heman_image_create(width, height, 1);
     heman_image_clear(coastmask, 0);
-    heman_internal_draw_seeds(coastmask, points);
+    heman_internal_draw_seeds(coastmask, points, 1);
 
     HEMAN_FLOAT* data = coastmask->data;
     HEMAN_FLOAT invh = 1.0f / height;
@@ -288,7 +288,7 @@ heman_image* heman_generate_archipelago_political_1(int width, int height,
 {
     heman_image* contour = heman_image_create(width, height, 3);
     heman_image_clear(contour, 0);
-    heman_draw_contour_from_points(contour, points, ocean, 0.40, 0.41);
+    heman_draw_contour_from_points(contour, points, ocean, 0.40, 0.41, 1);
     heman_draw_colored_points(contour, points, colors);
 
     heman_image* cf = heman_distance_create_cpcf(contour);

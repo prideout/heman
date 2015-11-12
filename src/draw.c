@@ -105,17 +105,18 @@ void heman_draw_splats(
     free(gaussian_splat);
 }
 
-void heman_internal_draw_seeds(heman_image* target, heman_points* pts);
+void heman_internal_draw_seeds(heman_image* target, heman_points* pts, int filterd);
 
 void heman_draw_contour_from_points(heman_image* target, heman_points* coords,
-    heman_color rgb, float mind, float maxd)
+    heman_color rgb, float mind, float maxd, int filterd)
 {
     assert(target->nbands == 3);
     int width = target->width;
     int height = target->height;
     heman_image* seed = heman_image_create(width, height, 1);
     heman_image_clear(seed, 0);
-    heman_internal_draw_seeds(seed, coords);
+
+    heman_internal_draw_seeds(seed, coords, filterd);
 
     HEMAN_FLOAT inv = 1.0f / 255.0f;
     HEMAN_FLOAT r = (HEMAN_FLOAT)(rgb >> 16) * inv;

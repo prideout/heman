@@ -317,7 +317,7 @@ void test_political()
     heman_color beach = 0x303030;
     heman_image* contour = heman_image_create(imgres, imgres, 3);
     heman_image_clear(contour, 0);
-    heman_draw_contour_from_points(contour, pts, ocean, 0.40, 0.41);
+    heman_draw_contour_from_points(contour, pts, ocean, 0.40, 0.41, 1);
     heman_draw_colored_circles(contour, pts, 10, colors);
 
     heman_color previous = cp_colors[2];

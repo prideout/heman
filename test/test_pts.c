@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     heman_color ocean = 0x83B2B2;
     heman_image* contour = heman_image_create(res, res / 2, 3);
     heman_image_clear(contour, 0);
-    heman_draw_contour_from_points(contour, pts, ocean, 0.3, 0.45);
+    heman_draw_contour_from_points(contour, pts, ocean, 0.3, 0.45, 1);
     heman_draw_colored_circles(contour, pts, 20, colors);
 
     heman_image* cpcf = heman_distance_create_cpcf(contour);
