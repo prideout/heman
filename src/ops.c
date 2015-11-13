@@ -221,12 +221,24 @@ heman_image* heman_ops_warp(heman_image* img, int seed, int octaves)
     for (int y = 0; y < height; y++) {
         HEMAN_FLOAT* dst = result->data + y * width * nbands;
         for (int x = 0; x < width; x++) {
+
+            float a = initial_amplitude;
+            float f = initial_frequency;
+
+            HEMAN_FLOAT* src;
+
+            // This is a little hack that modulates noise according to
+            // elevation, to prevent "swimming" at high elevations.
+            if (nbands == 4) {
+                src = heman_image_texel(img, x, y);
+                HEMAN_FLOAT elev = 1 - src[3];
+                a *= pow(elev, 4);
+            }
+
             float s = x * inv;
             float t = y * inv;
             float u = x * invw;
             float v = y * invh;
-            float a = initial_amplitude;
-            float f = initial_frequency;
             for (int i = 0; i < octaves; i++) {
                 u += NOISEX(s, t, a, f);
                 v += aspect * NOISEY(s, t, a, f);
@@ -235,7 +247,7 @@ heman_image* heman_ops_warp(heman_image* img, int seed, int octaves)
             }
             int i = CLAMP(u * width, 0, width - 1);
             int j = CLAMP(v * height, 0, height - 1);
-            HEMAN_FLOAT* src = heman_image_texel(img, i, j);
+            src = heman_image_texel(img, i, j);
             for (int n = 0; n < nbands; n++) {
                 *dst++ = *src++;
             }

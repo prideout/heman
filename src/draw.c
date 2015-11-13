@@ -4,7 +4,6 @@
 
 void heman_draw_points(heman_image* target, heman_points* pts, HEMAN_FLOAT val)
 {
-    assert(target->nbands == 1);
     HEMAN_FLOAT* src = pts->data;
     for (int k = 0; k < pts->width; k++) {
         HEMAN_FLOAT x = src[0];
@@ -16,7 +15,9 @@ void heman_draw_points(heman_image* target, heman_points* pts, HEMAN_FLOAT val)
             continue;
         }
         HEMAN_FLOAT* texel = heman_image_texel(target, i, j);
-        *texel = val;
+        for (int c = 0; c < target->nbands; c++) {
+            *texel++ = val;
+        }
     }
 }
 
@@ -101,7 +102,9 @@ void heman_draw_splats(
                     continue;
                 }
                 HEMAN_FLOAT* texel = heman_image_texel(target, i, j);
-                *texel += gaussian_splat[kj * fwidth + ki];
+                for (int c = 0; c < target->nbands; c++) {
+                    *texel++ += gaussian_splat[kj * fwidth + ki];
+                }
             }
         }
     }
