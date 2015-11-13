@@ -57,3 +57,33 @@ void heman_image_clear(heman_image* img, HEMAN_FLOAT value)
         *dst++ = value;
     }
 }
+
+heman_image* heman_image_extract_alpha(heman_image* img)
+{
+    assert(img->nbands == 4);
+    heman_image* retval = heman_image_create(img->width, img->height, 1);
+    int size = img->width * img->height;
+    HEMAN_FLOAT* src = img->data;
+    HEMAN_FLOAT* dst = retval->data;
+    while (size--) {
+        src += 3;
+        *dst++ = *src++;
+    }
+    return retval;
+}
+
+heman_image* heman_image_extract_rgb(heman_image* img)
+{
+    assert(img->nbands == 4);
+    heman_image* retval = heman_image_create(img->width, img->height, 3);
+    int size = img->width * img->height;
+    HEMAN_FLOAT* src = img->data;
+    HEMAN_FLOAT* dst = retval->data;
+    while (size--) {
+        *dst++ = *src++;
+        *dst++ = *src++;
+        *dst++ = *src++;
+        ++src;
+    }
+    return retval;
+}

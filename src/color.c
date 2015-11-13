@@ -149,12 +149,12 @@ heman_image* heman_color_from_cpcf(heman_image* cfield, heman_image* texture)
         return heman_internal_rg(cfield);
     }
     assert(cfield->nbands == 2);
-    assert(texture->nbands == 3);
+    assert(texture->nbands == 3 || texture->nbands == 4);
     assert(cfield->width == texture->width);
     assert(cfield->height == texture->height);
     int w = cfield->width;
     int h = cfield->height;
-    heman_image* target = heman_image_create(w, h, 3);
+    heman_image* target = heman_image_create(w, h, texture->nbands);
     HEMAN_FLOAT* dst = target->data;
     HEMAN_FLOAT* src = cfield->data;
     int size = w * h;
@@ -162,9 +162,9 @@ heman_image* heman_color_from_cpcf(heman_image* cfield, heman_image* texture)
         HEMAN_FLOAT u = *src++;
         HEMAN_FLOAT v = *src++;
         HEMAN_FLOAT* texel = heman_image_texel(texture, u, v);
-        *dst++ = *texel++;
-        *dst++ = *texel++;
-        *dst++ = *texel;
+        for (int c = 0; c < texture->nbands; c++) {
+            *dst++ = *texel++;
+        }
     }
     return target;
 }

@@ -23,7 +23,7 @@ void heman_draw_points(heman_image* target, heman_points* pts, HEMAN_FLOAT val)
 void heman_draw_colored_points(
     heman_image* target, heman_points* pts, const heman_color* colors)
 {
-    assert(target->nbands == 3);
+    assert(target->nbands == 3 || target->nbands == 4);
     HEMAN_FLOAT* src = pts->data;
     HEMAN_FLOAT inv = 1.0f / 255.0f;
     for (int k = 0; k < pts->width; k++) {
@@ -37,9 +37,12 @@ void heman_draw_colored_points(
         }
         HEMAN_FLOAT* texel = heman_image_texel(target, i, j);
         heman_color rgb = colors[k];
-        *texel++ = (HEMAN_FLOAT)(rgb >> 16) * inv;
+        *texel++ = (HEMAN_FLOAT)((rgb >> 16) & 0xff) * inv;
         *texel++ = (HEMAN_FLOAT)((rgb >> 8) & 0xff) * inv;
-        *texel = (HEMAN_FLOAT)(rgb & 0xff) * inv;
+        *texel++ = (HEMAN_FLOAT)(rgb & 0xff) * inv;
+        if (target->nbands == 4) {
+            *texel = (HEMAN_FLOAT)(rgb >> 24) * inv;
+        }
     }
 }
 
@@ -110,7 +113,7 @@ void heman_internal_draw_seeds(heman_image* target, heman_points* pts, int filte
 void heman_draw_contour_from_points(heman_image* target, heman_points* coords,
     heman_color rgb, float mind, float maxd, int filterd)
 {
-    assert(target->nbands == 3);
+    assert(target->nbands == 3 || target->nbands == 4);
     int width = target->width;
     int height = target->height;
     heman_image* seed = heman_image_create(width, height, 1);
@@ -119,21 +122,28 @@ void heman_draw_contour_from_points(heman_image* target, heman_points* coords,
     heman_internal_draw_seeds(seed, coords, filterd);
 
     HEMAN_FLOAT inv = 1.0f / 255.0f;
-    HEMAN_FLOAT r = (HEMAN_FLOAT)(rgb >> 16) * inv;
+    HEMAN_FLOAT r = (HEMAN_FLOAT)((rgb >> 16) & 0xff) * inv;
     HEMAN_FLOAT g = (HEMAN_FLOAT)((rgb >> 8) & 0xff) * inv;
     HEMAN_FLOAT b = (HEMAN_FLOAT)(rgb & 0xff) * inv;
+    HEMAN_FLOAT a = 1;
+    if (target->nbands == 4) {
+        a = (HEMAN_FLOAT)(rgb >> 24) * inv;
+    }
 
 #pragma omp parallel for
     for (int y = 0; y < height; y++) {
-        HEMAN_FLOAT* dst = target->data + y * width * 3;
+        HEMAN_FLOAT* dst = target->data + y * width * target->nbands;
         for (int x = 0; x < width; x++) {
             HEMAN_FLOAT dist = *heman_image_texel(seed, x, y);
             if (dist > mind && dist < maxd) {
                 dst[0] = r;
                 dst[1] = g;
                 dst[2] = b;
+                if (target->nbands == 4) {
+                    dst[3] = a;
+                }
             }
-            dst += 3;
+            dst += target->nbands;
         }
     }
 

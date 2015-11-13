@@ -46,6 +46,12 @@ void heman_image_clear(heman_image*, HEMAN_FLOAT value);
 // Free memory for a image.
 void heman_image_destroy(heman_image*);
 
+// Create a one-band image from a four-band image by extracting the 4th channel.
+heman_image* heman_image_extract_alpha(heman_image*);
+
+// Create a three-band image from a four-band image by extracting first 3 bands.
+heman_image* heman_image_extract_rgb(heman_image*);
+
 // Create a 1-pixel tall, 3-band image representing a color gradient that lerps
 // the given control points, in a gamma correct way.  Each control point is
 // defined by an X location (one integer each) and an RGB value (one 32-bit
