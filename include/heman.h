@@ -83,6 +83,9 @@ heman_image* heman_color_from_cpcf(heman_image* cfield, heman_image* texture);
 // distance field to generate an interesting height map.
 heman_image* heman_generate_island_heightmap(int width, int height, int seed);
 
+// High-level function that deforms a hemisphere with simplex noise.
+heman_image* heman_generate_rock_heightmap(int width, int height, int seed);
+
 // High-level function that uses several octaves of OpenSimplex noise over a 3D
 // domain to generate an interesting lat-long height map.
 heman_image* heman_generate_planet_heightmap(int width, int height, int seed);

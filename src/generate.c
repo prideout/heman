@@ -105,6 +105,42 @@ heman_image* heman_generate_island_heightmap(int width, int height, int seed)
     return result;
 }
 
+heman_image* heman_generate_rock_heightmap(int width, int height, int seed)
+{
+    heman_image* noisetex =
+        heman_internal_generate_island_noise(width, height, seed);
+    heman_image* heightmap = heman_image_create(width, height, 1);
+    HEMAN_FLOAT* data = heightmap->data;
+    HEMAN_FLOAT invh = 1.0f / height;
+    HEMAN_FLOAT invw = 1.0f / width;
+    int hh = height / 2;
+    int hw = width / 2;
+
+#pragma omp parallel for
+    for (int y = 0; y < height; ++y) {
+        HEMAN_FLOAT vv = (y - hh) * invh;
+        HEMAN_FLOAT* dst = data + y * width;
+        for (int x = 0; x < width; ++x) {
+            HEMAN_FLOAT n[3];
+            HEMAN_FLOAT v = y * invh;
+            HEMAN_FLOAT u = x * invw;
+            heman_image_sample(noisetex, 0.5 * u, 0.5 * v, n);
+            u = (x - hw) * invw;
+            v = vv;
+            HEMAN_FLOAT r = 0.4 + 0.5 * n[0];
+            if (u * u + v * v > r * r) {
+                *dst++ = 0;
+                continue;
+            }
+            HEMAN_FLOAT z = sqrt(r * r - u * u - v * v);
+            *dst++ = z;
+        }
+    }
+
+    heman_image_destroy(noisetex);
+    return heightmap;
+}
+
 heman_image* heman_generate_simplex_fbm(int width, int height, float frequency,
     float amplitude, int octaves, float lacunarity, float gain, int seed)
 {
