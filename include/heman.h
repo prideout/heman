@@ -142,6 +142,9 @@ heman_image* heman_distance_create_cpcf(heman_image* seed);
 // Convert a two-band coordinate field into an unsigned distance field.
 heman_image* heman_distance_from_cpcf(heman_image* cf);
 
+// Create a two-band CPCF where each texel contains its own coordinate.
+heman_image* heman_distance_identity_cpcf(int width, int height);
+
 // Create a single-channel floating point point image from bytes, such that
 // [0, 255] map to the given [minval, maxval] range.
 heman_image* heman_import_u8(int width, int height, int nbands,
@@ -202,6 +205,10 @@ void heman_ops_accumulate(heman_image* dst, heman_image* src);
 
 // Use FBM and Perlin noise to warp the given image.
 heman_image* heman_ops_warp(heman_image* src, int seed, int octaves);
+
+// Same as ops_warp, but alos applies the warping operation to a point list.
+heman_image* heman_ops_warp_points(heman_image* src, int seed, int octaves,
+    heman_points* pts);
 
 // Consume a 3-band image and a color of interest; produce a 1-band image.
 heman_image* heman_ops_extract_mask(heman_image* src, heman_color color, int invert);

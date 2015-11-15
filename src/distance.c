@@ -218,10 +218,22 @@ heman_image* heman_distance_create_df(heman_image* src)
     return positive;
 }
 
+heman_image* heman_distance_identity_cpcf(int width, int height)
+{
+    heman_image* retval = heman_image_create(width, height, 2);
+    HEMAN_FLOAT* cdata = retval->data;
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            *cdata++ = x;
+            *cdata++ = y;
+        }
+    }
+    return retval;
+}
+
 heman_image* heman_distance_create_cpcf(heman_image* src)
 {
     heman_image* negative = heman_image_create(src->width, src->height, 1);
-    heman_image* coordfield = heman_image_create(src->width, src->height, 2);
     int size = src->height * src->width;
     HEMAN_FLOAT* nptr = negative->data;
     HEMAN_FLOAT* sptr = src->data;
@@ -232,13 +244,7 @@ heman_image* heman_distance_create_cpcf(heman_image* src)
         }
         *nptr++ = val ? 0 : INF;
     }
-    HEMAN_FLOAT* cdata = coordfield->data;
-    for (int y = 0; y < src->height; y++) {
-        for (int x = 0; x < src->width; x++) {
-            *cdata++ = x;
-            *cdata++ = y;
-        }
-    }
+    heman_image* coordfield = heman_distance_identity_cpcf(src->width, src->height);
     transform_to_coordfield(negative, coordfield);
     heman_image_destroy(negative);
     return coordfield;

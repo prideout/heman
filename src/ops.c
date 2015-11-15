@@ -200,7 +200,8 @@ heman_image* heman_ops_sobel(heman_image* img, heman_color rgb)
     return result;
 }
 
-heman_image* heman_ops_warp(heman_image* img, int seed, int octaves)
+heman_image* heman_ops_warp_core(heman_image* img, heman_image* secondary,
+    int seed, int octaves)
 {
     struct osn_context* ctx;
     open_simplex_noise(seed, &ctx);
@@ -208,6 +209,7 @@ heman_image* heman_ops_warp(heman_image* img, int seed, int octaves)
     int height = img->height;
     int nbands = img->nbands;
     heman_image* result = heman_image_create(width, height, nbands);
+    heman_image* result2 = secondary ? heman_image_create(width, height, secondary->nbands) : 0;
     HEMAN_FLOAT invw = 1.0 / width;
     HEMAN_FLOAT invh = 1.0 / height;
     HEMAN_FLOAT inv = MIN(invw, invh);
@@ -251,11 +253,51 @@ heman_image* heman_ops_warp(heman_image* img, int seed, int octaves)
             for (int n = 0; n < nbands; n++) {
                 *dst++ = *src++;
             }
+            if (secondary) {
+                src = heman_image_texel(secondary, x, y);
+                HEMAN_FLOAT* dst2 = heman_image_texel(result2, i, j);
+                for (int n = 0; n < secondary->nbands; n++) {
+                    *dst2++ = *src++;
+                }
+            }
         }
     }
-
     open_simplex_noise_free(ctx);
+    if (secondary) {
+        free(secondary->data);
+        secondary->data = result2->data;
+        free(result2);
+    }
     return result;
+}
+
+heman_image* heman_ops_warp_points(heman_image* img, int seed, int octaves,
+    heman_points* pts)
+{
+    int width = img->width;
+    int height = img->height;
+    heman_image* mapping = heman_distance_identity_cpcf(width, height);
+    heman_image* retval = heman_ops_warp_core(img, mapping, seed, octaves);
+    HEMAN_FLOAT* src = pts->data;
+    for (int k = 0; k < pts->width; k++, src += pts->nbands) {
+        HEMAN_FLOAT x = src[0];
+        HEMAN_FLOAT y = src[1];
+        int i = x * mapping->width;
+        int j = y * mapping->height;
+        if (i < 0 || i >= mapping->width || j < 0 || j >= mapping->height) {
+            continue;
+        }
+        HEMAN_FLOAT* texel = heman_image_texel(mapping, i, j);
+        src[0] = texel[0] / mapping->width;
+        src[1] = texel[1] / mapping->height;
+    }
+    heman_image_destroy(mapping);
+    return retval;
+}
+
+heman_image* heman_ops_warp(heman_image* img, int seed, int octaves)
+{
+    return heman_ops_warp_core(img, 0, seed, octaves);
 }
 
 heman_image* heman_ops_extract_mask(heman_image* source, heman_color color, int invert)
