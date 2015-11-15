@@ -44,6 +44,34 @@ heman_image* heman_internal_generate_island_noise(
     return img;
 }
 
+heman_image* heman_internal_generate_rock_noise(
+    int width, int height, int seed)
+{
+    struct osn_context* ctx;
+    open_simplex_noise(seed, &ctx);
+    heman_image* img = heman_image_create(width, height, 1);
+    HEMAN_FLOAT* data = img->data;
+    float invh = 1.0f / MAX(width, height);
+    float invw = 1.0f / MAX(width, height);
+    float freqs[] = {2.0, 4.0, 16.0};
+    float ampls[] = {0.2, 0.05, 0.01};
+
+#pragma omp parallel for
+    for (int y = 0; y < height; ++y) {
+        float v = y * invh;
+        HEMAN_FLOAT* dst = data + y * width;
+        for (int x = 0; x < width; ++x) {
+            float u = x * invw;
+            *dst++ = ampls[0] * NOISE(u * freqs[0], v * freqs[0]) +
+                ampls[1] * NOISE(u * freqs[1], v * freqs[1]) +
+                ampls[2] * NOISE(u * freqs[2], v * freqs[2]);
+        }
+    }
+
+    open_simplex_noise_free(ctx);
+    return img;
+}
+
 heman_image* heman_generate_island_heightmap(int width, int height, int seed)
 {
     heman_image* noisetex =
@@ -108,7 +136,7 @@ heman_image* heman_generate_island_heightmap(int width, int height, int seed)
 heman_image* heman_generate_rock_heightmap(int width, int height, int seed)
 {
     heman_image* noisetex =
-        heman_internal_generate_island_noise(width, height, seed);
+        heman_internal_generate_rock_noise(width, height, seed);
     heman_image* heightmap = heman_image_create(width, height, 1);
     HEMAN_FLOAT* data = heightmap->data;
     HEMAN_FLOAT invh = 1.0f / height;
@@ -121,13 +149,13 @@ heman_image* heman_generate_rock_heightmap(int width, int height, int seed)
         HEMAN_FLOAT vv = (y - hh) * invh;
         HEMAN_FLOAT* dst = data + y * width;
         for (int x = 0; x < width; ++x) {
-            HEMAN_FLOAT n[3];
             HEMAN_FLOAT v = y * invh;
             HEMAN_FLOAT u = x * invw;
-            heman_image_sample(noisetex, 0.5 * u, 0.5 * v, n);
+            HEMAN_FLOAT n;
+            heman_image_sample(noisetex, u, v, &n);
             u = (x - hw) * invw;
             v = vv;
-            HEMAN_FLOAT r = 0.4 + 0.5 * n[0];
+            HEMAN_FLOAT r = 0.3 + n;
             if (u * u + v * v > r * r) {
                 *dst++ = 0;
                 continue;
