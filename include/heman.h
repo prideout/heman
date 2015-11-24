@@ -177,6 +177,9 @@ heman_image* heman_ops_stitch_vertical(heman_image** images, int count);
 heman_image* heman_ops_normalize_f32(
     heman_image* source, HEMAN_FLOAT minval, HEMAN_FLOAT maxval);
 
+// Compute the maximum value between two height maps.
+heman_image* heman_ops_max(heman_image* imga, heman_image* imgb);
+
 // Generate a monochrome image by applying a step function.
 heman_image* heman_ops_step(heman_image* image, HEMAN_FLOAT threshold);
 

@@ -22,6 +22,22 @@ heman_image* heman_ops_step(heman_image* hmap, HEMAN_FLOAT threshold)
     return result;
 }
 
+heman_image* heman_ops_max(heman_image* imga, heman_image* imgb)
+{
+    assert(imga->width == imgb->width);
+    assert(imga->height == imgb->height);
+    assert(imga->nbands == imgb->nbands);
+    heman_image* result = heman_image_create(imga->width, imga->height, imga->nbands);
+    int size = imga->height * imga->width * imga->nbands;
+    HEMAN_FLOAT* srca = imga->data;
+    HEMAN_FLOAT* srcb = imgb->data;
+    HEMAN_FLOAT* dst = result->data;
+    for (int i = 0; i < size; ++i, ++dst, ++srca, ++srcb) {
+        *dst = MAX(*srca, *srcb);
+    }
+    return result;
+}
+
 heman_image* heman_ops_sweep(heman_image* hmap)
 {
     assert(hmap->nbands == 1);
