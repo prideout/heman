@@ -137,6 +137,11 @@ heman_image* heman_distance_create_sdf(heman_image* monochrome);
 // the fast algorithm described in Felzenszwalb 2012.
 heman_image* heman_distance_create_df(heman_image* monochrome);
 
+
+// my addition
+void heman_distance_recompute_df(heman_image* dest, heman_image* src);
+
+
 // Create a two-band "closest point coordinate field" containing the
 // non-normalized texture coordinates of the nearest seed.  The result is
 // related to the distance field but has a greater amount of information.

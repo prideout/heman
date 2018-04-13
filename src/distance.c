@@ -218,6 +218,28 @@ heman_image* heman_distance_create_df(heman_image* src)
     return positive;
 }
 
+// my addition, assumes the destination is 0.f everywhere.
+void heman_distance_recompute_df(heman_image* dest, heman_image* src)
+{
+    assert(src->nbands == 1 && "Source distance field input must have only 1 band.");
+    assert(dest->nbands == 1 && "Destination distance field input must have only 1 band.");
+    assert(src->height == dest->height && src->width==dest->width && "Source and dist must have the same extents.");
+    int size = src->height * src->width;
+    HEMAN_FLOAT* pptr = dest->data;
+    HEMAN_FLOAT* sptr = src->data;
+    for (int i = 0; i < size; ++i, ++sptr) {
+        *pptr++ = *sptr ? 0 : INF;
+    }
+    transform_to_distance(dest);
+    HEMAN_FLOAT inv = 1.0f / src->width;
+    pptr = dest->data;
+    for (int i = 0; i < size; ++i, ++pptr) {
+        *pptr = sqrt(*pptr) * inv;
+    }
+    //    return dest;
+}
+
+
 heman_image* heman_distance_identity_cpcf(int width, int height)
 {
     heman_image* retval = heman_image_create(width, height, 2);
