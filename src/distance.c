@@ -236,7 +236,6 @@ void heman_distance_recompute_df(heman_image* dest, heman_image* src)
     for (int i = 0; i < size; ++i, ++pptr) {
         *pptr = sqrt(*pptr) * inv;
     }
-    //    return dest;
 }
 
 
