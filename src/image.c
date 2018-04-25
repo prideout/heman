@@ -30,7 +30,7 @@ heman_image* heman_image_create(int width, int height, int nbands)
     img->height = height;
     img->nbands = nbands;
 
-    #ifdef FT
+    #ifdef FFTW3_H
     img->data = fftwf_malloc(sizeof(float) * width * height * nbands);
     #else
     img->data = malloc(sizeof(HEMAN_FLOAT) * width * height * nbands);
