@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // An "image" encapsulates three integers (width, height, number of bands)
 // and an array of (w * h * nbands) floats, in scanline order.  For simplicity
 // the API disallows struct definitions, so this is just an opaque handle.
@@ -273,3 +277,7 @@ void heman_draw_splats(
 // Points can be 2-tuples (X Y) or 3-tuples (X Y Radius).
 void heman_draw_contour_from_points(heman_image* target, heman_points* coords,
     heman_color color, float mind, float maxd, int filterd);
+
+#ifdef __cplusplus
+}
+#endif

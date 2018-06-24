@@ -6,7 +6,7 @@
 #include <kazmath/vec2.h>
 
 // Transforms even the sequence 0,1,2,3,... into reasonably good random numbers.
-inline unsigned int randhash(unsigned int seed)
+unsigned int randhash(unsigned int seed)
 {
     unsigned int i = (seed ^ 12345391u) * 2654435769u;
     i ^= (i << 6) ^ (i >> 26);
@@ -15,7 +15,7 @@ inline unsigned int randhash(unsigned int seed)
     return i;
 }
 
-inline float randhashf(unsigned int seed, float a, float b)
+float randhashf(unsigned int seed, float a, float b)
 {
     return (b - a) * randhash(seed) / (float) UINT_MAX + a;
 }
