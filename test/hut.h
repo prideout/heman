@@ -19,7 +19,8 @@ heman_image* hut_read_image(const char* filename, int nbands)
     int width = 0, height = 0;
     stbi_uc* bytes;
     heman_image* retval;
-    bytes = stbi_load(filename, &width, &height, &nbands, nbands);
+    int bands_in_file;
+    bytes = stbi_load(filename, &width, &height, &bands_in_file, nbands);
     assert(bytes);
     printf("%4d x %4d x %d :: %s\n", width, height, nbands, filename);
     retval = heman_import_u8(width, height, nbands, bytes, 0, 1);

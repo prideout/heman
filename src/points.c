@@ -212,8 +212,14 @@ heman_points* heman_points_from_density(
     heman_image* density, HEMAN_FLOAT minradius, HEMAN_FLOAT maxradius)
 {
     assert(density->nbands == 1);
-    float width = 1;
-    float height = density->height / density->width;
+    float width, height;
+    if (density->height > density->width) {
+        width = 1;
+        height = (float) density->height / density->width;
+    } else {
+        width = (float) density->width / density->height;
+        height = 1;
+    }
     int maxattempts = 30;
     float rscale = 1.0f / UINT_MAX;
     unsigned int seed = 0;
