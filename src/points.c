@@ -174,7 +174,7 @@ heman_points* heman_points_from_poisson(
             GRIDF(pt) = actives[nactives++] = nsamples;
             samples[nsamples++] = pt;
         } else {
-            if (--nactives < 0) {
+            if (--nactives <= 0) {
                 break;
             }
             actives[aindex] = actives[nactives];
