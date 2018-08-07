@@ -1,9 +1,0 @@
-language: c
-script: scons test earth sdf planet pts && scons lib --double
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    - boost-latest
-    packages:
-    - libboost-python-dev
