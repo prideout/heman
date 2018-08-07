@@ -29,7 +29,18 @@ heman_image* heman_image_create(int width, int height, int nbands)
     img->width = width;
     img->height = height;
     img->nbands = nbands;
+
+    #ifdef FFTW3_H
+       #ifdef USE_DOUBLE_PRECISION
+       img->data = fftw_malloc(sizeof(HEMAN_FLOAT) * width * height * nbands);   
+       #else
+       img->data = fftwf_malloc(sizeof(HEMAN_FLOAT) * width * height * nbands);
+       #endif 
+    #else
     img->data = malloc(sizeof(HEMAN_FLOAT) * width * height * nbands);
+    #endif
+
+
     return img;
 }
 
