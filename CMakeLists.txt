@@ -37,3 +37,4 @@ set(MATH_SOURCE
     kazmath/vec4.c)
 
 add_library(heman STATIC ${HEMAN_SOURCE} ${MATH_SOURCE})
+target_include_directories(heman PUBLIC include)
