@@ -22,9 +22,9 @@ heman_image* heman_lighting_compute_normals(heman_image* heightmap)
     int maxx = width - 1;
     int maxy = height - 1;
     kmVec3* normals = (kmVec3*) result->data;
-
+    int y;
 #pragma omp parallel for
-    for (int y = 0; y < height; y++) {
+    for (y = 0; y < height; y++) {
         HEMAN_FLOAT v = y * invh;
         int y1 = MIN(y + 1, maxy);
         kmVec3 p;
@@ -85,8 +85,9 @@ heman_image* heman_lighting_apply(heman_image* heightmap, heman_image* albedo,
     L.z = light_position[2];
     kmVec3Normalize(&L, &L);
 
+    int y;
 #pragma omp parallel for
-    for (int y = 0; y < height; y++) {
+    for (y = 0; y < height; y++) {
         kmVec3* color = colors + y * width;
         for (int x = 0; x < width; x++, color++) {
             kmVec3* N = (kmVec3*) heman_image_texel(normals, x, y);
@@ -180,8 +181,10 @@ static void horizon_scan(
 
 // Finally, perform the actual sweeps. We're careful to touch each pixel
 // exactly once, which makes this embarassingly threadable.
+    int sweep;
+
 #pragma omp parallel for
-    for (int sweep = 0; sweep < nsweeps; sweep++) {
+    for (sweep = 0; sweep < nsweeps; sweep++) {
         kmVec3* convex_hull = hull_buffer + sweep * pathlen;
         int* p = startpts + sweep * 2;
         int i = p[0];

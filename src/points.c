@@ -51,8 +51,9 @@ heman_points* heman_points_from_grid(HEMAN_FLOAT width, HEMAN_FLOAT height,
 // in a thread-safe way.  Maybe we should add a seed argument and use
 // Bridson's randhash?
 
+    int j;
 #pragma omp parallel for
-    for (int j = 0; j < rows; j++) {
+    for (j = 0; j < rows; j++) {
         HEMAN_FLOAT* dst = result->data + j * cols * 2;
         HEMAN_FLOAT y = cellsize * 0.5 + cellsize * j;
         HEMAN_FLOAT x = cellsize * 0.5;

@@ -76,8 +76,9 @@ static void transform_to_distance(heman_image* sdf)
     HEMAN_FLOAT* zz = NEW(HEMAN_FLOAT, (height + 1) * (width + 1));
     uint16_t* ww = NEW(uint16_t, size);
 
+    int x;
 #pragma omp parallel for
-    for (int x = 0; x < width; ++x) {
+    for (x = 0; x < width; ++x) {
         HEMAN_FLOAT* f = ff + height * x;
         HEMAN_FLOAT* d = dd + height * x;
         HEMAN_FLOAT* z = zz + (height + 1) * x;
@@ -91,8 +92,9 @@ static void transform_to_distance(heman_image* sdf)
         }
     }
 
+    int y;
 #pragma omp parallel for
-    for (int y = 0; y < height; ++y) {
+    for (y = 0; y < height; ++y) {
         HEMAN_FLOAT* f = ff + width * y;
         HEMAN_FLOAT* d = dd + width * y;
         HEMAN_FLOAT* z = zz + (width + 1) * y;
@@ -122,8 +124,9 @@ static void transform_to_coordfield(heman_image* sdf, heman_image* cf)
     HEMAN_FLOAT* zz = NEW(HEMAN_FLOAT, (height + 1) * (width + 1));
     uint16_t* ww = NEW(uint16_t, size);
 
+    int x;
 #pragma omp parallel for
-    for (int x = 0; x < width; ++x) {
+    for (x = 0; x < width; ++x) {
         HEMAN_FLOAT* pl1 = NEW(HEMAN_FLOAT, height * 2);
         HEMAN_FLOAT* pl2 = NEW(HEMAN_FLOAT, height * 2);
         HEMAN_FLOAT* f = ff + height * x;
@@ -145,8 +148,9 @@ static void transform_to_coordfield(heman_image* sdf, heman_image* cf)
         free(pl2);
     }
 
+    int y;
 #pragma omp parallel for
-    for (int y = 0; y < height; ++y) {
+    for (y = 0; y < height; ++y) {
         HEMAN_FLOAT* pl1 = NEW(HEMAN_FLOAT, width * 2);
         HEMAN_FLOAT* pl2 = NEW(HEMAN_FLOAT, width * 2);
         HEMAN_FLOAT* f = ff + width * y;

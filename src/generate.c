@@ -23,8 +23,9 @@ heman_image* heman_internal_generate_island_noise(
     float freqs[] = {4.0, 16.0, 32.0, 64.0, 128.0};
     float ampls[] = {0.2, 0.1, 0.05, 0.025, 0.0125};
 
+    int y;
 #pragma omp parallel for
-    for (int y = 0; y < height; ++y) {
+    for (y = 0; y < height; ++y) {
         float v = y * invh;
         HEMAN_FLOAT* dst = data + y * width * 3;
         for (int x = 0; x < width; ++x) {
@@ -55,9 +56,11 @@ heman_image* heman_internal_generate_rock_noise(
     float invw = 1.0f / MAX(width, height);
     float freqs[] = {2.0, 4.0, 16.0};
     float ampls[] = {0.2, 0.05, 0.01};
+    
+    int y;
 
 #pragma omp parallel for
-    for (int y = 0; y < height; ++y) {
+    for (y = 0; y < height; ++y) {
         float v = y * invh;
         HEMAN_FLOAT* dst = data + y * width;
         for (int x = 0; x < width; ++x) {
@@ -83,8 +86,10 @@ heman_image* heman_generate_island_heightmap(int width, int height, int seed)
     int hh = height / 2;
     int hw = width / 2;
 
+    int y;
+
 #pragma omp parallel for
-    for (int y = 0; y < height; ++y) {
+    for (y = 0; y < height; ++y) {
         HEMAN_FLOAT vv = (y - hh) * invh;
         HEMAN_FLOAT* dst = data + y * width;
         for (int x = 0; x < width; ++x) {
@@ -108,7 +113,7 @@ heman_image* heman_generate_island_heightmap(int width, int height, int seed)
     data = result->data;
 
 #pragma omp parallel for
-    for (int y = 0; y < height; ++y) {
+    for (y = 0; y < height; ++y) {
         HEMAN_FLOAT* dst = data + y * width;
         for (int x = 0; x < width; ++x) {
             HEMAN_FLOAT n[3];
@@ -144,8 +149,10 @@ heman_image* heman_generate_rock_heightmap(int width, int height, int seed)
     int hh = height / 2;
     int hw = width / 2;
 
+    int y;
+
 #pragma omp parallel for
-    for (int y = 0; y < height; ++y) {
+    for (y = 0; y < height; ++y) {
         HEMAN_FLOAT vv = (y - hh) * invh;
         HEMAN_FLOAT* dst = data + y * width;
         for (int x = 0; x < width; ++x) {
@@ -183,8 +190,9 @@ heman_image* heman_generate_simplex_fbm(int width, int height, float frequency,
     memset(data, 0, sizeof(HEMAN_FLOAT) * width * height);
 
     while (octaves--) {
+        int y;
 #pragma omp parallel for
-        for (int y = 0; y < height; ++y) {
+        for (y = 0; y < height; ++y) {
             HEMAN_FLOAT v = y * invh;
             HEMAN_FLOAT* dst = data + y * width;
             for (int x = 0; x < width; ++x) {
@@ -216,8 +224,10 @@ heman_image* heman_generate_planet_heightmap(int width, int height, int seed)
     float scaley = PI / height;
     float invh = 1.0f / height;
 
+    int y;
+
 #pragma omp parallel for
-    for (int y = 0; y < height; ++y) {
+    for (y = 0; y < height; ++y) {
         HEMAN_FLOAT* dst = result->data + y * width;
         kmVec3 p;
         float v = y * invh;
@@ -296,8 +306,9 @@ heman_image* heman_generate_archipelago_heightmap(
     int hh = height / 2;
     int hw = width / 2;
 
+    int y;
 #pragma omp parallel for
-    for (int y = 0; y < height; ++y) {
+    for (y = 0; y < height; ++y) {
         HEMAN_FLOAT vv = (y - hh) * invh;
         HEMAN_FLOAT* dst = data + y * width;
         for (int x = 0; x < width; ++x) {
@@ -321,7 +332,7 @@ heman_image* heman_generate_archipelago_heightmap(
     data = result->data;
 
 #pragma omp parallel for
-    for (int y = 0; y < height; ++y) {
+    for (y = 0; y < height; ++y) {
         HEMAN_FLOAT* dst = data + y * width;
         for (int x = 0; x < width; ++x) {
             HEMAN_FLOAT n[3];
@@ -377,8 +388,10 @@ heman_image* heman_generate_archipelago_political_2(int width, int height,
     HEMAN_FLOAT invw = 1.0 / width;
     HEMAN_FLOAT invh = 1.0 / height;
 
+    int y;
+
 #pragma omp parallel for
-    for (int y = 0; y < height; ++y) {
+    for (y = 0; y < height; ++y) {
         HEMAN_FLOAT* dst = data + y * width;
         for (int x = 0; x < width; ++x) {
             HEMAN_FLOAT n[3];
@@ -415,8 +428,9 @@ heman_image* heman_generate_archipelago_political_3(int width, int height,
     heman_image* elevation = heman_image_create(width, height, 1);
     heman_image_clear(elevation, 0);
     for (int cindex = 0; cindex < ncolors; cindex++) {
+        int y;
 #pragma omp parallel for
-        for (int y = 0; y < height; ++y) {
+        for (y = 0; y < height; ++y) {
             HEMAN_FLOAT* dst = elevation->data + y * width;
             HEMAN_FLOAT* src = elevations[cindex]->data + y * width;
             for (int x = 0; x < width; ++x, ++dst, ++src) {
@@ -429,16 +443,19 @@ heman_image* heman_generate_archipelago_political_3(int width, int height,
 
     heman_image* ocean_elevation = heman_generate_archipelago_political_2(
         width, height, ocean, seed, political, 0);
+
+    int y;
+
 #pragma omp parallel for
-        for (int y = 0; y < height; ++y) {
-            HEMAN_FLOAT* dst = elevation->data + y * width;
-            HEMAN_FLOAT* src = ocean_elevation->data + y * width;
-            for (int x = 0; x < width; ++x, ++dst, ++src) {
-                if (*src < 0) {
-                    *dst = *src;
-                }
+    for (y = 0; y < height; ++y) {
+        HEMAN_FLOAT* dst = elevation->data + y * width;
+        HEMAN_FLOAT* src = ocean_elevation->data + y * width;
+        for (int x = 0; x < width; ++x, ++dst, ++src) {
+            if (*src < 0) {
+                *dst = *src;
             }
         }
+    }
     heman_image_destroy(ocean_elevation);
 
     return elevation;

@@ -9,6 +9,11 @@
 
 #define NOISEY(U, V, A, F) (A * open_simplex_noise2(ctx, U * F + 0.5, V * F))
 
+int heman_get_num_threads()
+{
+    return omp_get_max_threads();
+}
+
 heman_image* heman_ops_step(heman_image* hmap, HEMAN_FLOAT threshold)
 {
     assert(hmap->nbands == 1);
@@ -89,8 +94,9 @@ heman_image* heman_ops_stitch_horizontal(heman_image** images, int count)
     }
     heman_image* result = heman_image_create(width * count, height, nbands);
 
+    int y;
 #pragma omp parallel for
-    for (int y = 0; y < height; y++) {
+    for (y = 0; y < height; y++) {
         for (int tile = 0; tile < count; tile++) {
             copy_row(images[tile], result, tile * width, y);
         }
@@ -145,8 +151,9 @@ heman_image* heman_ops_laplacian(heman_image* heightmap)
     int maxx = width - 1;
     int maxy = height - 1;
 
+    int y;
 #pragma omp parallel for
-    for (int y = 0; y < height; y++) {
+    for (y = 0; y < height; y++) {
         int y1 = MIN(y + 1, maxy);
         HEMAN_FLOAT* dst = result->data + y * width;
         for (int x = 0; x < width; x++) {
@@ -188,8 +195,9 @@ heman_image* heman_ops_sobel(heman_image* img, heman_color rgb)
     edge_rgb.y = (HEMAN_FLOAT)((rgb >> 8) & 0xff) * inv;
     edge_rgb.z = (HEMAN_FLOAT)(rgb & 0xff) * inv;
 
+    int y;
 #pragma omp parallel for
-    for (int y = 0; y < height; y++) {
+    for (y = 0; y < height; y++) {
         kmVec3* dst = (kmVec3*) result->data + y * width;
         const kmVec3* src = (kmVec3*) img->data + y * width;
         for (int x = 0; x < width; x++) {
@@ -235,8 +243,9 @@ heman_image* heman_ops_warp_core(heman_image* img, heman_image* secondary,
     float initial_amplitude = 0.05;
     float initial_frequency = 8.0;
 
+    int y;
 #pragma omp parallel for
-    for (int y = 0; y < height; y++) {
+    for (y = 0; y < height; y++) {
         HEMAN_FLOAT* dst = result->data + y * width * nbands;
         for (int x = 0; x < width; x++) {
 
@@ -327,8 +336,9 @@ heman_image* heman_ops_extract_mask(heman_image* source, heman_color color, int 
     int width = source->width;
     heman_image* result = heman_image_create(width, height, 1);
 
+    int y;
 #pragma omp parallel for
-    for (int y = 0; y < height; y++) {
+    for (y = 0; y < height; y++) {
         HEMAN_FLOAT* dst = result->data + y * width;
         HEMAN_FLOAT* src = source->data + y * width * 3;
         for (int x = 0; x < width; x++, src += 3) {
@@ -358,8 +368,9 @@ heman_image* heman_ops_replace_color(
     HEMAN_FLOAT b = (HEMAN_FLOAT)(color & 0xff) * inv;
     heman_image* result = heman_image_create(width, height, 3);
 
+    int y;
 #pragma omp parallel for
-    for (int y = 0; y < height; y++) {
+    for (y = 0; y < height; y++) {
         HEMAN_FLOAT* dst = result->data + y * width * 3;
         HEMAN_FLOAT* src = source->data + y * width * 3;
         HEMAN_FLOAT* tex = texture->data + y * width * 3;
@@ -545,8 +556,9 @@ heman_image* heman_ops_emboss(heman_image* img, int mode)
     float ocean_amplitude = 0.5;
     float ocean_frequency = 1.0;
 
+    int y;
 #pragma omp parallel for
-    for (int y = 0; y < height; y++) {
+    for (y = 0; y < height; y++) {
         HEMAN_FLOAT* dst = result->data + y * width;
         for (int x = 0; x < width; x++) {
             HEMAN_FLOAT z = *heman_image_texel(img, x, y);

@@ -278,6 +278,9 @@ void heman_draw_splats(
 void heman_draw_contour_from_points(heman_image* target, heman_points* coords,
     heman_color color, float mind, float maxd, int filterd);
 
+// This returns omp_get_max_threads() for diagnostic purposes.
+int heman_get_num_threads();
+
 #ifdef __cplusplus
 }
 #endif

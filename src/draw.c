@@ -133,8 +133,9 @@ void heman_draw_contour_from_points(heman_image* target, heman_points* coords,
         a = (HEMAN_FLOAT)(rgb >> 24) * inv;
     }
 
+    int y;
 #pragma omp parallel for
-    for (int y = 0; y < height; y++) {
+    for (y = 0; y < height; y++) {
         HEMAN_FLOAT* dst = target->data + y * width * target->nbands;
         for (int x = 0; x < width; x++) {
             HEMAN_FLOAT dist = *heman_image_texel(seed, x, y);
