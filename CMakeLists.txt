@@ -39,17 +39,17 @@ set(MATH_SOURCE
     kazmath/vec4.c)
 
 add_library(heman STATIC ${HEMAN_SOURCE} ${MATH_SOURCE})
-target_include_directories(heman
-    PUBLIC include
-    PUBLIC /usr/local/include)
+target_include_directories(heman PUBLIC include)
 
 if(OpenMP_CXX_FOUND)
     target_link_libraries(heman PUBLIC OpenMP::OpenMP_CXX)
-else()
-    target_link_directories(heman PUBLIC /usr/local/lib)
-    target_link_libraries(heman PUBLIC omp)
+    target_include_directories(heman PUBLIC OpenMP::OpenMP_CXX)
 endif()
 
 if (APPLE)
     target_compile_options(heman PUBLIC -Xclang -fopenmp)
+endif()
+
+if (WIN32)
+    target_compile_options(heman PUBLIC /openmp)
 endif()

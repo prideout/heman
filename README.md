@@ -49,3 +49,13 @@ heman_image* final = heman_lighting_apply(elevation, albedo, ...);
 
 For the unabridged version, see `test_lighting()` in
 [test/test_heman.c](https://github.com/prideout/heman/blob/master/test/test_heman.c).
+
+## Building OpenMP
+
+```
+curl -L -O https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/
+tar -xvf openmp-12.0.0.src.tar.xz
+cd openmp-12.0.0.src
+cmake . -DLIBOMP_ENABLE_SHARED=OFF -DLIBOMP_INSTALL_ALIASES=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64
+sudo make install
+```
