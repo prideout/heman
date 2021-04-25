@@ -44,3 +44,7 @@ target_include_directories(heman PUBLIC include)
 if(OpenMP_CXX_FOUND)
     target_link_libraries(heman PUBLIC OpenMP::OpenMP_CXX)
 endif()
+
+if (APPLE)
+    target_compile_options(heman PUBLIC -Xclang -fopenmp)
+endif()

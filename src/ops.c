@@ -1,18 +1,16 @@
 #include "image.h"
 #include "noise.h"
 #include <assert.h>
-#include <memory.h>
-#include <stdlib.h>
 #include <kazmath/vec3.h>
+#include <memory.h>
+#include <omp.h>
+#include <stdlib.h>
 
 #define NOISEX(U, V, A, F) (A * open_simplex_noise2(ctx, U * F, V * F))
 
 #define NOISEY(U, V, A, F) (A * open_simplex_noise2(ctx, U * F + 0.5, V * F))
 
-int heman_get_num_threads()
-{
-    return omp_get_max_threads();
-}
+int heman_get_num_threads() { return omp_get_max_threads(); }
 
 heman_image* heman_ops_step(heman_image* hmap, HEMAN_FLOAT threshold)
 {
@@ -32,7 +30,8 @@ heman_image* heman_ops_max(heman_image* imga, heman_image* imgb)
     assert(imga->width == imgb->width);
     assert(imga->height == imgb->height);
     assert(imga->nbands == imgb->nbands);
-    heman_image* result = heman_image_create(imga->width, imga->height, imga->nbands);
+    heman_image* result =
+        heman_image_create(imga->width, imga->height, imga->nbands);
     int size = imga->height * imga->width * imga->nbands;
     HEMAN_FLOAT* srca = imga->data;
     HEMAN_FLOAT* srcb = imgb->data;
@@ -224,8 +223,8 @@ heman_image* heman_ops_sobel(heman_image* img, heman_color rgb)
     return result;
 }
 
-heman_image* heman_ops_warp_core(heman_image* img, heman_image* secondary,
-    int seed, int octaves)
+heman_image* heman_ops_warp_core(
+    heman_image* img, heman_image* secondary, int seed, int octaves)
 {
     struct osn_context* ctx;
     open_simplex_noise(seed, &ctx);
@@ -233,7 +232,8 @@ heman_image* heman_ops_warp_core(heman_image* img, heman_image* secondary,
     int height = img->height;
     int nbands = img->nbands;
     heman_image* result = heman_image_create(width, height, nbands);
-    heman_image* result2 = secondary ? heman_image_create(width, height, secondary->nbands) : 0;
+    heman_image* result2 =
+        secondary ? heman_image_create(width, height, secondary->nbands) : 0;
     HEMAN_FLOAT invw = 1.0 / width;
     HEMAN_FLOAT invh = 1.0 / height;
     HEMAN_FLOAT inv = MIN(invw, invh);
@@ -248,7 +248,6 @@ heman_image* heman_ops_warp_core(heman_image* img, heman_image* secondary,
     for (y = 0; y < height; y++) {
         HEMAN_FLOAT* dst = result->data + y * width * nbands;
         for (int x = 0; x < width; x++) {
-
             float a = initial_amplitude;
             float f = initial_frequency;
 
@@ -296,8 +295,8 @@ heman_image* heman_ops_warp_core(heman_image* img, heman_image* secondary,
     return result;
 }
 
-heman_image* heman_ops_warp_points(heman_image* img, int seed, int octaves,
-    heman_points* pts)
+heman_image* heman_ops_warp_points(
+    heman_image* img, int seed, int octaves, heman_points* pts)
 {
     int width = img->width;
     int height = img->height;
@@ -325,7 +324,8 @@ heman_image* heman_ops_warp(heman_image* img, int seed, int octaves)
     return heman_ops_warp_core(img, 0, seed, octaves);
 }
 
-heman_image* heman_ops_extract_mask(heman_image* source, heman_color color, int invert)
+heman_image* heman_ops_extract_mask(
+    heman_image* source, heman_color color, int invert)
 {
     assert(source->nbands == 3);
     HEMAN_FLOAT inv = 1.0f / 255.0f;
@@ -342,7 +342,7 @@ heman_image* heman_ops_extract_mask(heman_image* source, heman_color color, int 
         HEMAN_FLOAT* dst = result->data + y * width;
         HEMAN_FLOAT* src = source->data + y * width * 3;
         for (int x = 0; x < width; x++, src += 3) {
-            HEMAN_FLOAT val =((src[0] == r) && (src[1] == g) && (src[2] == b));
+            HEMAN_FLOAT val = ((src[0] == r) && (src[1] == g) && (src[2] == b));
             if (!invert) {
                 val = 1 - val;
             }
@@ -390,8 +390,8 @@ heman_image* heman_ops_replace_color(
     return result;
 }
 
-static int _match(heman_image* mask, heman_color mask_color,
-    int invert_mask, int pixel_index)
+static int _match(
+    heman_image* mask, heman_color mask_color, int invert_mask, int pixel_index)
 {
     HEMAN_FLOAT* mcolor = mask->data + pixel_index * 3;
     unsigned char r1 = mcolor[0] * 255;
@@ -404,18 +404,20 @@ static int _match(heman_image* mask, heman_color mask_color,
     return invert_mask ? (1 - retval) : retval;
 }
 
-static float qselect(float *v, int len, int k)
+static float qselect(float* v, int len, int k)
 {
     int i, st;
-    for(st = i = 0; i < len - 1; i++) {
-        if(v[i] > v[len - 1]) {
+    for (st = i = 0; i < len - 1; i++) {
+        if (v[i] > v[len - 1]) {
             continue;
         }
         SWAP(float, v[i], v[st]);
         st++;
     }
     SWAP(float, v[len - 1], v[st]);
-    return k == st ? v[st] : st > k ? qselect(v, st, k) : qselect(v + st, len - st, k - st);
+    return k == st  ? v[st]
+           : st > k ? qselect(v, st, k)
+                    : qselect(v + st, len - st, k - st);
 }
 
 heman_image* heman_ops_percentiles(heman_image* hmap, int nsteps,
