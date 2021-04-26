@@ -54,8 +54,7 @@ For the unabridged version, see `test_lighting()` in
 
 ```
 curl -L -O https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/openmp-12.0.0.src.tar.xz
-tar -xvf openmp-12.0.0.src.tar.xz
-rm tar -xvf openmp-12.0.0.src.tar.xz
+tar -xvf openmp-12.0.0.src.tar.xz ; rm openmp-12.0.0.src.tar.xz
 cd openmp-12.0.0.src
 cmake . -DLIBOMP_ENABLE_SHARED=OFF -DLIBOMP_INSTALL_ALIASES=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64
 sudo make install
